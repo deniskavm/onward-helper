@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onward — Лига героев</title>
+<style>
+  :root{
+    --bg:#f6f4ef; --card:#fff; --ink:#1d1d1b; --muted:#6b6a65; --line:#e4e1d9;
+    --accent:#8a3b1e; --chip:#efece5;
+    --lio:#2f6f4f; --kur:#a3341f; --tau:#7a5a1e; --nup:#3d4f9a;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#181816; --card:#22221f; --ink:#ecebe6; --muted:#a3a19a; --line:#34332f;
+      --accent:#e08a5f; --chip:#2c2b27; --lio:#6cc19a; --kur:#ef7d64; --tau:#d6b06a; --nup:#8fa2ef; }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+  main{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
+  h1{font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
+  .sub{color:var(--muted);margin:0 0 22px}
+  h2{font-size:17px;margin:28px 0 10px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  th{font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);
+    font-weight:600;background:var(--card);position:sticky;top:0;z-index:1}
+  #heroes th{cursor:pointer;user-select:none;white-space:nowrap}
+  #heroes th:hover{color:var(--ink)}
+  #heroes th .arr{color:var(--accent);margin-left:2px}
+  #heroes tbody.hero:hover{background:var(--chip)}
+  #heroes tbody.hero td{border-bottom:none}
+  #heroes tbody.hero{border-bottom:1px solid var(--line)}
+  #heroes tbody.hero:last-child{border-bottom:none}
+  #heroes .desc-row{display:none}
+  #heroes .desc-row td{padding-top:0;color:var(--ink);font-size:14px}
+  .name{font-weight:600}
+  .ru{color:var(--muted);font-weight:400}
+  .title{display:block;color:var(--muted);font-size:13px}
+  .fac{display:inline-block;padding:1px 8px;border-radius:999px;font-size:13px;font-weight:600;
+    border:1px solid currentColor;white-space:nowrap}
+  .f-Лиотан{color:var(--lio)} .f-Курумо{color:var(--kur)} .f-Таулот{color:var(--tau)} .f-Нуптен{color:var(--nup)}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 12px}
+  input[type=search],select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:8px;
+    background:var(--card);color:var(--ink)}
+  input[type=search]{flex:1 1 220px;min-width:180px}
+  button{font:inherit;padding:7px 12px;border:1px solid var(--line);border-radius:8px;background:var(--chip);
+    color:var(--ink);cursor:pointer}
+  .sec-static > h2{margin:18px 0 8px}
+  details.sec > summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:10px;
+    flex-wrap:wrap;user-select:none;-webkit-tap-highlight-color:transparent}
+  details.sec > summary::-webkit-details-marker{display:none}
+  details.sec > summary h2{margin:18px 0 8px;display:flex;align-items:center;gap:6px}
+  details.sec > summary h2::before{content:"";width:7px;height:7px;border-right:2px solid var(--muted);
+    border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s;margin:0 6px 4px 2px}
+  details.sec:not([open]) > summary h2::before{transform:rotate(-45deg);margin:0 6px 0 0}
+  details.sec > summary .hint{color:var(--muted);font-size:13px}
+  details.sec:not([open]) > summary .hint::after{content:"свёрнуто"}
+  details.sec > summary:hover h2{color:var(--accent)}
+  .count{color:var(--muted);font-size:13px}
+  .fbar{display:flex;align-items:center;gap:10px;margin:0 0 10px;flex-wrap:wrap}
+  .ftoggle{font:inherit;font-weight:600;background:none;border:none;padding:4px 0;color:var(--ink);cursor:pointer;
+    display:inline-flex;align-items:center;gap:2px}
+  .ftoggle:hover{color:var(--accent)}
+  .ftoggle .chev{transform:rotate(45deg)}
+  .fbar.collapsed .ftoggle .chev{transform:rotate(-45deg)}
+  .fact{font-weight:400;color:var(--accent);font-size:13px;margin-left:6px}
+  .flink{margin-left:auto;color:var(--accent);font-size:14px;text-decoration:underline;text-underline-offset:3px}
+  .flink.off{color:var(--muted);text-decoration:none;pointer-events:none;opacity:.6}
+  .fbar.collapsed + .controls{display:none}
+  .sw{display:inline-flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;user-select:none;white-space:nowrap}
+  .sw input{position:absolute;opacity:0;width:1px;height:1px}
+  .sw-t{position:relative;width:36px;height:20px;border-radius:999px;background:var(--line);transition:background .15s;flex:0 0 auto}
+  .sw-t::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:var(--card);
+    box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .sw input:checked + .sw-t{background:var(--lio)}
+  .sw input:checked + .sw-t::after{transform:translateX(16px)}
+  .sw input:focus-visible + .sw-t{outline:2px solid var(--accent);outline-offset:2px}
+  body.no-cp #heroes details[data-cp="good"], body.no-cp #heroes details[data-cp="bad"], body.no-cp #sec-pick{display:none}
+  .faq-bar{display:flex;align-items:center;gap:10px;margin:0 0 8px}
+  .faq{display:grid;gap:10px}
+  .faq-sec{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+  .faq-sec h3{margin:2px 0 6px;font-size:15px}
+  .faq-sec h4{margin:10px 0 2px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--accent)}
+  .faq-q{border-top:1px solid var(--line)}
+  .faq-sec h4 + .faq-q, .faq-sec h3 + .faq-q{border-top:none}
+  .faq-q > summary{list-style:none;cursor:pointer;padding:8px 0 8px 18px;position:relative;font-size:14.5px;line-height:1.4;font-weight:600;-webkit-tap-highlight-color:transparent}
+  .faq-q > summary::-webkit-details-marker{display:none}
+  .faq-q > summary::before{content:"";position:absolute;left:2px;top:14px;width:6px;height:6px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s}
+  .faq-q[open] > summary::before{transform:rotate(45deg);top:12px}
+  .faq-q > summary:hover{color:var(--accent)}
+  .faq-a{padding:0 0 10px 18px;font-size:14px;line-height:1.5;color:var(--ink)}
+  .faq-a a,.sub a{color:var(--accent)}
+  .tfac{font-weight:600;white-space:nowrap}
+  @media (min-width:761px){ #heroes .c-name{width:300px} }
+  .rng{display:inline-flex;align-items:center;color:var(--accent)}
+  .rng svg{display:block}
+  .c-rng{text-align:center}
+  #heroes tbody.hero > tr:first-child{cursor:pointer}
+  #heroes tbody.hero > tr:first-child:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+  .chev{display:inline-block;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
+    transform:rotate(-45deg);margin:0 7px 2px 0;transition:transform .15s}
+  tbody.hero.open .chev{transform:rotate(45deg)}
+  tbody.hero.open{background:var(--chip)}
+  .cp-row{display:none}
+  tbody.hero.open .cp-row{display:table-row}
+  .cp-row > td{padding:2px 12px 14px}
+  .cp{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}
+  .cp-col{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+  .cp-col h4{margin:0;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  .cp-col > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;user-select:none;-webkit-tap-highlight-color:transparent}
+  .cp-col > summary::-webkit-details-marker{display:none}
+  .cp-col > summary::before{content:"";width:6px;height:6px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
+    transform:rotate(45deg);margin:0 2px 3px 1px;transition:transform .15s}
+  .cp-col:not([open]) > summary::before{transform:rotate(-45deg);margin-bottom:0}
+  .cp-col[open] > summary{margin-bottom:6px}
+  .cp-n{font-size:12px;color:var(--muted)}
+  .cp-col.abil{grid-column:1/-1}
+  .cp-col.abil h4{color:var(--accent)}
+  .ab-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0 16px}
+  .ab-list li{padding:6px 0;border-top:1px solid var(--line);font-size:13.5px;line-height:1.4}
+  .ab-h{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+  .ab-h .tagp,.ab-h .tagu{display:inline}
+  .ab-cost{margin-left:auto;color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
+  .ab-u b{color:var(--accent)}
+  .cp-col.good h4{color:var(--lio)} .cp-col.bad h4{color:var(--kur)}
+  .cp-col ul{list-style:none;margin:0;padding:0}
+  .cp-col li{padding:5px 0;border-top:1px solid var(--line);font-size:13.5px;line-height:1.4}
+  .cp-col li:first-child{border-top:none}
+  .cp-hero{font:inherit;font-weight:600;color:var(--ink);background:none;border:none;padding:0;cursor:pointer;
+    text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+  .cp-hero:hover{color:var(--accent);text-decoration-color:currentColor}
+  .cp-why{color:var(--muted);display:block}
+  .cp-cls{color:var(--muted);font-size:13px}
+  .src-v{display:inline-block;font-size:11px;padding:0 6px;border-radius:999px;border:1px dashed var(--muted);
+    color:var(--muted);margin-left:4px;white-space:nowrap;vertical-align:1px}
+  .cp-empty{color:var(--muted);font-size:13px}
+  tbody.hero.flash{animation:flash 1.2s ease}
+  @keyframes flash{0%{background:color-mix(in srgb,var(--accent) 22%,transparent)}100%{background:var(--chip)}}
+  .note{color:var(--muted);font-size:13px;margin:10px 2px 0}
+  .note a{color:var(--accent)}
+  body.has-sheet main{padding-bottom:90px}
+  html,body{overscroll-behavior-x:none}
+  .sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;flex-direction:column;
+    background:var(--card);border-top:1px solid var(--line);box-shadow:0 -6px 24px rgba(0,0,0,.12);
+    padding-bottom:env(safe-area-inset-bottom)}
+  .sheet[hidden]{display:none}
+  .sh-bar{display:flex;align-items:center;gap:4px;max-width:1180px;width:100%;margin:0 auto;padding:6px 8px}
+  .sh-head{flex:1;min-width:0;font:inherit;background:none;border:none;color:var(--ink);cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px}
+  .sh-head:focus{outline:none} .sh-head:focus-visible{outline:2px solid var(--accent);border-radius:8px}
+  .sh-title{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .sh-title .cp-cls{font-weight:400}
+  .sh-dots{display:flex;gap:6px}
+  .sh-dot{width:7px;height:7px;border-radius:50%;background:var(--line)}
+  .sh-dot.on{background:var(--accent)}
+  .sh-dot.mine{box-shadow:0 0 0 1.5px var(--lio)}
+  .sh-nav{font:inherit;font-size:24px;line-height:1;width:38px;height:38px;border-radius:10px;border:1px solid var(--line);
+    background:var(--chip);color:var(--ink);cursor:pointer;flex:0 0 auto}
+  .sh-nav:disabled{opacity:.3;cursor:default}
+  .sh-close{flex:0 0 auto;width:34px;height:34px;border:none;background:none;cursor:pointer}
+  .sh-close .chev{transform:rotate(45deg)}
+  .sheet.collapsed .sh-close .chev{transform:rotate(-135deg)}
+  .sh-body{overscroll-behavior-x:contain;overflow:hidden;max-height:62vh;transition:max-height .2s ease;touch-action:pan-y}
+  .sheet.collapsed .sh-body{max-height:0}
+  .sh-track{display:flex;transition:transform .25s ease;will-change:transform}
+  .sh-track.drag{transition:none}
+  .sh-slide{flex:0 0 100%;min-width:0;max-height:62vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .sh-inner{max-width:1180px;margin:0 auto;padding:0 12px 14px}
+  .sh-sub{font-size:13px;color:var(--muted);margin:0 0 8px;text-align:center}
+  .abil{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .abil th,.abil td{padding:7px 9px;border-bottom:1px solid var(--line);font-size:13.5px;line-height:1.4;text-align:left;vertical-align:top}
+  .abil th{position:static;font-size:11.5px}
+  .abil tr:last-child td{border-bottom:none}
+  .abil .an{font-weight:600;white-space:nowrap}
+  .abil .ac{white-space:nowrap;color:var(--muted);font-variant-numeric:tabular-nums}
+  .abil tr.passive td{background:var(--chip)}
+  .abil tr.ult .an{color:var(--accent)}
+  .tagp,.tagu{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+  .tagu{color:var(--accent)}
+  @media (max-width:760px){
+    .abil .an{white-space:normal}
+    .abil th,.abil td{padding:6px 7px;font-size:13px}
+    .sh-nav{width:34px;height:34px}
+  }
+  .dpanel{display:grid;gap:10px}
+  .dgroup-h{display:flex;align-items:baseline;gap:8px;margin:0 0 5px;font-size:13px;font-weight:600}
+  .dgroup-h .dn{font-weight:400;color:var(--muted)}
+  .dgroup.my .dgroup-h{color:var(--lio)} .dgroup.enemy .dgroup-h{color:var(--kur)} .dgroup.ban .dgroup-h{color:var(--muted)}
+  .dgroup-h .flink{font-weight:400;font-size:13px}
+  .dslots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .dslot{position:relative;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:8px;
+    padding:6px 7px 6px 9px;min-height:50px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+  .dslot:hover{border-color:var(--muted)}
+  .dgroup.my .dslot{box-shadow:inset 3px 0 0 var(--lio)}
+  .dgroup.enemy .dslot{box-shadow:inset 3px 0 0 var(--kur)}
+  .dgroup.ban .dslot{box-shadow:inset 3px 0 0 var(--muted)}
+  .dgroup.ban .dslot .dnm{text-decoration:line-through;color:var(--muted)}
+  .dnm{display:block;font-weight:600;font-size:14px;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-right:16px}
+  .dcl{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--muted);margin-top:2px;min-width:0}
+  .dcl span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  .dcl .rng svg{width:15px;height:15px}
+  .dcl .rng{flex:0 0 auto}
+  .dx{position:absolute;top:3px;right:3px;width:18px;height:18px;border:none;border-radius:50%;background:none;
+    color:var(--muted);font:inherit;font-size:14px;line-height:18px;padding:0;cursor:pointer}
+  .dx:hover{background:var(--chip);color:var(--accent)}
+  .dgroup .dslot.empty{border-style:dashed;background:transparent;box-shadow:none;cursor:default;color:var(--muted);
+    font-size:12px;display:flex;align-items:center;justify-content:center}
+  details.dgroup > summary{list-style:none;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent}
+  details.dgroup > summary::-webkit-details-marker{display:none}
+  details.dgroup > summary .chev{transform:rotate(45deg);margin:0 4px 2px 1px}
+  details.dgroup:not([open]) > summary .chev{transform:rotate(-45deg)}
+  details.dgroup:not([open]) > summary{margin-bottom:0}
+  details.dgroup > summary:hover{color:var(--ink)}
+  .dbanlist{font-weight:400;color:var(--muted);display:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+  details.dgroup:not([open]) .dbanlist{display:inline}
+  .dhint{font-size:12.5px;color:var(--muted);margin:0}
+  @media (max-width:420px){ .dslots{gap:5px} .dnm{font-size:13px;padding-right:12px} .dcl{font-size:11px;gap:2px} .dcl .rng svg{width:13px;height:13px} .dslot{padding:5px 4px 5px 7px} .dx{width:15px;height:15px;line-height:15px;font-size:13px;top:2px;right:1px} }
+  .ds{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+  .ds-btn{font:inherit;font-size:12px;line-height:1;padding:5px 8px;border-radius:999px;border:1px solid var(--line);
+    background:var(--card);color:var(--muted);cursor:pointer}
+  .ds-btn:hover{color:var(--ink);border-color:var(--muted)}
+  .ds-btn[aria-pressed="true"].b-my{background:var(--lio);border-color:var(--lio);color:#fff}
+  .ds-btn[aria-pressed="true"].b-enemy{background:var(--kur);border-color:var(--kur);color:#fff}
+  .ds-btn[aria-pressed="true"].b-ban{background:var(--muted);border-color:var(--muted);color:var(--card)}
+  #heroes tbody.hero.st-my > tr > td:first-child{box-shadow:inset 4px 0 0 var(--lio)}
+  #heroes tbody.hero.st-enemy > tr > td:first-child{box-shadow:inset 4px 0 0 var(--kur)}
+  #heroes tbody.hero.st-ban > tr:not(.cp-row){opacity:.45}
+  #heroes tbody.hero.st-ban .name{text-decoration:line-through}
+  .pst{font-size:11.5px;font-weight:700;padding:1px 7px;border-radius:999px;color:#fff;white-space:nowrap}
+  .pst.my{background:var(--lio)} .pst.enemy{background:var(--kur)}
+  .prow.taken{opacity:.55}
+  .prow.taken .cp-hero{text-decoration:line-through}
+  .pick-controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .pick-controls select{flex:1 1 200px;min-width:0;width:100%;max-width:100%;text-overflow:ellipsis}
+  .pick-controls button{flex:0 0 auto}
+  .pick-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+  .pchip{display:inline-flex;align-items:center;gap:6px;padding:4px 6px 4px 10px;border-radius:999px;
+    background:var(--card);border:1px solid var(--line);font-size:14px}
+  .pchip b{font-weight:600}
+  .pchip button{font:inherit;border:none;background:var(--chip);color:var(--muted);width:22px;height:22px;
+    border-radius:50%;padding:0;cursor:pointer;line-height:22px}
+  .pchip button:hover{color:var(--accent)}
+  .plist{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .prow{padding:8px 12px;border-top:1px solid var(--line)}
+  .prow:first-child{border-top:none}
+  .prow.can-open{cursor:pointer}
+  .prow.can-open:hover{background:var(--chip)}
+  .prow.can-open:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+  .phead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .phead .cp-hero{font-size:15px}
+  .phead .rng{margin-left:auto}
+  .pnum{font-size:13px;font-weight:700;color:var(--lio);min-width:2.2em;text-align:right}
+  .prow .chev{margin:0 2px 2px 0}
+  .prow.open .chev{transform:rotate(45deg)}
+  .ptags{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 0 17px}
+  .ptag{font-size:12px;padding:1px 7px;border-radius:999px;border:1px solid var(--line);color:var(--muted);opacity:.55;text-decoration:line-through}
+  .ptag.hit{opacity:1;text-decoration:none;color:var(--lio);border-color:currentColor;font-weight:600}
+  .pwhy{display:none;margin:6px 0 2px 17px;font-size:13.5px;line-height:1.4;color:var(--muted)}
+  .pwhy b{color:var(--ink);font-weight:600}
+  .pwhy > div{padding:3px 0}
+  .prow.open .pwhy{display:block}
+  .pwhy1{font-size:13.5px;line-height:1.4;color:var(--muted);margin-top:3px}
+  .pmore{margin-top:8px;width:100%}
+  .pick-empty{color:var(--muted);font-size:14px;margin:4px 2px}
+  .cls td:first-child{font-weight:600;white-space:nowrap}
+  .tablewrap{max-height:none;overflow:auto}
+  /* Телефоны (iPhone 17 — 402 pt): описание второй строкой */
+  @media (max-width:760px){
+    main{padding:18px 10px 40px}
+    h1{font-size:21px}
+    .sub{font-size:14px}
+    th,td{padding:7px 6px}
+    th{font-size:11px;letter-spacing:.02em}
+    #heroes{table-layout:fixed}
+    #heroes .c-name{width:auto}
+    #heroes .c-cls{width:94px}
+    #heroes .c-rng{width:50px}
+    #heroes .c-desc{display:none}
+    #heroes .desc-row{display:table-row}
+    #heroes .desc-row td{padding:0 6px 9px;font-size:13.5px;line-height:1.4;color:var(--muted)}
+    .name{font-size:14.5px}
+    .ru{display:block;font-size:13px}
+    .title{font-size:12px}
+    .fac{font-size:12px;padding:1px 6px}
+    td{font-size:13.5px;word-wrap:break-word}
+    .controls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .controls input[type=search]{grid-column:1/-1}
+    .controls select{width:100%;font-size:14px}
+    .controls #fDraft,.controls .sw{grid-column:1/-1}
+    .cls td:first-child{white-space:normal}
+    .cp{grid-template-columns:1fr;gap:8px}
+    .cp-row > td{padding:0 6px 10px}
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Onward — Лига героев</h1>
+
+<section class="sec-static" id="sec-draft">
+  <h2>Драфт</h2>
+  <div id="draftbar" class="dpanel"></div>
+</section>
+
+<details class="sec" id="sec-heroes">
+  <summary><h2>Герои</h2><span class="hint"></span></summary>
+  <div class="fbar">
+    <button type="button" class="ftoggle" id="ftoggle" aria-expanded="true" aria-controls="fbody"><span class="chev" aria-hidden="true"></span>Фильтры<span class="fact" id="fact"></span></button>
+    <span class="count" id="count"></span>
+    <a href="#" class="flink" id="reset">Сбросить</a>
+  </div>
+  <div class="controls" id="fbody">
+    <input type="search" id="q" placeholder="Поиск по имени или описанию…">
+    <select id="fCls"><option value="">Все классы</option></select>
+    <select id="fRng"><option value="">Любой бой</option><option value="БД">⚔ Меч — ближний</option><option value="ДБ">🏹 Лук — дальний</option></select>
+    <select id="fDraft"><option value="">Любой статус</option><option value="free">Свободные</option><option value="my">Мои пики</option><option value="enemy">Пики противника</option><option value="ban">Баны</option></select>
+    <label class="sw"><input type="checkbox" id="fCp"><span class="sw-t" aria-hidden="true"></span>Показывать контрпики</label>
+  </div>
+  <div class="card tablewrap">
+    <table id="heroes">
+      <thead><tr>
+        <th class="c-name" data-k="name">Герой<span class="arr"></span></th>
+        <th class="c-cls" data-k="cls">Класс<span class="arr"></span></th>
+        <th class="c-rng" data-k="rng">Бой<span class="arr"></span></th>
+        <th class="c-desc" data-k="desc">Описание<span class="arr"></span></th>
+      </tr></thead>
+    </table>
+  </div>
+  <p class="note">Контрпики для героев базовой коробки — по разбору игрока tinnyf на BoardGameGeek
+  (<a href="https://boardgamegeek.com/thread/3609027/hero-strategies-kurumo">Курумо</a>,
+  <a href="https://boardgamegeek.com/thread/3617471/hero-strategies-liothan">Лиотан</a>). Разборов Таулота и Нуптена автор не публиковал:
+  для этих героев собрано то, что он писал о них в разборах базовых героев, а пометка <span class="src-v">наш вывод</span> — наши предположения по способностям, в партиях не проверенные.</p>
+  </details>
+
+<details class="sec" id="sec-pick">
+  <summary><h2>Подобрать контрпик</h2><span class="hint"></span></summary>
+  <p class="sub" style="margin-bottom:10px">Выберите героя противника — можно до четырёх, например всю вражескую команду. Выше в списке те, кто контрит больше выбранных героев и чей матчап отмечен в описаниях обоих героев.</p>
+  <div class="pick-controls">
+    <select id="pickSel" aria-label="Герой противника"><option value="">Выберите героя противника…</option></select>
+    <button id="pickEnemy" type="button">Взять пики противника</button>
+    <button id="pickClear" type="button">Очистить</button>
+  </div>
+  <div id="pickChips" class="pick-chips"></div>
+  <div id="pickOut"></div>
+</details>
+
+<details class="sec" id="sec-classes">
+  <summary><h2>Классы</h2><span class="hint"></span></summary>
+  <div class="card">
+    <table class="cls">
+      <thead><tr><th>Класс</th><th>Роль в команде</th></tr></thead>
+      <tbody id="classes"></tbody>
+    </table>
+  </div>
+  </details>
+
+<details class="sec" id="sec-statuses">
+  <summary><h2>Статусы</h2><span class="hint"></span></summary>
+  <p class="sub" style="margin-bottom:10px">Статусы бывают только у героев: не больше одного каждого вида, то есть до пяти одновременно. Все статусы снимаются, когда герой заканчивает ход (действием «Пас») или погибает.</p>
+  <div class="card">
+    <table class="cls">
+      <thead><tr><th>Статус</th><th>Эффект</th></tr></thead>
+      <tbody>
+        <tr><td>Ожог</td><td>После того как герой полностью разыграет атаку или заклинание, он получает 1 пробивающий урон. Срабатывает и на «атаки» и «заклинания» с карт заклинаний.</td></tr>
+        <tr><td>Обезоруживание</td><td>Герой не открывает и не сбрасывает карты атаки. Его атаки идут с базовой силой 1 и игнорируют все бонусы к силе.</td></tr>
+        <tr><td>Заморозка</td><td>Чтобы объявить перемещение, герой тратит на 1 MP больше. Не действует, если наложена после объявления перемещения, и на бесплатные перемещения от заклинаний.</td></tr>
+        <tr><td>Немота</td><td>Отключает способность с листа героя и все прикреплённые к нему дружественные заклинания, включая временные, отложенные и срабатывающие эффекты от них.</td></tr>
+        <tr><td>Оглушение</td><td>У героя −2 к инициативе.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  </details>
+
+<details class="sec" id="sec-faq">
+  <summary><h2>Community FAQ с сайта BGG</h2><span class="hint"></span></summary>
+  <p class="sub" style="margin-bottom:8px">Опубликовано на BoardGameGeek пользователем <a class="flink" style="margin:0" href="https://boardgamegeek.com/profile/coylote">coylote</a>. Документ сообщества: все ответы подтверждены книгой правил и/или комментариями разработчиков в Discord Skytear Games. Это не новые правила, а собранные в одном месте разъяснения. Официальные уточнения и эррата — <a class="flink" style="margin:0" href="https://docs.google.com/document/d/1mPRMGgT7OkKzkOduW1jc7jqk1hoP9pt1MaPk_NFteGY/edit?tab=t.0">Onward rules clarifications</a>, вопросы разработчикам — <a class="flink" style="margin:0" href="https://discord.gg/V8ZAdn7m9x">Discord Skytear Games</a>.</p>
+  <div class="faq-bar"><span class="count">40 вопросов</span><a href="#" class="flink" id="faqAll">Развернуть все</a></div>
+  <div class="faq">
+    <div class="faq-sec"><h3>Статусы</h3>
+      <h4>Ожог</h4>
+      <details class="faq-q"><summary>Когда наносится урон от Ожога?</summary><div class="faq-a">После завершения атаки. Поэтому лечение, которое срабатывает при нанесении урона, происходит раньше — в том числе лечение при повышении уровня героя.</div></details>
+      <details class="faq-q"><summary>Срабатывает ли Ожог от бесплатной атаки или бесплатного розыгрыша заклинания?</summary><div class="faq-a">Да.</div></details>
+      <h4>Немота</h4>
+      <details class="faq-q"><summary>Может ли герой под Немотой разыгрывать заклинания? Сработают ли они?</summary><div class="faq-a">Да, может. Большинство заклинаний Немота не затрагивает, и они срабатывают полностью. Проще говоря: если заклинание сработало и о нём больше не нужно помнить, Немота на него не влияет. Если же оно даёт эффект, который нужно отслеживать после розыгрыша, этот эффект Немота отключает. Исключение — заклинания, которые откладывают фазу миньонов: это эффект не на героя, поэтому эту часть заклинания Немота не отменяет. (<a href="https://discord.com/channels/481825900275695616/1245381859073065073/1442889636857905194">ссылка на обсуждение в Discord</a>)</div></details>
+      <h4>Стойкость</h4>
+      <details class="faq-q"><summary>Что, если у юнита есть и Стойкость, и Броня?</summary><div class="faq-a">Броня работает с уроном, Стойкость — с потерей HP. Сначала броня уменьшает урон, а затем, если урон всё ещё больше 1, Стойкость позволяет потерять только 1 HP.</div></details>
+    </div>
+    <div class="faq-sec"><h3>Юниты</h3>
+      <h4>Миньоны</h4>
+      <details class="faq-q"><summary>Заходят ли миньоны когда-нибудь в зону нексуса?</summary><div class="faq-a">Нет.</div></details>
+      <details class="faq-q"><summary>Сколько миньонов погибает от Ответного удара нексуса? Зависит ли это от нанесённого урона?</summary><div class="faq-a">Один. Сколько бы натиска ни потратили, урон осады наносится одним разом, поэтому от Ответного удара погибает один миньон.</div></details>
+      <h4>Герои</h4>
+      <details class="faq-q"><summary>Должен ли герой ближнего боя стоять в зоне нексуса, чтобы атаковать нексус?</summary><div class="faq-a">Да.</div></details>
+      <h4>Vorhild</h4>
+      <details class="faq-q"><summary>Как работает её способность Icy Shade и чем от неё отличается улучшенная Frozen Shade?</summary><div class="faq-a">Атакой она поражает один юнит в 1 или 2 зонах от себя. После повышения уровня её атаки ещё и накладывают Заморозку, а поскольку дальность становится «в пределах 2», она может бить и по своей зоне.</div></details>
+      <details class="faq-q"><summary>Можно ли разыграть The Ermine’s Eye в ход союзного героя?</summary><div class="faq-a">Да, за дополнительную стоимость 0 AP.</div></details>
+      <details class="faq-q"><summary>Какая у неё дальность атаки с Lightning Naginata?</summary><div class="faq-a">Vorhild может атаковать героев в своей зоне, в соседних зонах и врагов ровно в 2 зонах. Нагината не ограничивает способность с её листа. Оглушение срабатывает на все её атаки, даже на 2 зоны.</div></details>
+      <h4>Nelaclen</h4>
+      <details class="faq-q"><summary>Способности каких героев может копировать Eldritch Consultation?</summary><div class="faq-a">Любого героя: готового, истощённого или возрождающегося, на поле или вне его. У аутсайдера способности нет.</div></details>
+      <h4>Shaidrus</h4>
+      <details class="faq-q"><summary>Нужно ли Шайдрусу из-за Last Protector открывать карты, чтобы атаковать врагов с 1–2 HP?</summary><div class="faq-a">Да. Из-за −2 к силе открытая «2» не победит врага, поэтому такой враг не считается слабым.</div></details>
+      <h4>Akhuti</h4>
+      <details class="faq-q"><summary>Может ли Silence Ray остановить уже разыгранное заклинание?</summary><div class="faq-a">Нет.</div></details>
+      <h4>Монстры</h4>
+      <details class="faq-q"><summary>Можно ли выбрать целью несколько монстров в одной зоне или поразить их одной атакой?</summary><div class="faq-a">Нет. В стопке одновременно существует только один монстр, и целью можно выбрать только его.</div></details>
+      <h4>Башни</h4>
+      <details class="faq-q"><summary>Нужно ли уничтожать башни в определённом порядке?</summary><div class="faq-a">Нет.</div></details>
+      <details class="faq-q"><summary>Можно ли первой атаковать башню, ближайшую к нексусу?</summary><div class="faq-a">Да.</div></details>
+      <details class="faq-q"><summary>Нужно ли уничтожить все башни, чтобы атаковать нексус?</summary><div class="faq-a">Нет.</div></details>
+      <details class="faq-q"><summary>Можно ли войти в зону с башней, не пересекая границу, на которой она стоит?</summary><div class="faq-a">Да. Барьер запрещает пересекать только конкретную границу, но не закрывает доступ в зону другими путями.</div></details>
+      <details class="faq-q"><summary>Почему так? В MOBA-играх башни работают иначе.</summary><div class="faq-a">Такие вопросы понятны: в видеоиграх эти ограничения есть. В Onward их нет, чтобы не добавлять лишних правил. Это открывает более творческие ходы, но механика миньонов устроена так, что линии обычно продавливаются привычным образом.</div></details>
+      <h4>Аутсайдер</h4>
+      <details class="faq-q"><summary>Что происходит, когда аутсайдера приручают?</summary><div class="faq-a">Он переходит в вашу команду и становится одновременно героем и аутсайдером. Всё, что действует на аутсайдера, действует и на прирученного, а всё, что действует на героев, теперь тоже действует на него. Вы планируете и делаете им ход, как любым другим героем, — то есть у вас будет на один ход героя больше, чем у противника. На прирученного аутсайдера можно надеть предметы, если осталось золото.</div></details>
+      <details class="faq-q"><summary>Аутсайдер кажется слишком сильным — его хорошо протестировали?</summary><div class="faq-a">Да, и ещё раз да. Аутсайдер задуман как фактическое условие победы. Осторожнее с уничтожением его третьей руки или головы: приручить его может и противник.</div></details>
+    </div>
+    <div class="faq-sec"><h3>Термины</h3>
+      <h4>Ответный удар</h4>
+      <details class="faq-q"><summary>Срабатывает ли Ответный удар, если цель не потеряла здоровье?</summary><div class="faq-a">Да. Даже если урон предотвращён, он всё равно был нанесён.</div></details>
+      <h4>Барьер</h4>
+      <details class="faq-q"><summary>Мешает ли Барьер врагам входить в зону с башней?</summary><div class="faq-a">Нет. Барьер запрещает только перемещаться или вести счёт зон через границу, на которой стоит башня.</div></details>
+      <details class="faq-q"><summary>Мешает ли Барьер выбирать цели?</summary><div class="faq-a">Не напрямую, но через границу с башней нельзя считать зоны. Если до юнита можно досчитать только через эту границу, выбрать его целью нельзя.</div></details>
+      <details class="faq-q"><summary>Можно ли считать зоны в обход Барьера?</summary><div class="faq-a">Да.</div></details>
+      <h4>Цель</h4>
+      <details class="faq-q"><summary>На моей карте нет символа мишени ◎. Это опечатка?</summary><div class="faq-a">Нет. Если на заклинании нет символа мишени, ему не нужно соблюдать правила выбора целей.</div></details>
+      <details class="faq-q"><summary>Можно ли при достаточной дальности выбрать целью зону за лесом?</summary><div class="faq-a">Да. Правило леса запрещает только выбирать целью юнитов, которые находятся в лесу.</div></details>
+      <h4>В пределах X</h4>
+      <details class="faq-q"><summary>Можно ещё пример подсчёта зон?</summary><div class="faq-a">В документе сообщества здесь схема с примером подсчёта зон — её можно посмотреть в <a href="https://docs.google.com/document/d/1mPRMGgT7OkKzkOduW1jc7jqk1hoP9pt1MaPk_NFteGY/edit?tab=t.0">официальных уточнениях правил</a> или в исходном FAQ.</div></details>
+      <h4>Ход</h4>
+      <details class="faq-q"><summary>Почему некоторые карты и предметы действуют только «во время хода»?</summary><div class="faq-a">Чтобы не нарушать фазу миньонов и их действие «Штурм», большинство эффектов не останавливают урон от миньонов. Броня без указанного окна времени или источника урона блокирует и урон при штурме миньонов.</div></details>
+      <h4>Возрождение</h4>
+      <details class="faq-q"><summary>Когда герои возрождаются и что значит «возрождение» в Onward?</summary><div class="faq-a">Побеждённые герои возвращаются в игру. Когда ранее побеждённый герой становится готовым, им можно планировать. При планировании его ставят в зону нексуса своей команды. «Возрождающийся» — это герой, чей лист перевёрнут вверх ногами. Так бывает, только если побеждён истощённый герой или герой, который сейчас активен.</div></details>
+      <h4>HP</h4>
+      <details class="faq-q"><summary>Что значит «потерять HP»?</summary><div class="faq-a">Это уменьшить здоровье на некоторое значение. Когда итоговый урон от атаки или другого источника определён, вы теряете столько HP. Если эффект прямо велит «потерять HP», броня такую потерю не уменьшает.</div></details>
+    </div>
+    <div class="faq-sec"><h3>Действия</h3>
+      <h4>Заклинания и розыгрыш</h4>
+      <details class="faq-q"><summary>Можно ли объявить реактивный розыгрыш в ответ на розыгрыш в фазе покупок?</summary><div class="faq-a">Да.</div></details>
+      <details class="faq-q"><summary>Можно ли разыграть реактивное заклинание обычным действием розыгрыша?</summary><div class="faq-a">Да.</div></details>
+      <details class="faq-q"><summary>Может ли неактивный герой разыграть заклинание с дополнительной стоимостью в MP или AP?</summary><div class="faq-a">Фактически нет, технически да. Если герой получил MP или AP не от карты плана, он может потратить их на заклинания. Но так может только Nelaclen, и для этого ему нужно разыграть заклинания нескольких героев. У The Ermine’s Eye героини Vorhild тоже есть стоимость в AP, но вне её хода его можно разыграть за 0 AP.</div></details>
+      <details class="faq-q"><summary>Можно ли реактивно разыграть заклинание в ответ на действие «Пас»?</summary><div class="faq-a">Да. Это действие, и его нужно объявить, прежде чем оно будет выполнено.</div></details>
+      <h4>Перемещение</h4>
+      <details class="faq-q"><summary>Выбирается ли зона перемещения целью?</summary><div class="faq-a">Нет: выбор зоны — это не выбор цели. Герой всегда перемещается в выбранную зону. Даже если в ответ на объявление перемещения разыграли заклинания, герой затем всё равно переместится туда. Заклинания смещения не мешают дойти до выбранной зоны. Герой может даже уйти из неё рывком — перемещение всё равно завершится в изначально выбранной зоне.</div></details>
+      <h4>Атака</h4>
+      <details class="faq-q"><summary>Если герой может поразить несколько врагов, могут ли они быть в разных зонах?</summary><div class="faq-a">Да. Достаточно, чтобы для каждой цели соблюдались ограничения выбора целей; положение целей друг относительно друга неважно.</div></details>
+      <details class="faq-q"><summary>В каком порядке применяются эффекты, добавленные к атаке (например, от Reptile String)?</summary><div class="faq-a">Если время не указано, эффекты применяются после нанесения урона.</div></details>
+    </div>
+    <div class="faq-sec"><h3>Прочее</h3>
+      <details class="faq-q"><summary>Когда я получу свою ульту?</summary><div class="faq-a">Каждую фазу плана вы берёте 2 карты и сбрасываете открытые карты при атаках по неслабым врагам, поэтому колода неизбежно закончится и сброс перемешается в новую колоду. Тогда в ней окажутся ульты, и их можно будет взять или открыть при атаке (это атака силой 4!).</div></details>
+      <details class="faq-q"><summary>Может ли герой «застрять» во вражеском нексусе или между двумя стенами на центральной линии?</summary><div class="faq-a">Да, такое возможно. Помните об этом и не попадайтесь!</div></details>
+    </div>
+  </div>
+</details>
+</main>
+<div id="sheet" class="sheet collapsed" hidden>
+  <div class="sh-bar">
+    <button type="button" class="sh-nav" id="shPrev" aria-label="Предыдущий герой">‹</button>
+    <button type="button" class="sh-head" id="shToggle" aria-expanded="false">
+      <span class="sh-title" id="shTitle"></span>
+      <span class="sh-dots" id="shDots"></span>
+    </button>
+    <button type="button" class="sh-nav" id="shNext" aria-label="Следующий герой">›</button>
+    <button type="button" class="sh-close" id="shClose" aria-label="Свернуть панель"><span class="chev" aria-hidden="true"></span></button>
+  </div>
+  <div class="sh-body" id="shBody"><div class="sh-track" id="shTrack"></div></div>
+</div>
+
+<script>
+const CLASSES = [
+  ["Убийца (Slayer)","Перехватывает инициативу, может убить вражеского героя одной атакой"],
+  ["Стрелок (Marksman)","Урон с дистанции, особенно после повышения уровня и красных предметов"],
+  ["Танк (Tank)","Защищает союзников, сбивает атаки и движение врагов"],
+  ["Контроллер (Controller)","Накладывает негативные статусы, лечит союзников"],
+  ["Маг (Mage)","Зачищает волны миньонов заклинаниями по области"],
+  ["Лайнер (Laner)","Продавливает линию к нексусу врага, поддерживает миньонов"],
+  ["Лесник (Jungler)","Быстрее всех копит золото, действует вне своего хода"],
+  ["Воин (Warrior)","Силён в командных боях: смещает и сбивает врагов, самый универсальный"]
+];
+// name, ru, title, faction, class, range, description
+const H = [
+ ["Achla","Ачла","Одинокий ловчий","Таулот","Стрелок","ДБ","Отравленные ловушки: враг рядом теряет +1 HP при любом уроне, в том числе от союзников; мастер засад"],
+ ["Akhuti","Ахути","Сияющий голос","Нуптен","Контроллер","ДБ","Враг, вошедший в соседнюю зону, получает НЕМОТУ и ЗАМОРОЗКУ — жёсткий контроль территории"],
+ ["Akimo","Акимо","Клинок Вечного короля","Курумо","Убийца","БД","Сам себя поджигает ради +3 силы (+5 после уровня); ульта удваивает силу против отмеченного героя"],
+ ["Astryda","Астрида","Голос глубин","Лиотан","Лайнер","ДБ","Убив миньона, может за 1 HP поставить своего миньона в спорную зону; сильный контроль линии"],
+ ["Brylvar","Брюлвар","Неустрашимый защитник","Лиотан","Танк","БД","Союзные герои рядом получают +1 брони (+2 после уровня) — аура для командных драк"],
+ ["Corjof","Корйоф","Серый дозорный","Лиотан","Маг","ДБ","Тратит очки движения на добор карт — больше заклинаний в руке"],
+ ["Cotlic","Котлик","Десница Таулота","Таулот","Танк","БД","Союзные миньоны рядом получают +2 брони (после уровня и сам Котлик) — танк линии"],
+ ["Doomies","Думис","Потерянный легион","Курумо","Лайнер","БД","+1 натиска за каждые 4 HP; толкает миньонов вперёд"],
+ ["Ekhrit","Экрит","Укротительница бурь","Нуптен","Лайнер","ДБ","Никакой герой не может войти в её зону; после уровня защищает свою зону от целей и выдувает вошедших"],
+ ["Freyhel","Фрейхель","Вечная королева","Лиотан","Контроллер","ДБ","Раз в ход лечит союзника на 3 HP (4 HP на дальности 2 после уровня); ульта превращает лечение в урон"],
+ ["Gulbjarn","Гульбьярн","Дикий владыка","Лиотан","Воин","БД","Атаки задевают ещё одного врага (не миньона) — хорош в свалке"],
+ ["Haburat","Хабурат","Первый палач","Нуптен","Убийца","БД","+Х силы, где Х — число AP на его карте плана; может удвоить AP и выбрать жертву в любой точке карты"],
+ ["Heraal","Хераал","Весенний охотник","Лиотан","Лесник","ДБ","Игнорирует ограничение на цели в лесу; очень мобильный"],
+ ["Hogosai","Хогосай","Вечный страж","Курумо","Танк","БД","+1 брони (+3 после уровня); провокация заставляет врагов целить способностями только в него"],
+ ["Ixatosk","Иксатоск","Посланник бездны","Таулот","Лесник","БД","Телепортирует соседнего союзника к себе (дважды за ход после уровня) — организует ганки"],
+ ["Khenui","Хенуи","Танцующая с отражениями","Нуптен","Воин","БД","На линии стойка (Tough) к атакам, включая ответные — сложно выбить"],
+ ["Khepiax","Хепиакс","Владычица молний","Нуптен","Стрелок","ДБ","Каждое заклинание союзников добавляет 1 урон (2 после уровня) по врагу рядом с ней; атака может задеть до 4 целей"],
+ ["Kichie","Кичие","Хранитель наследия","Курумо","Маг","ДБ","Лечится на 1 HP за каждого задетого — живучий чистильщик волн"],
+ ["Kohai","Кохай","Колючий охотник","Таулот","Лайнер","ДБ","Притягивает и оглушает (STUN) вражеского героя до 2 зон; может выставлять миньонов в спорной зоне"],
+ ["Kumaya","Кумая","Пепельная дева","Курумо","Лесник","БД","Враг, уходящий из её зоны, получает 2 урона и ожог; ганки из леса"],
+ ["Miyuki","Миюки","Пробуждающая свет","Курумо","Контроллер","ДБ","Враги рядом платят 2 урона и ожог за каждое заклинание; лечит и переносит статусы; ульта спасает союзника от смерти (HP становится 5)"],
+ ["Nantaca","Нантака","Неживая монархиня","Таулот","Убийца","БД","В лесу или реке +1 силы за каждого союзного миньона рядом"],
+ ["Nelaclen","Нелаклен","Безликий шептун","Таулот","Маг","ДБ","Может разыграть любое заклинание из руки, даже чужое — имя героя заменяется на его собственное"],
+ ["Sakoshi","Сакоши","Укротитель лавы","Курумо","Стрелок","ДБ","Получив урон, отскакивает в соседнюю зону; может нести лишние предметы одного цвета"],
+ ["Setheru","Сетеру","Повелитель неба","Нуптен","Маг","ДБ","Канализирует заклинания и раз в ход возвращает своё заклинание из сброса; заряды сгорают при его гибели"],
+ ["Shafathi","Шафати","Затенённый","Нуптен","Лесник","—","Игра на уклонении и «двойном существовании»; способности в Onward сверить по листу"],
+ ["Shaidrus","Шайдрус","Последний свет","Нуптен","Танк","БД","+3 брони, но −2 силы; может привязать к союзнику свою тень-защиту"],
+ ["Shyllavi","Шиллави","Стремительный клык","Лиотан","Убийца","БД","+3 силы, пока у неё 7+ HP: страшна на полном здоровье, её нужно сначала подранить"],
+ ["Tlakali","Тлакали","Верховная жрица","Таулот","Контроллер","ДБ","Может потерять 1 HP вместо гибели союзного миньона рядом; усиливает своих"],
+ ["Vorhild","Ворхильд","Белая тень","Лиотан","Стрелок","ДБ","Бьёт по соседним зонам и ровно через одну — держит дистанцию"],
+ ["Yami","Ями","Пылающий вестник","Курумо","Воин","БД","Входя в зону, смещает вражеского героя (двух после уровня) — разбивает построение"],
+ ["Zacoal","Закоал","Падший сын","Таулот","Воин","БД","Атаки с телепортом — перемещает цели по карте (детали сверить по листу)"]
+].map(r=>({name:r[0],ru:r[1],title:r[2],fac:r[3],cls:r[4],rng:r[5],desc:r[6]}));
+
+// Контрпики. src: "a" — по разбору tinnyf на BGG (Kurumo, Liothan), "v" — наш вывод из способностей
+const C = {
+ Akimo:{g:[
+   ["Sakoshi","Обычно убивает его одной атакой, если попадёт","a"],
+   ["Kichie","Живучесть Kichie не спасает от удара с одного раза; ожоги Akimo не страшны","a"],
+   ["Hogosai","Брони Hogosai не хватает, а уклоняться ему почти нечем","a"],
+   ["Kumaya","То же, что с Hogosai, хотя Kumaya уворачивается лучше","a"],
+   ["Brylvar","Урон Akimo пробивает даже защиту Brylvar","a"],
+   ["Freyhel","Убивает с одного удара — лечить уже некого","a"]],
+  b:[
+   ["Akhuti","Отключает почти все его заклинания и помогает команде уворачиваться","a"],
+   ["Ekhrit","Akimo просто не может её ударить","a"],
+   ["Tlakali","Обезоруживание делает его почти бесполезным","a"],
+   ["Miyuki","Тяжело убить, мгновенное обезоруживание, наказывает за самоподжог","a"],
+   ["Astryda","Её реакции хорошо ловят героев, которые вкладываются в убийство","a"],
+   ["Corjof","Мгновенное обезоруживание и ответные заклинания","a"]]},
+ Sakoshi:{g:[],
+  b:[
+   ["Akhuti","Выключает его пассивку, завязанную на смену дистанции","a"],
+   ["Kumaya","Постоянные ожоги и бесплатный урон; Дымовая завеса сильно его глушит","a"],
+   ["Gulbjarn","Может зажать и убить; с Формой медведя Sakoshi почти не работает","a"],
+   ["Ekhrit","Прокачанная Ekhrit не даёт целиться в свою зону","a"],
+   ["Akimo","Обычно убивает его одной атакой","a"]]},
+ Hogosai:{g:[
+   ["Doomies","Выравнивает волны миньонов против пушеров","a"],
+   ["Astryda","Перевес в миньонах значит меньше, ульта Hogosai чистит волну","a"],
+   ["Khepiax","Броня гасит её мелкий урон","a"],
+   ["Freyhel","Провокация Hogosai перенаправляет всё её лечение","a"]],
+  b:[
+   ["Nantaca","Он может чистить её волны, но небезопасно — Nantaca часто его убивает","a"],
+   ["Ekhrit","Hogosai нужно стоять в спорных зонах, Ekhrit этого не даёт","a"],
+   ["Akimo","Броня не спасает от его урона","a"]]},
+ Miyuki:{g:[
+   ["Khepiax","Спам заклинаний рядом с Miyuki — «смертный приговор»","a"],
+   ["Akimo","Наказывает за самоподжог, заклинания Miyuki хороши против него","a"],
+   ["Nelaclen","Часть его взрывных ходов Miyuki гасит","a"],
+   ["Akhuti","Ей не мешает немота в свой ход, может подойти к Akhuti","a"]],
+  b:[
+   ["Vorhild","Бьёт из-за пределов её дальности, всех не спасти","a"],
+   ["Heraal","Нападает из леса после телепорта и быстро убивает","a"],
+   ["Kichie","Плата за заклинания его же и лечит; реакцией срывает её ульту","a"],
+   ["Yami","Сбивает позицию, от которой Miyuki зависит","a"],
+   ["Shyllavi","Прыжок с немотой позволяет добраться и убить","a"],
+   ["Brylvar","Броня снижает урон от её пассивки по всей команде (мягкий контр)","a"],
+   ["Freyhel","Подлечивает цели против её тактики на измор","a"]]},
+ Doomies:{g:[
+   ["Cotlic","Сильно оспаривает его линию почти без риска","a"],
+   ["Khenui","Миньоны хороши против неё, а Doomies она почти не угрожает","a"]],
+  b:[
+   ["Corjof","Быстро чистит волны, снимает здоровье и добивает","a"],
+   ["Ekhrit","Doomies нужно стоять в спорных зонах, Ekhrit не пускает","a"],
+   ["Yami","Утаскивает из спорных зон и через башни, сбивает ульту","a"],
+   ["Hogosai","Выравнивает волны миньонов","a"]]},
+ Kichie:{g:[
+   ["Miyuki","Плата за заклинания его лечит; реакцией срывает её ульту","a"],
+   ["Akhuti","Может ходить за ней и бить заклинаниями; её немота — только в его ход","a"],
+   ["Cotlic","Пробивающий урон по области ломает его защиту","a"],
+   ["Brylvar","Весь урон Kichie пробивающий — броня не помогает","a"],
+   ["Shyllavi","Мгновенный ответный урон срывает её попытки убийства","a"]],
+  b:[
+   ["Heraal","Часто добирается до Kichie и убивает, ответить трудно","a"],
+   ["Akimo","Убивает с одного удара — лечение не успевает","a"]]},
+ Yami:{g:[
+   ["Miyuki","Ломает позиционную игру","a"],
+   ["Cotlic","Ломает позиционную игру","a"],
+   ["Brylvar","Растаскивает команду от его ауры","a"],
+   ["Nantaca","Ломает позиционную игру","a"],
+   ["Doomies","Утаскивает из спорных зон и через башни, сбивает ульту","a"],
+   ["Kumaya","Лучший ответ на неё: снимает Дымовую завесу и вытаскивает пойманных","a"],
+   ["Heraal","Наказывает вторжения","a"],
+   ["Ixatosk","Наказывает вторжения","a"],
+   ["Freyhel","Уводит её от тех, кого нужно лечить","a"]],
+  b:[
+   ["Akhuti","Не сдвинуть без притяжения; её немота и заморозка мешают всей команде","a"],
+   ["Ekhrit","Yami не может войти в её зону","a"],
+   ["Gulbjarn","Форма медведя не даёт себя сместить","a"]]},
+ Kumaya:{g:[
+   ["Sakoshi","Сильно ограничивает его игру","a"],
+   ["Vorhild","Vorhild обычно не может бить её и в её зону, мешает пушу","a"],
+   ["Freyhel","Дымовая завеса не даёт Freyhel спасать","a"],
+   ["Corjof","С Дымовой завесой защищает волны от его заклинаний","a"]],
+  b:[
+   ["Haburat","Убийцы просто убивают её, не разбираясь с заклинаниями","a"],
+   ["Akimo","Убийцы просто убивают её","a"],
+   ["Yami","Лучший ответ на Kumaya: снимает завесу, вытаскивает пойманных","a"],
+   ["Shafathi","Срывает её попытки взять Чужака, немота глушит контроль","a"],
+   ["Corjof","Без Дымовой завесы он обезоруживает её и отменяет ульту","a"]]},
+ Shyllavi:{g:[
+   ["Akhuti","Прыжок с немотой — едва ли не лучший ответ на Akhuti","a"],
+   ["Miyuki","Может добраться и убить, хотя у Miyuki есть обезоруживание","a"],
+   ["Brylvar","Прыжок не даёт ему ответить, быстро убивает","a"],
+   ["Astryda","Прыгает на неё и не даёт реагировать (матчап обоюдный)","a"]],
+  b:[
+   ["Shafathi","Немота и телепорты; мешает брать Чужака","a"],
+   ["Kichie","Мгновенный ответный урон срывает убийство","a"],
+   ["Corjof","Ответный урон, обезоруживание, Ледяная стена режет мобильность","a"],
+   ["Khepiax","Трудно удержаться выше 7 HP, Раскат грома — глобальный ответ","a"],
+   ["Astryda","Её заклинания и лечение мешают первым убийствам (матчап обоюдный)","a"]]},
+ Brylvar:{g:[
+   ["Khepiax","Аура брони выключает её пассивку по всей команде","a"],
+   ["Miyuki","Снижает урон от её пассивки по команде (мягкий контр)","a"],
+   ["Achla","Броня обходит его ловушки на мелкий урон","a"],
+   ["Gulbjarn","Броня работает против каждой из его атак","a"],
+   ["Heraal","Плотная оборонительная игра мешает его нырянию","a"]],
+  b:[
+   ["Kichie","Весь его урон пробивающий, Огненная звезда бьёт по группе","a"],
+   ["Haburat","Снимает его пассивку и прорубает броню","a"],
+   ["Shyllavi","Прыжок не даёт ответить хвостом, быстро убивает","a"],
+   ["Akimo","Урона так много, что броня не спасает","a"],
+   ["Yami","Растаскивает команду от его ауры","a"]]},
+ Vorhild:{g:[
+   ["Khepiax","Против героев, контролирующих пространство","a"],
+   ["Akhuti","Против героев, контролирующих пространство","a"],
+   ["Miyuki","Бьёт из-за пределов её дальности","a"],
+   ["Ekhrit","Против героев, контролирующих пространство","a"]],
+  b:[
+   ["Kumaya","Обычно нельзя бить её и в её зону, Kumaya «липкая»","a"],
+   ["Zacoal","Часто переносит Vorhild в плохие позиции","a"],
+   ["Heraal","Легко телепортируется к ней, лишая преимущества дистанции","a"]]},
+ Freyhel:{g:[
+   ["Khepiax","Лечение в любой момент обесценивает её мелкий урон","a"],
+   ["Kichie","Его урон от заклинаний и ожогов Freyhel хорошо отлечивает","a"],
+   ["Miyuki","Держит цели в здоровье против тактики на измор","a"]],
+  b:[
+   ["Kumaya","Дымовая завеса не даёт спасать","a"],
+   ["Akimo","Убивает с одного удара","a"],
+   ["Yami","Уводит её от тех, кого нужно лечить","a"],
+   ["Kohai","Уводит её от тех, кого нужно лечить","a"],
+   ["Hogosai","Провокация перенаправляет всё её лечение","a"]]},
+ Astryda:{g:[
+   ["Akimo","Наказывает героев, которые вкладываются в убийство","a"],
+   ["Haburat","Наказывает героев, которые вкладываются в убийство","a"],
+   ["Nantaca","Наказывает героев, которые вкладываются в убийство","a"],
+   ["Nelaclen","Её ульта особенно хороша против него","a"],
+   ["Shafathi","Взгляд в ответ на его Эхо-ганк","a"],
+   ["Khepiax","Взгляд в ответ на её Собирающуюся бурю","a"],
+   ["Shyllavi","Заклинания и лечение мешают её первым убийствам (матчап обоюдный)","a"]],
+  b:[
+   ["Tlakali","Сохраняет миньонов живыми — пассивка Astryda не срабатывает","a"],
+   ["Corjof","Непревзойдённая зачистка волн, телепорт через карту","a"],
+   ["Hogosai","Перевес в миньонах значит меньше, ульта чистит волну","a"],
+   ["Shyllavi","Прыгает и не даёт реагировать, ульта чистит волны (матчап обоюдный)","a"]]},
+ Corjof:{g:[
+   ["Nantaca","Чистит волны пушеров и наказывает за вложения в убийство","a"],
+   ["Astryda","Чистит волны пушеров","a"],
+   ["Doomies","Чистит волны пушеров","a"],
+   ["Akimo","Наказывает героев, которые вкладываются в убийство","a"],
+   ["Haburat","Наказывает героев, которые вкладываются в убийство","a"],
+   ["Kumaya","Без Дымовой завесы обезоруживает её и отменяет ульту","a"],
+   ["Khenui","Ультой уходит от её Магнетизма и чистит волну","a"],
+   ["Shyllavi","Может обезоружить или ранить её в ответ (матчап полярный)","a"]],
+  b:[
+   ["Gulbjarn","Форма медведя мешает его ульте, замедления не дают отступить","a"],
+   ["Ekhrit","Запрещает цели в своей зоне — спасает волны","a"],
+   ["Kumaya","С Дымовой завесой спасает волны от его заклинаний","a"],
+   ["Shaidrus","Ульта переносит волну — ульта Corjof промахивается","a"],
+   ["Zacoal","Ульта переносит Corjof и срывает его ульту","a"]]},
+ Gulbjarn:{g:[
+   ["Zacoal","Форма медведя полностью отменяет его смещения","a"],
+   ["Yami","Форма медведя не даёт себя сместить","a"],
+   ["Sakoshi","С Формой медведя Sakoshi почти не работает","a"],
+   ["Corjof","Форма медведя мешает его ульте","a"]],
+  b:[
+   ["Brylvar","Броня работает против каждой его атаки","a"],
+   ["Ekhrit","Притянув её, Gulbjarn не может целиться в других в этой зоне","a"],
+   ["Akhuti","Немота выключает Форму медведя и атаку по двум целям","a"]]},
+ Heraal:{g:[
+   ["Ekhrit","Достаёт её в лесу, где она обычно в безопасности","a"],
+   ["Miyuki","Нападает из леса и быстро убивает","a"],
+   ["Kichie","Добирается до него и убивает","a"],
+   ["Vorhild","Телепортируется к ней, лишая дистанции","a"]],
+  b:[
+   ["Yami","Выбивает его из леса, лишает ныряний","a"],
+   ["Brylvar","Плотная оборонительная игра","a"],
+   ["Ixatosk","Не даёт получить преимущество по золоту","a"],
+   ["Shafathi","Не даёт получить преимущество по золоту","a"]]},
+
+ // ---- дополнения: автор писал о них только в разборах базовых героев ----
+ Achla:{g:[
+   ["Shyllavi","Лишний урон от ловушек быстро сбивает её ниже 7 HP","v"],
+   ["Doomies","Сила Doomies зависит от HP, ловушки быстро её снижают","v"]],
+  b:[
+   ["Brylvar","Броня обходит ловушки, рассчитанные на мелкий урон","a"],
+   ["Shaidrus","+3 брони гасят мелкие попадания, на которые опирается Achla","v"]]},
+ Akhuti:{g:[
+   ["Akimo","Отключает почти все его заклинания","a"],
+   ["Sakoshi","Выключает его пассивку","a"],
+   ["Yami","Её не сдвинуть без притяжения","a"],
+   ["Gulbjarn","Немота выключает Форму медведя","a"]],
+  b:[
+   ["Shyllavi","Прыжок с немотой добирается до неё","a"],
+   ["Kichie","Ходит за ней и бьёт заклинаниями","a"],
+   ["Vorhild","Бьёт её из-за пределов зоны контроля","a"],
+   ["Miyuki","Не боится немоты в свой ход","a"]]},
+ Cotlic:{g:[
+   ["Corjof","+2 брони миньонам против заклинаний мешают зачистке","v"],
+   ["Khepiax","Броня миньонов гасит её мелкий урон по волне","v"]],
+  b:[
+   ["Doomies","Оспаривает его линию почти без риска","a"],
+   ["Kichie","Пробивающий урон по области ломает защиту","a"],
+   ["Yami","Ломает позиционную игру","a"]]},
+ Ekhrit:{g:[
+   ["Akimo","Он не может её ударить","a"],
+   ["Hogosai","Не пускает в спорные зоны","a"],
+   ["Doomies","Не пускает в спорные зоны","a"],
+   ["Yami","Yami не может войти в её зону","a"],
+   ["Corjof","Защищает волны от его заклинаний","a"],
+   ["Gulbjarn","Притянутая Ekhrit закрывает другие цели в зоне","a"],
+   ["Sakoshi","Прокачанная не даёт целиться в свою зону","a"],
+   ["Shyllavi","Прыжок не работает против её зоны","a"]],
+  b:[
+   ["Heraal","Достаёт её в лесу","a"],
+   ["Vorhild","Бьёт по ней с дистанции","a"]]},
+ Haburat:{g:[
+   ["Kumaya","Просто убивает её","a"],
+   ["Brylvar","Снимает пассивку и прорубает броню","a"]],
+  b:[
+   ["Astryda","Наказывает за вложения в убийство","a"],
+   ["Corjof","Наказывает за вложения в убийство","a"]]},
+ Ixatosk:{g:[
+   ["Heraal","Не даёт ему преимущества по золоту","a"]],
+  b:[
+   ["Yami","Наказывает вторжения","a"],
+   ["Gulbjarn","Форма медведя мешает подтягивать и переносить героев","v"]]},
+ Khenui:{g:[
+   ["Akimo","Стойкость на линии: за удар не больше 1 HP","v"],
+   ["Shyllavi","Стойкость на линии гасит удар с одного раза","v"],
+   ["Haburat","Стойкость на линии гасит удар с одного раза","v"]],
+  b:[
+   ["Doomies","Миньоны хороши против неё","a"],
+   ["Corjof","Ультой уходит от её Магнетизма","a"]]},
+ Khepiax:{g:[
+   ["Shyllavi","Не даёт держаться выше 7 HP","a"]],
+  b:[
+   ["Brylvar","Аура брони выключает её пассивку","a"],
+   ["Hogosai","Броня гасит её урон","a"],
+   ["Miyuki","Спам заклинаний рядом с Miyuki смертелен","a"],
+   ["Freyhel","Отлечивает её мелкий урон","a"],
+   ["Vorhild","Против героев, контролирующих пространство","a"],
+   ["Astryda","Взгляд в ответ на Собирающуюся бурю","a"]]},
+ Kohai:{g:[
+   ["Freyhel","Уводит её от тех, кого нужно лечить","a"]],
+  b:[
+   ["Gulbjarn","Форма медведя, судя по всему, не даёт себя притянуть","v"],
+   ["Ekhrit","Нельзя притянуть героя в её зону","v"]]},
+ Nantaca:{g:[
+   ["Hogosai","Часто убивает его, пока он чистит её волны","a"]],
+  b:[
+   ["Yami","Ломает позиционную игру","a"],
+   ["Corjof","Чистит её волны","a"],
+   ["Astryda","Наказывает за вложения в убийство","a"]]},
+ Nelaclen:{g:[],
+  b:[
+   ["Miyuki","Гасит часть его взрывных ходов","a"],
+   ["Astryda","Её ульта особенно хороша против него","a"],
+   ["Akhuti","Немота отключает его главную способность — чужие заклинания","v"]]},
+ Setheru:{g:[],
+  b:[
+   ["Miyuki","Каждое заклинание рядом с ней стоит 2 урона и ожог","v"],
+   ["Akhuti","Немота отключает канализацию заклинаний","v"]]},
+ Shafathi:{g:[
+   ["Shyllavi","Немота и телепорты, мешает ей брать Чужака","a"],
+   ["Kumaya","Срывает её попытки взять Чужака","a"],
+   ["Heraal","Не даёт ему преимущества по золоту","a"]],
+  b:[
+   ["Astryda","Взгляд в ответ на его Эхо-ганк","a"]]},
+ Shaidrus:{g:[
+   ["Corjof","Ульта переносит волну — ульта Corjof промахивается","a"],
+   ["Achla","+3 брони гасят мелкие попадания","v"]],
+  b:[
+   ["Kichie","Пробивающий урон игнорирует его броню","v"]]},
+ Tlakali:{g:[
+   ["Akimo","Обезоруживание делает его почти бесполезным","a"],
+   ["Astryda","Сохраняет миньонов — её пассивка не срабатывает","a"]],
+  b:[
+   ["Kichie","Пробивающий урон по области заставляет терять HP за каждого миньона","v"],
+   ["Corjof","Зачистка волн разом — Tlakali не успевает спасать миньонов","v"]]},
+ Zacoal:{g:[
+   ["Vorhild","Переносит её в плохие позиции","a"],
+   ["Corjof","Ультой срывает его ульту","a"]],
+  b:[
+   ["Gulbjarn","Форма медведя полностью отменяет смещения","a"]]}
+};
+
+const ABIL={"Hogosai":{"p":["Igneous Body","Хогосай имеет +1 броню. Вражеские миньоны должны атаковать его, если это возможно."],"c":[["Brimstone Shield","0/3","1 соседний отряд имеет +3 брони и «Ответный удар: ГОРЕНИЕ» в этом ходу."],["Infernal Taunt","2/2","Прикрепите к Хогосаю, пока он не будет побеждён. Он получает +1 броню и способность «Ответный удар: ГОРЕНИЕ. Когда оппонент выбирает цель для заклинания или способности, он должен, если возможно, выбрать целью Хогосая."],["Burst","3/1","Дополнительная стоимость: выберите X — 1, 2 или 3. Нанесите X УРОНА Хогосаю. Нанесите 1 УРОН и нанесите ОГЛУШЕНИЕ X врагам в 1 соседней зоне."],["Scorching Shove","4/1","Вытолкните и наложите ГОРЕНИЕ на 1 вражеского героя в 1 соседнюю зону. Если вы вытолкнули его, перейдите в целевую зону."],["Supernova","3/2","Нанесите 3 УРОНА и наложите ГОРЕНИЕ всех врагов в 1 соседней зоне."]]},"Brylvar":{"p":["Stoic Defender","Соседние дружественные герои имеют +1 броню. (Включая Брильвара.)"],"c":[["Frost Shield","0/3","1 соседний отряд имеет +3 брони и «Ответный удар: ЗАМОРОЗКА» в этом ходу."],["Pangolin Form","2/2","Прикрепите к Брильвару, пока он не будет побеждён. У него +1 броня. Если соседний герой получат УРОН, Брильвар вместо этого может получить любое его количество. (Оба героя используют собственную броню.)"],["Tail Slam","3/1","Нанесите 2 УРОНА и наложите БЕЗМОЛВИЕ на до X врагов в 1 соседней зоне, где X равно броне Брилвара."],["Rolling Shove","4/1","Вытолкните и наложите ЗАМОРОЗКУ 1 вражеского героя в 1 соседнюю зону. Если вы вытолкнули его, перейдите в целевую зону."],["Spiked Scales","3/2","В этом ходу 1 соседний юнит имеет +4 брони и «Ответный удар: X УРОНА», где X — его броня."]]},"Cotlic":{"p":["Xotlan Protects","Соседние дружественные миньоны имеют +2 брони против карточек, атак и способностей."],"c":[["Bone Shield","0/3","1 соседний отряд имеет +3 брони и в этом ходу «Ответный удар: ОБЕЗОРУЖИВАНИЕ."],["Flesh to Stone","2/2","Прикрепите к Котлику, пока он не будет побеждён. У него +2 брони, и он теряет 1 AP каждый раз, когда начинает ход. Когда оппонент выбирает цель для атаки или произнесения заклинания, он должен, если возможно, нацелиться на Котлика."],["Totem of Pain","3/1","Нанесите 2 УРОНА и ОБЕЗОРУЖТЕ до 2 врагов в зоне Котлика. Если во время применения этого заклинания там есть 3 или более дружественных миньонов, вместо этого выберите 3х врагов."],["Shield Shove","4/1","Вытолкните и ОБЕЗОРУЖТЕ 1 вражеского героя в 1 соседнюю зону. Если вы вытолкнули его, перейдите в целевую зону."],["My Kingdom!","3/2","Сразу после этого хода выполните пуш линии в зоне Котлика с импульсом +2."]]},"Shaidrus":{"p":["Last Protector","Шайдрус имеет +3 брони и -2 силы."],"c":[["Void Shield","0/3","1 соседний отряд имеет +3 брони и «Ответный удар: нанесите БЕЗМОЛВИЕ» в этом ходу."],["Shaidrus Shadow","2/2","Прикрепите к 1 дружественному герою в пределах 2 зон, пока Шайдрус не будет побежден. Если герой с этой картой должен получить УРОН, Шайдрус должен получить его вместо этого. (Оба героя используют свою броню)."],["Shields Whirlwind","3/1","Нанесите 1 УРОН и нанесите ГОРЕНИЕ до 2х врагов в зоне Шаидруса. Если в зоне более 5 вражеских миньёнов - выберите целью 3х врагов вместо 2х."],["Judgement Shove","4/1","Вытолкните и ОГЛУШИТЕ 1 вражеского героя в 1 соседнюю зону. Если вы вытолкнули его, перейдите в целевую зону."],["None Shall Enter","3/2","Телепортируйте Шайдруса и всех миньонов из 1 соседней зоне в зону, отмеченную буквой «M» на той же линии. Затем восстановите все разрушенные дружественные башни на этой линии."]]},"Miyuki":{"p":["Spiritual Wake","Соседние вражеские герои должны получить 2 УРОНА и ГОРЕНИЕ в качестве дополнительной стоимости розыгрыша карты."],"c":[["Spirit Heal","0/3","Восстановите 3 HP 1 юниту в пределах 2 зон. Если у цели есть статус, вы можете перенести его 1 другому соседнему с Миюки герою."],["Choking Sparks","2/2","Нанесите ГОРЕНИЕ и прикрепите к 1 вражескому герою в пределах 2 зон, пока Миюки или этот герой не будут побеждены. Если герой с этой картой теряет 1 HP из-за ГОРЕНИЯ, вместо этого он потеряет 2 HP."],["Lifesteal Touch","3/1","Прикрепите к 1 дружественному герою в пределах 3 зон, пока он не будет побежден. Когда герой с этой картой наносит атакой 1 или более УРОНА исцелите ему 2 HP."],["Crippling Ray","4/1","Выберите два разных статуса: ОБЕЗОРУЖИВАНИЕ, БЕЗМОЛВИЕ, ОГЛУШЕНИЕ или ГОРЕНИЕ. Нанесите выбранные статусы 1 вражескому герою в пределах 2 зон."],["Soul Guide","1/3","Если 1 аутсайдер или дружественный герой в пределах 3 зон должен быть побежден в этом ходу, вместо этого установите его HP на 5."]]},"Freyhel":{"p":["Enduring Queen","Действие: исцелите 3 HP 1 соседнему герою. (Один раз за ход Фрейхель"],"c":[["Nourish Heal","0/3","Восстановите 3 HP 1 юниту в пределах 2 зон."],["Breezing Nova","2/2","Выберите «дружественный» или «вражеский». Исцелите 2 HP каждому соседнему герою выбранного типа."],["Withering Gift","3/1","Прикрепите к Фрейхель, пока она не будет побеждена. Если она исцеляет отряд, вместо этого она может нанести такое же количество УРОНА."],["Life Drain","4/1","Нанесите 2 УРОНА и наложите ЗАМОРОЗКУ на 1 соседнего вражеского героя или миньона. Если вы нанесете УРОН, вылечите 2 HP 1 другому ближайшему юниту."],["Glacial Rebirth","1/3","Восстановите 3 HP и снимите все статусы с 1 юнита в любом месте. Если этот отряд дружественный, вместо этого вылечите 8 HP."]]},"Tlakali":{"p":["Ritual of Sacrifice","Если соседний дружественный миньон должен быть побежден, Вместо этого Тлакали может потерять 1 HP. (До одного раза в ход каждого героя)"],"c":[["Ritual Heal","0/3","Восстановите 3 HP 1 соседнему юниту и удалите 1 жетон статуса с него. Если Тлакали находится в зоне столкновения, этот юнит в этом ходу получает +1 броню."],["Scarifier's Curse","2/2","Прикрепите к 1 ближайшему вражескому герою, до тех пор, пока Тлакали или этот герой не будут побеждены. Наложите ОБЕЗОРУЖИВАНИЕ на прикрепленного героя. Когда он потеряет этот статус, наложите его снова."],["Ritual of Sacrifice","3/1","Дополнительная стоимость: нанесите 2 УРОНА 1 дружественному герою в пределах 2 зон. Восстановите 6 HP 1 соседнему юниту и снимите с него 1 статус. Вы не можете выбрать один и тот же отряд."],["Twisted Allegiance","4/1","Дополнительная стоимость: нанесите 2 УРОНА 1 дружественному герою в пределах 2 зон. Восстановите 8 HP Тлакали."],["The Call of Taulot","1/3","Выберите одно: - Подготовьте 1 возражадающегося героя. - Подготовте 1 уставшего героя, который был побежден в этот день. - Удалите 1 жетон аутсайдера с линии"]]},"Akhuti":{"p":["Radiant Silence","Когда вражеский герой входит в соседнюю зону, Наложите на него БЕЗМОЛВИЕ и ЗАМОРОЗКУ."],"c":[["Radiant Healing","0/3","Восстановите 2 HP до 2 соседним юнитам и снимите 1 из их статусов. Любой из этих юнитов, не достигший начального уровня здоровья, в этом ходу получает +1 броню."],["Flash Ray","2/2","Переместите 1 другого дружественного героя в пределах 3 зон в 1 зону, смежную к нему."],["Silence Ray","3/1","Наложите ЗАМОРОЗКУ и ГОРЕНИЕ на 1 героя в пределах 2 зон. Он не может применять заклинания в этом ходу."],["Peacekeeping Ray","4/1","Вы можете снять 1 статус с 1 юнита в пределах 2 зон. В следующий раз, когда они будут терять HP в этом ходу - предотвратите это."],["Nupten Touch","1/3","Вылечите 8 HP, снимите все статусы и повысьте уровень 1 дружественного героя в пределах 3 зон."]]},"Akimo":{"p":["Blade of the Everking","Акимо получает +3 к силе, если у него есть ГОРЕНИЕ. Действие: Акимо получает ГОРЕНИЕ."],"c":[["Scorching Dive","0/3","Переместитесь в 1 смежную зону. Если вы это сделаете, вы можете нанести 2 УРОНА и наложить ГОРЕНИЕ на 1 вражеского героя или аутсайдера."],["Kurumo's Brand","2/2","Нанесите 3 УРОНА и наложите ГОРЕНИЕ на 1 соседнего вражеского героя или аутсайдера. В следующий раз, когда этот враг войдет в какую-либо зону в этом ходу, телепортируйте туда Акимо."],["Ishiro Unleashed","3/1","Дополнительная стоимость: 1 HP. Следующая атака Акимо в этом ходу имеет +5 силы, а также наносит ГОРЕНИЕ."],["Bloodthirst","4/1","Применяйте только в вашу фазу покупок. В этом раунде у Акимо +3 инициативы и +1 силы. Следующая фаза миньонов отложена до конца этого раунда."],["Akimo's Oath","3/2","Прикрепите к 1 соседнему вражескому герою. Удвойте силу Акимо, пока он атакует этого героя."]]},"Shyllavi":{"p":["Restless Wildcat","Шиллави получает +3 к силе, если у нее 7 и более HP."],"c":[["Freezing Dive","0/3","Переместитесь в 1 соседнюю зону. Если вы это сделаете, вы можете нанести 2 УРОНА и наложить ЗАМОРОЗКУ на 1 вражеского героя или аутсайдера."],["Wildcat Form","2/2","Прикрепите к Шиллави, пока она не будет побеждена. У нее есть +1 броня и «Ответный удар: ОБЕЗОРУЖИВАНИЕ»."],["Biding Time","3/1","Применяйте только в вашу фазу покупок Исцелите 3 HP Шиллави. В этом раунде у нее +3 инициативы. Следующая фаза миньонов отложена до конца этого раунда."],["Feline Pounce","4/1","Телепортируйтесь в 1 зону, в 2 зонах от вас. Если вы это сделаете, наложите БЕЗМОЛВИЕ на 1 героя и предотвратите применение им заклинаний в этом ходу."],["Dance of the Predator","3/2","Дополнительная стоимость: 1 AP. Переместитесь в 1 зону в пределах 2 зон. Если вы это сделаете, атакуйте каждого вражеского героя и каждого вражеского миньона там."]]},"Nantaca":{"p":["Sepulchral Tendrils","Нантака имеет +1 к силе за каждого соседнего дружественного миньона, пока она находится в джунглях или реке."],"c":[["Withering Pull","0/3","Нанесите 2 УРОНА, ОБЕЗОРУЖТЕ и притяните 1 смежного вражеского героя, игнорируя ограничение прицеливания в джунгли."],["Unburial Rite","2/2","Дополнительная стоимость: 1 MP. Если Нантака находится в зоне столкновения, поместите туда 1 дружественного миньона. Все зоны столкновения в этот ход являются джунглями."],["Sinkhole","3/1","Нанесите 1 УРОН, ОГЛУШИТЕ и притяните каждого соседнего вражеского. В этом ходу предотвратите эффекты «перемещение», «телепорт» и «выталкивания» в их заклинаниях."],["Living Jungle","4/1","Примените только в вашей фазе покупок и только если Нантака находится в джунглях. Телепортируйтесь в 1 зону джунглей в любое место, где нет вражеских героев. В этом раунде у нее +2 инициативы. Следующая фаза миньонов отложена до конца этого раунда."],["Obey the Monarch","3/2","Поместите 2 дружественных миньонов в 1 соседнюю зону столкновения. В этот ход все зоны являются джунглями."]]},"Haburat":{"p":["Executioner","Хабурат имеет силу +X, где X равена количеству AP на его карте плана."],"c":[["Shining Dive","0/3","Передвинтесь в 1 соседнюю зону. Если вы это сделали, вы можете нанести 2 УРОНА и ОГЛУШИТЬ 1 вражеского героя или аутсайдера там."],["Haburat Shadow","2/2","Прикрепите к 1 ближайшему вражескому герою, пока Хабурат или этот герой не будут побеждены. Прикрепленный герой всегда находится в пределах досягаемости Хабурата (применяется правило джунглей)."],["Overdue Execution","3/1","Применяйте только в вашей фазе покупок В этом раунде Хабурат имеет +X инициативы и +X силы, где X - номер дня. Выберите 1 вражеского героя в любом месте, Хабурат может атаковать его только в этом раунде."],["Weave","4/1","Выберите 1 соседнего врага. Следующая атака Хабурата в этом ходу игнорирует правило «Слабых врагов» и наносит любой избыточный УРОН выбранному врагу. Избыточный УРОН - это любой УРОН, превышающий необходимый для уничтожения цели."],["Lightning Blades","3/2","Применяйте только в вашу фазу покупок Удвойте AP на карте плана Хабурата в этом раунде."]]},"Sakoshi":{"p":["Run and Hide","Когда Сакоши теряет 1 или более HP, он может продвинутся в 1 смежную зону."],"c":[["Quick Shot","0/3","Атакуйте 1 врага в зоне Сакоши."],["Bouncy Shurikens","2/2","Дополнительная стоимость: 1 MP и 1 AP. Атакуйте до 3 соседних врагов."],["Airship Drop","3/1","Дополнительная стоимость: 1 MP и 1 HP. Телепортируйтесь в 1 зону куда угодно. Если вы это сделаете, вы можете нанести 1 УРОН 1 врагу там. Затем потеряйте все MP и AP."],["Counterfeits","4/1","Применяйте только в вашу фазу покупок. Купите предмет стоимостью до 12 золотых, не оплачивая его стоимость. Наденьте его на Сакоши, игнорируя ограничение в 1 предмет каждого цвета."],["Shuriken Storm","1/3","Применяйте только вашу фазу покупок Сакоши получает 3 AP. В этом раунде он может предпринимать действия атаки, но в качестве цели может выбрать только героя и/или аутсайдера."]]},"Vorhild":{"p":["Icy Shade","Ворхильд может атаковать смежных врагов, и врагов ровно через 2 зоны."],"c":[["Precise Shot","0/3","Атакуйте 1 врага в двух зонах от Ворхильд"],["Ermine Form","2/2","Прикрепите к Ворхильде, пока она не объявит атаку или произнесет заклинание. У нее есть Стойкость во время хода любого героя."],["Long Shot","3/1","Дополнительная стоимость: 1 MP. Выберите 1 не соседнюю зону. Нанесите 1 УРОН и ЗАМОРОЗЬТЕ 1 вражеского героя или миньона там."],["Barrage","4/1","Дополнительная стоимость: 1 AP. Атакуйте каждого соседнего вражеского героя."],["The Ermine's Eye","1/3","Дополнительная стоимость: все AP. Выберите 1 вражеского героя в 1 зоне в любом месте и атакуйте его с +3 к силе за каждую AP, потраченную на его применение."]]},"Achla":{"p":["Poisoned Traps","Когда 1 соседний вражеский герой теряет HP во время хода любого героя, он теряет на 1 HP больше."],"c":[["Guerrilla Shot","0/3","Атакуйте 1 соседнего враг в джунглях, игнорируя ограничение на выбор цели в джунглях."],["Spiked Bait","2/2","Выберите 1 зону джунглей в любом месте. Нанесите 1 УРОН и ОГЛУШИТЕ 1 врага там."],["Poison Sting","3/1","Прикрепите к 1 вражескому герою в пределах 2 зон, пока он не истощится или не исцелится. Когда этот герой завершает действие, нанесите ему 1 УРОН."],["Ambush","4/1","Дополнительная стоимость: 2 MP. Дважды атакуйте 1 смежного вражеского героя, игнорируюя ограничение выбора цели в джунглях."],["Coma Toxin","1/3","Нанесите 8 УРОНА 1 соседнему вражескому герою, игнорируя ограничение выбора цели в джунглях."]]},"Khepiax":{"p":["Lady of Lightning","Добавьте следующий эффект в конец каждого заклинания дружественного героя: \"Хепиакс наносит 1 УРОН до 1 вражеского героя, соседнего с Хепиаксом.\""],"c":[["Lightning Shot","0/3","Атакуйте 1 соседнего врага на линии."],["Chain Lightning","2/2","Дополнительная стоимость: сбросьте 1 карту из руки. Следующая атака Хепиакса в этом ходу может быть нацелена еще на 3 врагов в его зоне."],["Gathering Storm","3/1","Примените только в начале хода Хепиакса. Дополнительная стоимость: все AP и все MP. Возьмите 4 карты."],["Thunderclap","4/1","Выберите 1 не соседнюю линию. Нанесите 1 УРОН и наложите БЕЗМОЛВИЕ 1 вражескому герою там."],["Become the Storm","1/3","Дополнительная стоимость: победите 1 соседнего дружественного миньона. Нанесите 4 УРОНА, разделенных между 4 врагами в любом месте (даже в разных зонах)."]]},"Kichie":{"p":["Rejuvenating Fire","Когда Кичи наносит УРОН, исцелите ему 1 HP за каждую юнит, которому он нанес урон."],"c":[["Burning Bolts","0/3","Нанесите 1 УРОН и наложите ГОРЕНИЕ на 2 врагов, не являющихся монстрами, в 1 соседней зоне."],["Flaming Star","2/2","Выберите 1 зону в пределах 2 зон. Нанесите 1 УРОН и наложите ГОРЕНИЕ на каждого соседнего для выбранной зоны вражеского героя"],["Fireball","3/1","Дополнительная стоимость: 1 AP. Нанесите 1 УРОН и наложите ГОРЕНИЕ до 5 врагам в 1 соседней зоне."],["Blazing Dart","4/1","Нанесите 3 УРОН и наложите ГОРЕНИЕ на 1 соседнего вражеского героя."],["Mindfulness","1/3","Возьмите 4 карты, затем, положите 2 карты из своей руки поверх колоды. Нанесите 1 УРОН и наложите ГОРЕНИЕ на 2 соседних врагов."]]},"Corjof":{"p":["Gathering Scryer","Действие: потратьте 1 MP чтобы взять 1 карту. (Один раз за ход Коржофа.)"],"c":[["Ice Bolts","0/3","Нанесите 1 УРОН и ЗАМОРОЗЬТЕ до 2 врагов, не являющихся монстрами, в 1 соседней зоне."],["Blizzard","2/2","Дополнительная стоимость: сбросьте 1 карту из руки. Нанесите 1 УРОН и ЗАМОРОЗЬТЕ до 5 врагов в 1 соседней зоне."],["Disarming Darts","3/1","Дополнительная стоимость: сбросьте 1 карту из руки. Нанесите 2 УРОНА и ОБЕЗОРУЖТЕ до 2 соседних врагов."],["Icewall","4/1","Дополнительная стоимость: сбросьте 1 карту из руки. Нанесите 4 УРОНА и ЗАМОРОЗЬТЕ всех вражеских героев в 1 соседней зоне. В следующий раз, когда один из них покинет эту зону в этом ходу, предотвратите это."],["Rain of Shards","1/3","Дополнительная стоимость: сбросьте 1 карту из руки. Телепортируйтесь в 1 другую зону куда угодно. Если вы это сделаете, нанесите 2 УРОНА и ЗАМОРОЗЬТЕ каждого врага там."]]},"Nelaclen":{"p":["Eldritch Whispers","Нелаклен может применять любые заклинания в вашей руке. Если он использует не свое заклинание, замените любые имена героев на нём на «Нелаклен»."],"c":[["Abyssal Bolts","0/3","Нанесите 1 УРОН и ОБЕЗОРУЖТЕ до 2 врагов, не являющихся монстрами, в 1 соседней зоне."],["Mask Darts","2/2","Выберите ГОРЕНИЕ, ЗАМОРОЗКА, ОГЛУШЕНИЕ, БЕЗМОЛВИЕ Нанесите 2 УРОНА и примените выбранный статус 1 к соседнему врагу."],["Totem of Void","3/1","Выберите 1 не ультимативную карту в своей стопке сброса. Если возможно, Нелаклен применяет его, как если бы он был у вас в руке."],["Earthquake","4/1","Дополнительная стоимость: 2 MP. Нанесите 1 УРОН и ОБЕЗОРУЖТЕ до 5 врагов в 1 соседней зоне."],["Heart of Taulot","1/3","Нанесите 8 УРОНА 1 соседнему аутсайдеру, игнорируя его способности Стойкость и Ответный удар."]]},"Setheru":{"p":["Skytear Master","Чтобы подготовить заклинание, поместите его лицевой стороной вверх рядом с полем. В начале каждой фазы плана добавьте 1 золотой жетон из резерва как «заряд» для каждого подготавливаемого заклинания. Сетеру может использовать подготовленное заклинание, сбросив его и все заряды на нем. Когда Сетеру побеждён, сбросьте все заряды."],"c":[["Skytear Bolts","0/3","Нанесите 1 УРОН и наложите БЕЗМОЛВИЕ на 2 врагов, не являющихся монстрами, в 1 соседней зоне."],["Word of Darts","2/2","Подготовьте в вашу фазу покупок. Нанесите Х УРОНА и наложите БЕЗМОЛВИЕ на 1 соседнего вражеского героя, где X — количество жетонов заряда на нем."],["Word of Void","3/1","Подготовьте в вашу фазу покупок. Нанесите 1 УРОН и ОГЛУШИТЕ до X врагов в 1 соседней зоне, где X - количество зарядов на ней."],["Word of Command","4/1","Подготовьте в вашу фазу покупок. Для каждых 2 зарядов выберите любой эффект: - Возьмите 1 карту. - Вытолкните 1 соседнего героя. - В этом раунде у Сетеру +1 импульс."],["The Last Word","1/3","Удвойте заряды 1 подготовленного заклинания. Затем разыграйте его, не сбрасывая ни эту карту, ни её заряды."]]},"Doomies":{"p":["Lost Legion","Думики имеют +1 импульс за каждые 4 HP, которые у них есть."],"c":[["Summon Scatter","0/3","Дополнительная стоимость: 1 HP. Поместите 1 дружественного миньона в 1 соседнюю зону столкновения."],["Siege Masters","2/2","Применяйте только в фазу ваших покупок. Сразу после этого раунда пушите дружественными миньонами в зоне Думиков."],["Join Us","3/1","Прикрепите к Думикам, пока они не будут побеждены. Когда соседний вражеский миньон побежден, вылечите Думикам 2 HP."],["Rocket Jump","4/1","Дополнительная стоимость: нанесите 3 УРОНА 1 соседнему дружественному миньону. Телепортируйтесь в 1 зону столкновения в любом месте. Если вы это сделаете, нанесите 1 УРОН и ОБЕЗОРУЖТЕ до 2 врагов там."],["BOOM!!!","3/2","Примените только в фазу ваших покупок. Сразу после этого раунда нанесите 4 УРОНА 1 вражескому нексусу или башне в пределах 3 зон, игнорируя его способности «Стойкость» и «Ответный удар»."]]},"Astryda":{"p":["Voice of the Tide","Когда Астрида побеждает вражеского миньона, она может потерять 1 HP, чтобы разместить 1 дружественного миньона в 1 соседнюю зону столкновения. (Один раз за ход Астриды.)"],"c":[["Summon Wave","0/3","Дополнительная стоимость: 1 AP. Если Астрида находится в зоне столкновения, поместите туда 2 дружественных миньонов."],["Freeze Push","2/2","Применяйте только в вешй фазе покупок и прекрепите к Астриде до конца этого раунда. Предотвратите пуш всех соседних миньонов."],["Lullaby","3/1","Восстановите 3 HP Астриде и ОБЕЗОРУЖТЕ 1 вражеского героя в 1 соседней зоне."],["Gaze","4/1","Предотвратите применение эффектов следующего заклинания для 1 вражеского героя в пределах 2 зон в этом ходу."],["Song of the Siren","1/3","Наложите БЕЗМОЛВИЕ на 1 вражеского героя в пределах 2 зон, игнорируя ограничение выбора цели в джунглях. Он также теряет 1 MP, 1 AP и не пожет применять заклинания в этом ходу."]]},"Kohai":{"p":["Barbed Hooks","Действие: притяните и ОГЛУШИТЕ 1 вражеского героя в пределах 2 зон. (Один раз за ход Кохая.)"],"c":[["Summon Ancestors","0/3","Дополнительная стоимость: сбросьте 1 карту из руки. Если Кохай находится в зоне столкновения, поместите туда 2 дружественных миньонов."],["Hooked Prey","2/2","Притяните и ОБЕЗОРУЖТЕ 1 вражеского героя в пределах 2 зон. Они не могут объявлять действия в этом ходу."],["Grit and Grin","3/1","Вылечите 4 HP Кохаю. В этом ходу у него +1 броня, и когда противник выбирает цель для атаки, он должен, если возможно, выбрать целью Кохая."],["Quick Call","4/1","Притяните и ОБЕЗОРУЖТЕ 1 дружественного героя в пределах 2 зон."],["Tower Reel","1/3","Дополнительная стоимость: 1 HP. Телепортируйтесь в 1 другую зону с башней или нексусом. Если вы это сделаете, нанесите 1 УРОН и наложите ОГЛУШЕНИЕ до 6 врагам там."]]},"Ekhrit":{"p":["Winds Gather","Предотвратите вход ЛЮБОГО героя в зону Эхрит."],"c":[["Summon Gale","0/3","Дополнительная стоимость: 1 MP. Поместите 1 дружественного миньона в 1 соседнюю зону столкновения."],["Stasis Push","2/2","Примените только в вашу фазу покупок и прикрепите к Эхрит до конца этого раунда. В этом раунде предотвратите пуш миньонов, кроме соседних с Эхрит."],["Windborne","3/1","Передвинте 1 другого дружественного героя в пределах 2 зон до 2 раз. В этом ходу он получает +1 импульс."],["Tornado","4/1","Вытолкните и ЗАМОРОЗИТЕ всех остальных героев в зоне Экрит."],["Windblast","1/3","Вытолкните, нанесите 2 УРОНА и ОГЛУШИТЕ до 4 соседних врагов."]]},"Kumaya":{"p":["Ashen Maiden","Когда вражеский герой покидает зону с Кумаи, она может нанести 2 УРОНА и нанести ГОРЕНИЕ на него."],"c":[["Shroud Smite","0/3","В этом ходу Кумая имеет +2 брони. Затем, атакуйте с силой +2 аутсайдера или монстра в зоне с Кумаи."],["Smokescreen","2/2","Прикрепите к Кумаи, пока она не будет побеждена. Враги за пределами зоне Кумаи не могут атаковать юнитов в ее зоне или саму зону."],["Explosive Resolve","3/1","В этом ходу Кумая имеет +2 брони. Нанесите 2 УРОНА и наложите ГОРЕНИЕ до 2 вражеских героев в ее зоне."],["Ashen Gank","4/1","Применяйте только в том случае, если Кумая находится в джунглях без вражеских героев. Передвинтесь к 1 смежной зоне на линии. Если вы это сделаете, атакуйте там 1 вражеского героя с +2 к силе."],["Ahasan Mark","3/2","Передвинтесь в 1 смежную зону. Если вы это сделаете, вы можете нанести 5 УРОНА и наложить БЕЗМОЛВИЕ на 1 врага."]]},"Heraal":{"p":["Jungle Runner","Гераал игнорирует ограничение выбора цели в джунглях. Действие: если Гераал находится в джунглях, телепортируйтесь в 1 джунгли в пределах 2 зон. (Один раз за ход Гераала.)"],"c":[["Ironwood Smite","0/3","В этом ходу у Гераала +2 брони. Нанесите 3 УРОНА 1 ближайшему монстру или аутсайдеру."],["Elk Form","2/2","Прикрепляйтесь к Гераалу, пока он не будет побеждён. Когда Гераал входит в зону, он может нанести 2 УРОНА 1 монстру или аутсайдеру там. (Один раз за ход Гераала.)"],["Vital Rebound","3/1","Исцелите 3 HP Гераалу. Нанесите 2 УРОНА и ОГЛУШИТЕ 1 соседнего вражеского героя."],["Hunting Gank","4/1","Применяйте, только если Гераал находится в джунглях без вражеских героев. Телепортируйтесь в 1 другую зону джунглей, где нет вражеских героев. Затем атакуйте 1 соседнего вражеского героя на линии."],["The Wilds Ride","1/3","Применяйте только в вашей фазе покупок. Сразу после того, как Гераал завершит этот раунд (пас), нанесите Х УРОНА 1 врагу в зоне Гераала, где Х — количество MP, которое он потратил в этом ходу. Этот УРОН игнорирует способность Стойкость."]]},"Ixatosk":{"p":["Underworld Dweller","Действие: телепортируйте 1 соседнего дружественного героя в 1 зону, смежную к Иксатоску. (Один раз за ход Иксатоска.)"],"c":[["Burrowing Smite","0/3","Если Иксатоск не является целью, передвинтесь в 1 соседнюю зону с монстром или аутсайдером. Если вы это сделаете, нанесите ему 2 УРОНА и игнорируйте его способности «Ответный удар» и «Стойкость»."],["Split Form","2/2","Прикрепляйтесь к Иксатоску, пока он не будет побеждён. Когда фаза джунглей заканчивается, вы можете нанести 1 УРОН 1 монстру или аутсайдеру в пределах 2 зон."],["Counterstrike","3/1","В этом ходу Иксатоск имеет +2 брони. Нанесите 2 УРОНА 1 вражескому герою в зоне Иксатоска."],["Tunnel Gank","4/1","Телепортируйте 1 соседнего дружественного героя к 1 зоне джунглей без вражеских героев. В этом ходу этот герой имеет +1 к силе."],["Skytear Predator","3/2","Применяйте только в вашей фазе покупок В этом раунде Иксатоск имеет +X силы и +X брони, где X — это MP на его плане. В этом раунде атаки Иксатоска могут быть нацелены только на аутсайдера, игнорируя его Стойкость."]]},"Shafathi":{"p":["Shadow Over Space","Шафати имеет +3 инициативы. Соседние враги имеют -1 инициативу."],"c":[["Smite Stasis","0/3","Выберите 1 монстра или монстра в любом месте. В следующий раз, когда в этом ходу ему должен быть нанесен УРОН - предотвратите весь УРОН."],["Shafathi Shadow","2/2","Присоедените к Шафати, пока он не будет побежден. Когда он победит монстра, получите +3 золота."],["Dematerialize","3/1","Шафари получает Стойкость на этот ход. Нанесите 1 УРОН и наложите БЕЗМОЛВИЕ 1 вражескому герою в его зоне."],["Echo Gank","4/1","Применяйте, только если Шафати находится в джунглях без вражеских героев. Дополнительная стоимость: сбросьте 3 карты из руки. Подготовьте Шафати."],["Split Second","3/2","Применяйте только в вешей фазе покупок. Телепортируйтесь в 1 зону столкновения. Если вы это сделаете, нанесите 2 УРОНА и БЕЗМОЛВИЕ до 2 врагов в ней."]]},"Yami":{"p":["Harbinger of Revenge","Когда Ями входит в зону во время своего хода, она может вытолкнуть оттуда 1 вражеского героя."],"c":[["Haunting Lead","0/3","При следующем пуше, вражеские миньоны в 1 соседней зоне, теряют 3 импульса (вплоть до минимума 0)."],["Flame Swipe","2/2","Нанесите 2 УРОНА и нанесите ГОРЕНИЕ 2-ум врагам в зоне Ями. Если на момент произношения этого заклинания там находится 4 или более врагов, вместо этого выберите целью 3х врагов."],["Ghost Walk","3/1","Ями получает 2 MP. В этом ходу она может совершать действия движения, и у нее есть Стойкость."],["Get Over Here","4/1","Притяните и ОГЛУШИТЕ 1 соседнего вражеского героя."],["Kneel Before Me","3/2","Телепортируйтесь в 1 зону в пределах 2 зон. Если вы это сделаете, нанесите 1 УРОН и ЗАМОРОЗЬТЕ до 3 врагов."]]},"Gulbjarn":{"p":["Rabid Brawl","Атаки Гульбьярна могут поражать 1 дополнительного врага, не являющегося миньоном."],"c":[["Fearless Lead","0/3","Прикрепите к Гульбьярну до конца этого раунда. Гульбьярн имеет +2 импульса."],["Bear Form","2/2","Прикрепите к Гульбьярну, пока он не будет побеждён. Гульбьярн имеет +1 броню. Предотвращайте эффекты «перемещения», «телепортации» и «выталкивания» от заклинаний и способностей соседних вражеских героев."],["Iron Grasp","3/1","Нанесите 3 УРОНА, РАЗОРУЖИТЕ и притяните 1 соседнего вражеского героя. Ни Гульбьярн, ни цель не могут произносить заклинания в этом ходу."],["Feral Grapple","4/1","Нанесите 3 УРОНА и притяните 1 соседнего врага. Если вы нанесли 1 или более УРОНА, вылечите Гульбьярну 3 HP."],["Feral Brawl","3/2","Вылечите Гульбьярну 4 HP. Притяните и ЗАМОРОЗЬТЕ до 2 вражеских героев в пределах 2 зон."]]},"Zacoal":{"p":["*Kradoom*","Атаки Закоала также могут телепортировать целевого героя в 1 зону в пределах 2 зон от Закоала."],"c":[["Towering Lead","0/3","Прикрепите к Закоалу до конца этого хода. Соседние дружественные миньоны имеют +3 брони."],["*Whheeeeee*","2/2","ЗАМОРОЗЬТЕ и телепортируйте 1 соседнего героя в смежную с этим героем зону. Этот герой не может произносить заклинания в этом ходу."],["*Thud* *Thud*","3/1","В этом ходу, когда Закоал телепортирует юнит в зону, он может нанести 1 УРОН и ОБЕЗОРУЖИТЬ до 2 врагов там."],["*Clonk*","4/1","Закоал в этом ходу имеет +2 брони. Нанесите 3 УРОНА 1 соседнему вражескому герою."],["*Slam*","3/2","Атакуйте 1 врага в зоне действия Закоала с силой +2. Если атака поразила героя, вы можете телепортировать его в любую зону, кроме нексуса Закоала."]]},"Khenui":{"p":["Refraction Dance","Пока Хенуи находится на линии, у нее есть Стойкость против атак (в том числе и от «Ответного удара»)."],"c":[["Deceptive Lead","0/3","Прикрепите к Хенуи до конца этого раунда. Предотвратите способность «Ответный удар» от соседних врагов."],["Pirouette Blow","2/2","Дополнительная стоимость: 1 MP. Нанесите 1 УРОН и заморозьте до 3 соседних врагов."],["Elusive Spin","3/1","В этом ходу у Хенуи +3 брони. Нанесите БЕЗМОЛВИЕ или ОГЛУШЕНИЕ 1 соседнему вражескому герою."],["Magnetic Presence","4/1","Применяйте только в вашей фазе покупок. Прикрепите к Хенуи до конца раунда. Вражеские герои в пределах 3 зон не могут атаковать, если они не находятся рядом с Хенуи или у них не осталось 0 MP. Если эти герои объявляют действие движения, они должны подойти ближе к ней. (Не работает на движение от заклинаний)"],["Echo Dance","3/2","Применяйте только в вашей фазе покупок. Хенуи имеет +2 инициативы в этом раунде и может телепортироваться в 1 другую зону куда угодно. Если вы это сделаете, нанесите 2 УРОНА и ОБЕЗОРУЖТЕ 1 вражеского героя в этой зоне."]]}};
+const CLS_ORDER = ["Убийца","Стрелок","Танк","Контроллер","Маг","Лайнер","Лесник","Воин"];
+const FAC_ORDER = ["Лиотан","Курумо","Таулот","Нуптен"];
+
+document.getElementById("classes").innerHTML =
+  CLASSES.map(c=>`<tr><td>${c[0]}</td><td>${c[1]}</td></tr>`).join("");
+
+const fDraft=document.getElementById("fDraft");
+const fCls=document.getElementById("fCls"),
+      fRng=document.getElementById("fRng"), q=document.getElementById("q");
+CLS_ORDER.forEach(c=>fCls.add(new Option(c,c)));
+
+let sortKey="name", dir=1;
+const coll=new Intl.Collator("ru",{sensitivity:"base"});
+function cmp(a,b,k){
+  if(k==="cls") return CLS_ORDER.indexOf(a.cls)-CLS_ORDER.indexOf(b.cls);
+  return coll.compare(a[k],b[k]);
+}
+const ICON_SWORD = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 4 L9.5 14.5"/><path d="M20 4 l-0.6 3.6 L10.8 16.2"/><path d="M20 4 l-3.6 0.6 L7.8 13.2"/><path d="M6.5 12.5 l5 5"/><path d="M9 15 l-4.5 4.5"/><circle cx="4" cy="20" r="1"/></svg>`;
+const ICON_ARROW = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 2.5 C 16 5.5, 16 18.5, 7 21.5"/><path d="M7 2.5 L 5.5 12 L 7 21.5" stroke-width="1"/><path d="M4 12 H18.5"/><path d="M22.5 12 L17.5 9.3 L17.5 14.7 Z" fill="currentColor" stroke-width="1"/><path d="M4 12 L2.3 9.8"/><path d="M4 12 L2.3 14.2"/></svg>`;
+function rngIcon(r){
+  if(r==="БД") return `<span class="rng" title="Ближний бой" aria-label="Ближний бой">${ICON_SWORD}</span>`;
+  if(r==="ДБ") return `<span class="rng" title="Дальний бой" aria-label="Дальний бой">${ICON_ARROW}</span>`;
+  return `<span class="rng" title="Не указано">—</span>`;
+}
+function esc(s){return s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+const DRAFT={};
+try{ Object.assign(DRAFT, JSON.parse(localStorage.getItem("onward-draft")||"{}")); }catch(e){}
+function saveDraft(){ try{ localStorage.setItem("onward-draft", JSON.stringify(DRAFT)); }catch(e){} }
+const DS_LABEL={my:"Мой",enemy:"Враг",ban:"Бан"};
+function dsHtml(n){
+  return `<span class="ds" role="group" aria-label="Статус в драфте">`+["my","enemy","ban"].map(k=>
+    `<button type="button" class="ds-btn b-${k}" data-ds="${k}" data-h="${esc(n)}" aria-pressed="${DRAFT[n]===k}">${DS_LABEL[k]}</button>`).join("")+`</span>`;
+}
+let BAN_OPEN=true; try{ BAN_OPEN=localStorage.getItem("onward-bans")!=="0"; }catch(e){}
+function renderDraftBar(){
+  const groups={my:[],enemy:[],ban:[]};
+  Object.entries(DRAFT).forEach(([n,v])=>{ if(BYNAME[n]&&groups[v]) groups[v].push(n); });
+  const total=groups.my.length+groups.enemy.length+groups.ban.length;
+  const T={my:"Мы",enemy:"Противник",ban:"Баны"};
+  const slot=n=>{ const h=BYNAME[n];
+    return `<div class="dslot" role="button" tabindex="0" data-go="${esc(n)}" title="${esc(h.ru+", "+h.fac)}">
+      <span class="dnm">${esc(h.name)}</span><span class="dcl"><span>${esc(h.cls)}</span>${rngIcon(h.rng)}</span>
+      <button type="button" class="dx" data-clear="${esc(n)}" aria-label="Снять отметку с ${esc(h.name)}">×</button></div>`; };
+  document.getElementById("draftbar").innerHTML=["my","enemy","ban"].map((k,i)=>{
+    const list=groups[k], slots=Math.max(4, Math.ceil(list.length/4)*4);
+    const body=`<div class="dslots">${list.map(slot).join("")}${"<div class=\"dslot empty\">пусто</div>".repeat(slots-list.length)}</div>`;
+    if(k==="ban") return `<details class="dgroup ban" id="dban"${BAN_OPEN?" open":""}><summary class="dgroup-h"><span class="chev" aria-hidden="true"></span>${T[k]} <span class="dn">${list.length}/4</span>`+
+      `<span class="dbanlist">${list.length?"· "+list.map(esc).join(", "):""}</span></summary>${body}</details>`;
+    return `<div class="dgroup ${k}"><div class="dgroup-h">${T[k]} <span class="dn">${list.length}/4</span>`+
+      (i===0&&total?`<a href="#" class="flink" id="draftReset">Сбросить драфт</a>`:"")+`</div>${body}</div>`;
+  }).join("")+(total?"":`<p class="dhint">Отмечайте героев кнопками «Мой», «Враг» и «Бан» в таблице ниже.</p>`);
+  const db=document.getElementById("dban");
+  db.addEventListener("toggle",()=>{ BAN_OPEN=db.open; try{localStorage.setItem("onward-bans",BAN_OPEN?"1":"0")}catch(e){} });
+  const pe=document.getElementById("pickEnemy"); if(pe){ const c=groups.enemy.length; pe.disabled=!c; pe.textContent=c?`Взять пики противника (${c})`:"Взять пики противника"; }
+}
+function setDraft(n,k){
+  if(DRAFT[n]===k) delete DRAFT[n]; else DRAFT[n]=k;
+  if(DRAFT[n]==="ban"){ const i=PICK.indexOf(n); if(i>=0) PICK.splice(i,1); }
+  saveDraft(); render(); renderDraftBar(); renderPick(); renderSheet();
+}
+const OPEN=new Set();
+const MQ=matchMedia("(max-width:760px)");
+const SPAN=()=>MQ.matches?3:4;
+try{ MQ.addEventListener("change",()=>render()); }catch(e){ MQ.addListener&&MQ.addListener(()=>render()); }
+const BYNAME=Object.fromEntries(H.map(h=>[h.name,h]));
+function cpList(items, emptyText){
+  if(!items||!items.length) return `<p class="cp-empty">${emptyText}</p>`;
+  return "<ul>"+items.map(([n,why,src])=>{
+    const h=BYNAME[n]; const label=h?`${h.name}`:n;
+    return `<li><button type="button" class="cp-hero" data-go="${esc(n)}" title="${h?esc(h.ru+" — "+h.cls+", "+h.fac):""}">${esc(label)}</button>`+
+      (h?` <span class="cp-cls">· ${esc(h.cls)}</span>`:"")+
+      `<span class="cp-why">${esc(why)}</span>${src==="v"?'<span class="src-v" title="Не из разбора автора — вывод по способностям, в партиях не проверен">наш вывод</span>':""}</li>`;
+  }).join("")+"</ul>";
+}
+// по умолчанию все три блока свёрнуты; состояние держится только до перезагрузки, отдельно для каждого героя
+const CP_STATE={};
+function abilList(name){
+  const a=ABIL[name]; if(!a) return '<p class="cp-empty">Нет данных</p>';
+  const last=a.c.length-1;
+  return `<ul class="ab-list"><li class="ab-p"><div class="ab-h"><span class="tagp">Пассивка</span><b>${esc(a.p[0])}</b></div><div class="cp-why">${esc(a.p[1])}</div></li>`+
+    a.c.map((c,i)=>`<li${i===last?' class="ab-u"':""}><div class="ab-h">${i===last?'<span class="tagu">★ Ульта</span>':""}<b>${esc(c[0])}</b><span class="ab-cost" title="MP/AP">${esc(c[1]||"")}</span></div><div class="cp-why">${esc(c[2])}</div></li>`).join("")+
+    `</ul>`;
+}
+function cpBlock(n,k,title,body,cnt){
+  return `<details class="cp-col ${k}" data-cp="${k}" data-h="${esc(n)}"${CP_STATE[n+":"+k]?" open":""}><summary><h4>${title}</h4><span class="cp-n">${cnt}</span></summary>${body}</details>`;
+}
+function cpHtml(name){
+  const c=C[name]||{g:[],b:[]};
+  return `<div class="cp">`+
+    cpBlock(name,"good","Силён против",cpList(c.g,"Автор не выделяет явных целей"),c.g.length)+
+    cpBlock(name,"bad","Слаб против",cpList(c.b,"Автор не выделяет явных угроз"),c.b.length)+
+    cpBlock(name,"abil","Способности",abilList(name),ABIL[name]?"пассивка и 5 карт":"")+`</div>`;
+}
+function toggleHero(tb, force){
+  const n=tb.dataset.h, open = force===undefined ? !OPEN.has(n) : force;
+  if(open) OPEN.add(n); else OPEN.delete(n);
+  tb.classList.toggle("open",open);
+  tb.querySelector("tr").setAttribute("aria-expanded",open);
+}
+function goHero(n){
+  let tb=document.querySelector(`#heroes tbody.hero[data-h="${n}"]`);
+  if(!tb){ q.value="";fCls.value="";fRng.value="";fDraft.value=""; render(); tb=document.querySelector(`#heroes tbody.hero[data-h="${n}"]`); }
+  const sec=document.getElementById("sec-heroes"); if(sec) sec.open=true;
+  if(!tb) return;
+  toggleHero(tb,true);
+  tb.scrollIntoView({behavior:"smooth",block:"start"});
+  tb.classList.remove("flash"); void tb.offsetWidth; tb.classList.add("flash");
+}
+document.getElementById("heroes").addEventListener("click",e=>{
+  const ds=e.target.closest(".ds-btn"); if(ds){ e.stopPropagation(); setDraft(ds.dataset.h, ds.dataset.ds); return; }
+  const go=e.target.closest(".cp-hero"); if(go){ e.stopPropagation(); goHero(go.dataset.go); return; }
+  const tr=e.target.closest("tbody.hero > tr:first-child, tbody.hero > tr.desc-row"); if(!tr) return;
+  toggleHero(tr.parentElement);
+});
+document.getElementById("heroes").addEventListener("toggle",e=>{
+  const d=e.target; if(!d.matches||!d.matches("details[data-cp]")) return;
+  CP_STATE[d.dataset.h+":"+d.dataset.cp]=d.open;
+},true);
+document.getElementById("heroes").addEventListener("keydown",e=>{
+  if((e.key==="Enter"||e.key===" ") && e.target.matches("tbody.hero > tr:first-child")){ e.preventDefault(); toggleHero(e.target.parentElement); }
+});
+function render(){
+  const s=q.value.trim().toLowerCase();
+  let rows=H.filter(h=>
+    (!fCls.value||h.cls===fCls.value)&&(!fRng.value||h.rng===fRng.value)&&
+    (!fDraft.value||(fDraft.value==="free"?!DRAFT[h.name]:DRAFT[h.name]===fDraft.value))&&
+    (!s||[h.name,h.ru,h.title,h.desc,h.cls,h.fac].join(" ").toLowerCase().includes(s)));
+  rows.sort((a,b)=>(cmp(a,b,sortKey)||coll.compare(a.name,b.name))*dir);
+  const tbl=document.getElementById("heroes");
+  tbl.querySelectorAll("tbody").forEach(b=>b.remove());
+  tbl.insertAdjacentHTML("beforeend", rows.map(h=>`<tbody class="hero${OPEN.has(h.name)?" open":""}${DRAFT[h.name]?" st-"+DRAFT[h.name]:""}" data-h="${h.name}"><tr tabindex="0" aria-expanded="${OPEN.has(h.name)}">
+    <td class="c-name"><span class="chev" aria-hidden="true"></span><span class="name">${esc(h.name)}</span> <span class="ru">${esc(h.ru)}</span><span class="title">${esc(h.title)}, <span class="tfac f-${h.fac}">${h.fac}</span></span>${dsHtml(h.name)}</td>
+    <td class="c-cls">${h.cls}</td><td class="c-rng">${rngIcon(h.rng)}</td><td class="c-desc">${esc(h.desc)}</td></tr>
+    <tr class="desc-row"><td colspan="3">${esc(h.desc)}</td></tr>
+    <tr class="cp-row"><td colspan="${SPAN()}">${cpHtml(h.name)}</td></tr></tbody>`).join(""));
+  document.getElementById("count").textContent=`показано ${rows.length} из ${H.length}`;
+  const act=[q.value.trim(),fCls.value,fRng.value,fDraft.value].filter(Boolean).length;
+  document.getElementById("fact").textContent=act?`· ${act} ${act===1?"активен":"активны"}`:"";
+  document.getElementById("reset").classList.toggle("off",!act && sortKey==="name" && dir===1);
+  document.querySelectorAll("#heroes th").forEach(th=>{
+    th.querySelector(".arr").textContent = th.dataset.k===sortKey ? (dir>0?"▲":"▼") : "";
+  });
+}
+document.querySelectorAll("#heroes th").forEach(th=>th.addEventListener("click",()=>{
+  if(sortKey===th.dataset.k) dir=-dir; else {sortKey=th.dataset.k; dir=1;}
+  render();
+}));
+[q,fCls,fRng,fDraft].forEach(el=>el.addEventListener("input",render));
+(()=>{ const a=document.getElementById("faqAll"); if(!a) return;
+  const qs=()=>[...document.querySelectorAll(".faq-q")];
+  const upd=()=>{ a.textContent=qs().every(d=>d.open)?"Свернуть все":"Развернуть все"; };
+  a.addEventListener("click",e=>{ e.preventDefault(); const open=!qs().every(d=>d.open); qs().forEach(d=>d.open=open); upd(); });
+  document.querySelector(".faq").addEventListener("toggle",upd,true);
+})();
+(()=>{ const cb=document.getElementById("fCp");
+  const apply=()=>document.body.classList.toggle("no-cp",!cb.checked);
+  cb.addEventListener("change",apply); apply(); })();
+document.getElementById("reset").addEventListener("click",e=>{
+  e.preventDefault(); q.value="";fCls.value="";fRng.value="";fDraft.value="";sortKey="name";dir=1;render();
+});
+(()=>{ const bar=document.querySelector(".fbar"), t=document.getElementById("ftoggle");
+  const set=c=>{ bar.classList.toggle("collapsed",c); t.setAttribute("aria-expanded",!c); try{localStorage.setItem("onward-filters",c?"0":"1")}catch(e){} };
+  try{ if(localStorage.getItem("onward-filters")==="0") set(true); }catch(e){}
+  t.addEventListener("click",()=>set(!bar.classList.contains("collapsed")));
+})();
+render();
+
+// ---- Подобрать контрпик ----
+const PICK=[];
+const PICK_TOP=3; let PICK_ALL=false;
+const pickSel=document.getElementById("pickSel");
+FAC_ORDER.forEach(f=>{
+  const og=document.createElement("optgroup"); og.label=f;
+  H.filter(h=>h.fac===f).sort((a,b)=>coll.compare(a.name,b.name)).forEach(h=>og.appendChild(new Option(`${h.name} (${h.ru}) — ${h.cls}`,h.name)));
+  pickSel.appendChild(og);
+});
+function countersOf(e){
+  // кто контрит героя e: Y силён против e, или e слаб против Y
+  const m=new Map();
+  const add=(y,why,src,dir)=>{ if(y===e) return; const r=m.get(y)||{reasons:[],w:0};
+    r.reasons.push({why,src,dir}); r.w+= src==="a"?2:1; m.set(y,r); };
+  for(const [y,c] of Object.entries(C)) for(const [n,why,src] of c.g) if(n===e) add(y,why,src,"g");
+  for(const [n,why,src] of (C[e]?.b||[])) add(n,why,src,"b");
+  return m;
+}
+function renderPick(){
+  const chips=document.getElementById("pickChips"), out=document.getElementById("pickOut");
+  chips.innerHTML=PICK.map(n=>{const h=BYNAME[n];return `<span class="pchip"><b>${esc(h.name)}</b><span class="cp-cls">${esc(h.cls)}</span><button type="button" data-rm="${esc(n)}" aria-label="Убрать ${esc(h.name)}">×</button></span>`}).join("");
+  [...pickSel.options].forEach(o=>{ if(!o.value) return; const h=BYNAME[o.value];
+    o.disabled=PICK.includes(o.value)||PICK.length>=4||DRAFT[o.value]==="ban"||DRAFT[o.value]==="my";
+    o.text=`${h.name} (${h.ru}) — ${h.cls}`+(DRAFT[o.value]==="ban"?" · бан":DRAFT[o.value]==="my"?" · наш пик":DRAFT[o.value]==="enemy"?" · у противника":""); });
+  pickSel.options[0].text = PICK.length>=4 ? "Выбрано 4 героя — уберите одного, чтобы добавить" : (PICK.length?"Добавить ещё героя противника…":"Выберите героя противника…");
+  if(!PICK.length){ out.innerHTML=""; return; }
+  const agg=new Map();
+  for(const e of PICK){
+    for(const [y,r] of countersOf(e)){
+      if(PICK.includes(y) || DRAFT[y]==="ban") continue;
+      const a=agg.get(y)||{vs:[],w:0}; a.vs.push({e,reasons:r.reasons}); a.w+=r.w; agg.set(y,a);
+    }
+  }
+  const taken=n=>DRAFT[n]==="enemy"?1:0;
+  const list=[...agg.entries()].sort((x,y)=>taken(x[0])-taken(y[0]) || y[1].vs.length-x[1].vs.length || y[1].w-x[1].w || coll.compare(x[0],y[0]));
+  if(!list.length){ out.innerHTML=`<p class="pick-empty">Для ${PICK.length>1?"этих героев":"этого героя"} контрпиков в разборах нет.</p>`; return; }
+  const multi=PICK.length>1;
+  const shown = PICK_ALL ? list : list.slice(0,PICK_TOP);
+  const reasonHtml=v=>{
+    const best=v.reasons.find(r=>r.src==="a")||v.reasons[0];
+    const both=v.reasons.length>1, onlyV=v.reasons.every(r=>r.src==="v");
+    return `${multi?`<b>${esc(v.e)}:</b> `:""}${esc(best.why)}${both?' <span class="cp-cls">· отмечено у обоих героев</span>':""}${onlyV?'<span class="src-v" title="Не из разбора автора — вывод по способностям">наш вывод</span>':""}`;
+  };
+  out.innerHTML=`<div class="plist">`+shown.map(([y,a])=>{
+    const h=BYNAME[y];
+    const tags = multi ? `<span class="ptags">`+PICK.map(e=>{
+        const hit=a.vs.some(v=>v.e===e);
+        return `<span class="ptag${hit?" hit":""}" title="${hit?"Контрит":"Не контрит"} ${esc(e)}">${esc(e)}</span>`;
+      }).join("")+`</span>` : "";
+    const why = multi
+      ? `<div class="pwhy">`+a.vs.map(v=>`<div>${reasonHtml(v)}</div>`).join("")+`</div>`
+      : `<div class="pwhy1">${reasonHtml(a.vs[0])}</div>`;
+    const st=DRAFT[y]; const stb = st==="my"?'<span class="pst my">наш пик</span>':st==="enemy"?'<span class="pst enemy">у противника</span>':"";
+    return `<div class="prow${multi?" can-open":""}${st==="enemy"?" taken":""}" ${multi?'tabindex="0" role="button" aria-expanded="false"':""}>
+      <div class="phead">${multi?'<span class="chev" aria-hidden="true"></span>':""}<button type="button" class="cp-hero" data-go="${esc(y)}">${esc(h.name)}</button>
+        <span class="fac f-${h.fac}">${h.fac}</span><span class="cp-cls">${esc(h.cls)}</span>${stb}${rngIcon(h.rng)}
+        ${multi?`<span class="pnum">${a.vs.length}/${PICK.length}</span>`:""}</div>
+      ${tags}${why}</div>`;
+  }).join("")+`</div>`+
+  (list.length>PICK_TOP ? `<button type="button" class="pmore" id="pickMore">${PICK_ALL?"Свернуть":`Показать ещё ${list.length-PICK_TOP}`}</button>` : "")+
+  (multi?`<p class="note" style="margin-top:6px">Нажмите на строку, чтобы увидеть причины.</p>`:"");
+}
+pickSel.addEventListener("change",()=>{ const v=pickSel.value; if(v&&!PICK.includes(v)&&PICK.length<4) PICK.push(v); pickSel.value=""; PICK_ALL=false; renderPick(); });
+document.getElementById("pickChips").addEventListener("click",e=>{ const b=e.target.closest("[data-rm]"); if(!b) return; PICK.splice(PICK.indexOf(b.dataset.rm),1); PICK_ALL=false; renderPick(); });
+document.getElementById("pickClear").addEventListener("click",()=>{ PICK.length=0; renderPick(); });
+document.getElementById("pickEnemy").addEventListener("click",()=>{
+  PICK.length=0; H.filter(h=>DRAFT[h.name]==="enemy").slice(0,4).forEach(h=>PICK.push(h.name)); PICK_ALL=false; renderPick(); });
+document.getElementById("draftbar").addEventListener("click",e=>{
+  if(e.target.id==="draftReset"){ e.preventDefault(); Object.keys(DRAFT).forEach(k=>delete DRAFT[k]); saveDraft(); render(); renderDraftBar(); renderPick(); renderSheet(); return; }
+  const x=e.target.closest("[data-clear]"); if(x){ setDraft(x.dataset.clear, DRAFT[x.dataset.clear]); return; }
+  const g=e.target.closest(".dslot[data-go]"); if(g) goHero(g.dataset.go);
+});
+document.getElementById("draftbar").addEventListener("keydown",e=>{
+  if((e.key==="Enter"||e.key===" ")&&e.target.matches(".dslot[data-go]")){ e.preventDefault(); goHero(e.target.dataset.go); }
+});
+document.getElementById("pickOut").addEventListener("click",e=>{
+  const go=e.target.closest(".cp-hero"); if(go){ goHero(go.dataset.go); return; }
+  if(e.target.closest("#pickMore")){ PICK_ALL=!PICK_ALL; renderPick(); return; }
+  const r=e.target.closest(".prow.can-open"); if(r){ const o=r.classList.toggle("open"); r.setAttribute("aria-expanded",o); }
+});
+document.getElementById("pickOut").addEventListener("keydown",e=>{
+  if((e.key==="Enter"||e.key===" ")&&e.target.matches(".prow.can-open")){ e.preventDefault(); e.target.click(); }
+});
+renderPick();
+renderDraftBar();
+// ---- Панель способностей внизу ----
+let SH_IDX=0;
+const sheet=document.getElementById("sheet"), track=document.getElementById("shTrack");
+function deck(){ return Object.keys(DRAFT).filter(n=>DRAFT[n]==="my"&&ABIL[n]); }
+function abilTable(n){
+  const a=ABIL[n], h=BYNAME[n];
+  const rows=[`<tr class="passive"><td class="an"><span class="tagp">Пассивка</span>${esc(a.p[0])}</td><td class="ac">—</td><td>${esc(a.p[1])}</td></tr>`]
+    .concat(a.c.map((c,i)=>`<tr class="${i===a.c.length-1?"ult":""}"><td class="an">${i===a.c.length-1?'<span class="tagu">★ Ульта</span>':""}${esc(c[0])}</td><td class="ac">${esc(c[1]||"")}</td><td>${esc(c[2])}</td></tr>`));
+  return `<div class="sh-slide"><div class="sh-inner"><p class="sh-sub">${esc(h.ru)} · ${esc(h.cls)} · <span class="tfac f-${h.fac}">${h.fac}</span>${DRAFT[n]==="my"?' · <span class="pst my">наш пик</span>':DRAFT[n]==="enemy"?' · <span class="pst enemy">у противника</span>':""}</p>
+    <table class="abil"><thead><tr><th>Способность</th><th>MP/AP</th><th>Эффект</th></tr></thead><tbody>${rows.join("")}</tbody></table></div></div>`;
+}
+function renderSheet(){
+  const d=deck();
+  if(!d.length){ sheet.hidden=true; document.body.classList.remove("has-sheet"); return; }
+  sheet.hidden=false; document.body.classList.add("has-sheet");
+  SH_IDX=Math.max(0,Math.min(SH_IDX,d.length-1));
+  track.innerHTML=d.map(abilTable).join("");
+  updSheet();
+}
+function updSheet(){
+  const d=deck(), n=d[SH_IDX], h=BYNAME[n];
+  track.style.transform=`translateX(${-SH_IDX*100}%)`;
+  document.getElementById("shTitle").innerHTML=`${esc(h.name)} <span class="cp-cls">${esc(h.cls)}</span>`;
+  document.getElementById("shDots").innerHTML=d.map((x,i)=>`<span class="sh-dot${i===SH_IDX?" on":""}${DRAFT[x]==="my"?" mine":""}"></span>`).join("");
+  document.getElementById("shPrev").disabled=SH_IDX===0;
+  document.getElementById("shNext").disabled=SH_IDX>=d.length-1;
+  [...track.children].forEach((sl,i)=>sl.setAttribute("aria-hidden",i!==SH_IDX));
+}
+function setOpen(o){ sheet.classList.toggle("collapsed",!o); document.getElementById("shToggle").setAttribute("aria-expanded",o); }
+function go(i){ const d=deck(); SH_IDX=Math.max(0,Math.min(i,d.length-1)); updSheet(); }
+document.getElementById("shPrev").addEventListener("click",()=>go(SH_IDX-1));
+document.getElementById("shNext").addEventListener("click",()=>go(SH_IDX+1));
+document.getElementById("shToggle").addEventListener("click",()=>setOpen(sheet.classList.contains("collapsed")));
+document.getElementById("shClose").addEventListener("click",()=>setOpen(sheet.classList.contains("collapsed")));
+document.addEventListener("keydown",e=>{
+  if(sheet.hidden||sheet.classList.contains("collapsed")) return;
+  if(e.target.matches("input,select,textarea")) return;
+  if(e.key==="ArrowLeft") go(SH_IDX-1); else if(e.key==="ArrowRight") go(SH_IDX+1); else if(e.key==="Escape") setOpen(false);
+});
+(()=>{ // свайп
+  const body=document.getElementById("shBody"); let x0=null,y0=null,dx=0,lock=null;
+  body.addEventListener("touchstart",e=>{ const t=e.touches[0]; x0=t.clientX; y0=t.clientY; dx=0; lock=null; },{passive:true});
+  body.addEventListener("touchmove",e=>{ if(x0===null) return; const t=e.touches[0]; const ddx=t.clientX-x0, ddy=t.clientY-y0;
+    if(lock===null && (Math.abs(ddx)>8||Math.abs(ddy)>8)) lock=Math.abs(ddx)>Math.abs(ddy)?"x":"y";
+    if(lock!=="x") return; e.preventDefault(); dx=ddx; track.classList.add("drag");
+    const w=body.clientWidth, n=deck().length, edge=(SH_IDX===0&&dx>0)||(SH_IDX===n-1&&dx<0)?0.3:1;
+    track.style.transform=`translateX(calc(${-SH_IDX*100}% + ${dx*edge}px))`; },{passive:false});
+  const end=()=>{ if(x0===null) return; track.classList.remove("drag");
+    if(lock==="x" && Math.abs(dx)>50) go(SH_IDX+(dx<0?1:-1)); else updSheet(); x0=null; };
+  body.addEventListener("touchend",end); body.addEventListener("touchcancel",end);
+})();
+renderSheet();
+// Сворачивание секций: состояние запоминается в этом браузере
+document.querySelectorAll("details.sec").forEach(d=>{
+  const k="onward-sec-"+d.id;
+  try{ if(localStorage.getItem(k)==="1") d.open=true; }catch(e){}
+  d.addEventListener("toggle",()=>{ try{ localStorage.setItem(k, d.open?"1":"0"); }catch(e){} });
+});
+</script>
+</body>
+</html>
