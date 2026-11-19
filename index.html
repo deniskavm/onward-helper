@@ -4,22 +4,35 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Onward — Лига героев</title>
+<script>try{var t=localStorage.getItem("onward-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}</script>
 <style>
   :root{
     --bg:#f6f4ef; --card:#fff; --ink:#1d1d1b; --muted:#6b6a65; --line:#e4e1d9;
     --accent:#8a3b1e; --chip:#efece5;
     --lio:#2f6f4f; --kur:#a3341f; --tau:#7a5a1e; --nup:#3d4f9a;
   }
+  :root{color-scheme:light}
+  /* тёмная тема: по системе (если не выбрана светлая) или вручную */
   @media (prefers-color-scheme: dark){
-    :root{ --bg:#181816; --card:#22221f; --ink:#ecebe6; --muted:#a3a19a; --line:#34332f;
+    :root:not([data-theme="light"]){ color-scheme:dark; --bg:#181816; --card:#22221f; --ink:#ecebe6; --muted:#a3a19a; --line:#34332f;
       --accent:#e08a5f; --chip:#2c2b27; --lio:#6cc19a; --kur:#ef7d64; --tau:#d6b06a; --nup:#8fa2ef; }
   }
+  :root[data-theme="dark"]{ color-scheme:dark; --bg:#181816; --card:#22221f; --ink:#ecebe6; --muted:#a3a19a; --line:#34332f;
+      --accent:#e08a5f; --chip:#2c2b27; --lio:#6cc19a; --kur:#ef7d64; --tau:#d6b06a; --nup:#8fa2ef; }
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);
     font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
   main{max-width:1180px;margin:0 auto;padding:28px 20px 60px}
   h1{font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
   .sub{color:var(--muted);margin:0 0 22px}
+  .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .top h1{margin:0}
+  .theme-btn{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;
+    border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;flex:0 0 auto}
+  .theme-btn:hover{border-color:var(--accent)}
+  .th-ic{width:14px;height:14px;border-radius:50%;border:2px solid currentColor;background:linear-gradient(90deg,currentColor 50%,transparent 50%)}
+  .theme-btn[data-mode="dark"] .th-ic{background:currentColor;box-shadow:inset 4px -3px 0 0 var(--card)}
+  .theme-btn[data-mode="light"] .th-ic{background:transparent;box-shadow:0 0 0 2px var(--card),0 0 0 3px currentColor}
   h2{font-size:17px;margin:28px 0 10px}
   .card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden}
   table{width:100%;border-collapse:collapse}
@@ -109,6 +122,32 @@
     .ref-terms{grid-template-columns:1fr;padding:4px 12px}
     .ref-terms > div:nth-child(2){border-top:1px solid var(--line)}
   }
+  .ic-r{color:#b3402a} .ic-y{color:#a07a12} .ic-b{color:#2f5fa8} .ic-g{color:#2f7a4f}
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .ic-r{color:#ef8a6f} :root:not([data-theme="light"]) .ic-y{color:#e3c15f} :root:not([data-theme="light"]) .ic-b{color:#8fb0ef} :root:not([data-theme="light"]) .ic-g{color:#7fcf9f} }
+  :root[data-theme="dark"] .ic-r{color:#ef8a6f} :root[data-theme="dark"] .ic-y{color:#e3c15f} :root[data-theme="dark"] .ic-b{color:#8fb0ef} :root[data-theme="dark"] .ic-g{color:#7fcf9f}
+  .it-adv{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 14px;margin-bottom:10px}
+  .it-adv > summary{cursor:pointer;font-weight:600;font-size:14.5px}
+  .it-adv ul{margin:8px 0 2px;padding-left:18px;font-size:14px;line-height:1.5}
+  .it-adv li{margin:4px 0}
+  .it-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+  .it-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:8px;align-items:start}
+  .it{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:8px;padding:8px 11px}
+  .it.c-r{border-left-color:#b3402a} .it.c-y{border-left-color:#c9a227} .it.c-b{border-left-color:#2f5fa8} .it.c-g{border-left-color:#2f7a4f}
+  .it-h{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+  .it-h b{font-size:15px}
+  .it-rar{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+  .it-cost{margin-left:auto;font-weight:700;font-size:13px;white-space:nowrap}
+  .it-e{font-size:14px;line-height:1.45;margin:4px 0 2px}
+  .it details{margin-top:4px}
+  .it details > summary{cursor:pointer;font-size:12.5px;color:var(--muted);list-style:none;display:flex;gap:6px;align-items:center}
+  .it details > summary::-webkit-details-marker{display:none}
+  .it details > summary::before{content:"";width:5px;height:5px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s}
+  .it details[open] > summary::before{transform:rotate(45deg)}
+  .it-t{font-size:13.5px;line-height:1.45;color:var(--muted);margin:4px 0 2px}
+  .it-t .cp-hero{font-weight:600}
+  .dtag{font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;white-space:nowrap}
+  .dtag.yes{background:var(--lio);color:#fff} .dtag.some{background:#c9a227;color:#fff} .dtag.no{background:var(--chip);color:var(--muted)}
+  @media (max-width:760px){ .it-list{grid-template-columns:1fr} }
   .faq-bar{display:flex;align-items:center;gap:10px;margin:0 0 8px}
   .faq{display:grid;gap:10px}
   .faq-sec{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
@@ -123,6 +162,9 @@
   .faq-q > summary:hover{color:var(--accent)}
   .faq-a{padding:0 0 10px 18px;font-size:14px;line-height:1.5;color:var(--ink)}
   .faq-a a,.sub a{color:var(--accent)}
+  mark{background:color-mix(in srgb,#e3b341 45%,transparent);color:inherit;border-radius:3px;padding:0 1px}
+  .hitln{display:block;font-size:12.5px;color:var(--accent);margin-top:3px;line-height:1.35}
+  .ab-list li.ab-hit{background:color-mix(in srgb,#e3b341 12%,transparent);margin:0 -6px;padding-left:6px;padding-right:6px;border-radius:6px}
   .tfac{font-weight:600;white-space:nowrap}
   @media (min-width:761px){ #heroes .c-name{width:300px} }
   .rng{display:inline-flex;align-items:center;color:var(--accent)}
@@ -281,6 +323,36 @@
   .pk-empty{color:var(--muted);font-size:14px;grid-column:1/-1;padding:8px 2px}
   @media (max-width:760px){ .pk-wrap{align-items:flex-end;padding:0} .pk{border-radius:14px 14px 0 0;max-height:82vh;width:100%;padding-bottom:calc(14px + env(safe-area-inset-bottom))}
     .pk-list{grid-template-columns:repeat(2,minmax(0,1fr))} }
+  .dset{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:0 0 10px;font-size:13.5px;color:var(--muted)}
+  .dset-i{display:inline-flex;align-items:center;gap:6px}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{font:inherit;font-size:13px;padding:4px 10px;border:none;background:var(--card);color:var(--ink);cursor:pointer}
+  .seg button + button{border-left:1px solid var(--line)}
+  .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+  .dset .sw{font-size:13.5px;color:var(--ink)}
+  .tm{font-weight:700} .tm.D{color:#6a54a8} .tm.L{color:#a8801f}
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .tm.D{color:#b8a6f0} :root:not([data-theme="light"]) .tm.L{color:#e3c15f} }
+  :root[data-theme="dark"] .tm.D{color:#b8a6f0} :root[data-theme="dark"] .tm.L{color:#e3c15f}
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .ost.D{color:#b8a6f0} :root:not([data-theme="light"]) .ost.L{color:#e3c15f} }
+  :root[data-theme="dark"] .ost.D{color:#b8a6f0} :root[data-theme="dark"] .ost.L{color:#e3c15f}
+  .dgroup-h .tm{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+  .dord{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:8px 12px;margin:0 0 10px}
+  .dord.fin{border-left-color:var(--lio)}
+  .dord-h{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);font-weight:600}
+  .dord-n{text-transform:none;letter-spacing:0}
+  .dord-now{font-size:15px;font-weight:600;margin:3px 0 1px}
+  .dord-next{font-size:13px;color:var(--muted)}
+  .dord-dots{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}
+  .ost{width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
+    border:1.5px solid currentColor;opacity:.45}
+  .ost.D{color:#6a54a8} .ost.L{color:#a8801f}
+  .ost.ban{border-style:dashed}
+  .ost.done{opacity:1;background:var(--chip);color:var(--muted);border-color:var(--line)}
+  .ost.cur{opacity:1;box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--accent)}
+  .dord-note{font-size:12px;color:var(--muted);margin-top:6px}
+  .dgroup.active{position:relative}
+  .dnow{font-size:11px;font-weight:700;color:#fff;background:var(--accent);border-radius:999px;padding:1px 7px}
+  .dgroup.active .dslot.empty{border-color:var(--accent);color:var(--accent);border-style:dashed;background:color-mix(in srgb,var(--accent) 6%,transparent)}
   .dhint{font-size:12.5px;color:var(--muted);margin:0}
   @media (max-width:420px){ .dslots{gap:5px} .dnm{font-size:13px;padding-right:12px} .dcl{font-size:11px;gap:2px} .dcl .rng svg{width:13px;height:13px} .dslot{padding:5px 4px 5px 7px} .dx{width:15px;height:15px;line-height:15px;font-size:13px;top:2px;right:1px} }
   .ds{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
@@ -363,10 +435,13 @@
 </head>
 <body>
 <main>
-  <h1>Onward — Лига героев</h1>
+  <header class="top"><h1>Onward — Лига героев</h1>
+    <button type="button" class="theme-btn" id="themeBtn" aria-label="Тема оформления"><span class="th-ic" aria-hidden="true"></span><span id="themeLbl">Авто</span></button></header>
 
 <section class="sec-static" id="sec-draft">
   <h2>Драфт</h2>
+  <div class="dset" id="dset"></div>
+  <div id="dorder"></div>
   <div id="draftbar" class="dpanel"></div>
 </section>
 
@@ -378,7 +453,7 @@
     <a href="#" class="flink" id="reset">Сбросить</a>
   </div>
   <div class="controls" id="fbody">
-    <input type="search" id="q" placeholder="Поиск по имени или описанию…">
+    <input type="search" id="q" placeholder="Поиск по имени, описанию и способностям…">
     <select id="fCls"><option value="">Все классы</option></select>
     <select id="fRng"><option value="">Любой бой</option><option value="БД">⚔ Меч — ближний</option><option value="ДБ">🏹 Лук — дальний</option></select>
     <select id="fDraft"><option value="">Любой статус</option><option value="free">Свободные</option><option value="my">Мои пики</option><option value="enemy">Пики противника</option><option value="ban">Баны</option></select>
@@ -420,24 +495,39 @@
       <tbody id="classes"></tbody>
     </table>
   </div>
+  <p class="note">Класс указан рядом с именем на планшете героя, отдельных правил у классов нет. Цвет ленты на планшете — специализация героя:
+  красные наносят много урона, синие сильны в обороне и живучи, зелёные используют импульс и миньонов, жёлтые — скорость и разнообразие (правила, с. 16).</p>
   </details>
 
 <details class="sec" id="sec-statuses">
   <summary><h2>Статусы</h2><span class="hint"></span></summary>
-  <p class="sub" style="margin-bottom:10px">Статусы бывают только у героев: не больше одного каждого вида, то есть до пяти одновременно. Все статусы снимаются, когда герой заканчивает ход (действием «Пас») или погибает.</p>
+  <p class="sub" style="margin-bottom:10px">Когда герой заканчивает ход или побеждён, уберите все его статусы. Статусы бывают только у героев, не больше одного каждого вида (правила, с. 20).</p>
   <div class="card">
     <table class="cls">
       <thead><tr><th>Статус</th><th>Эффект</th></tr></thead>
       <tbody>
-        <tr><td>Ожог</td><td>После того как герой полностью разыграет атаку или заклинание, он получает 1 пробивающий урон. Срабатывает и на «атаки» и «заклинания» с карт заклинаний.</td></tr>
-        <tr><td>Обезоруживание</td><td>Герой не открывает и не сбрасывает карты атаки. Его атаки идут с базовой силой 1 и игнорируют все бонусы к силе.</td></tr>
-        <tr><td>Заморозка</td><td>Чтобы объявить перемещение, герой тратит на 1 MP больше. Не действует, если наложена после объявления перемещения, и на бесплатные перемещения от заклинаний.</td></tr>
-        <tr><td>Немота</td><td>Отключает способность с листа героя и все прикреплённые к нему дружественные заклинания, включая временные, отложенные и срабатывающие эффекты от них.</td></tr>
+        <tr><td>Безоружность</td><td>Не открывайте / сбрасывайте карты атаки. Базовая сила ваших атак равна 1. Игнорируйте все положительные модификаторы силы.</td></tr>
+        <tr><td>Горение</td><td>Нанесите 1 бронебойный урон герою, после того как он полностью разыграет действие атаки или заклинания.</td></tr>
+        <tr><td>Заморозка</td><td>Герой должен тратить на 1 дополнительное ОП больше, чтобы объявить перемещение. Если герой заморожен после объявления действия, перед его розыгрышем заморозка не работает. Также она не действует на свободные перемещения по заклинаниям.</td></tr>
+        <tr><td>Молчание</td><td>Отмените свойство с планшета героя и со всех дружественных карт заклинаний, прикреплённых к нему. Также отмените любые временные (например, «до конца раунда»), отложенные («в конце раунда») или активируемые («когда») эффекты дружественных заклинаний.</td></tr>
         <tr><td>Оглушение</td><td>У героя −2 к инициативе.</td></tr>
       </tbody>
     </table>
   </div>
   </details>
+
+<details class="sec" id="sec-items">
+  <summary><h2>Предметы</h2><span class="hint"></span></summary>
+  <p class="sub" style="margin-bottom:8px">Цвет ленты — предназначение: <b class="ic-r">красный</b> — урон, <b class="ic-y">жёлтый</b> — скорость, <b class="ic-b">синий</b> — защита, <b class="ic-g">зелёный</b> — контроль пути.
+  Обычные предметы встречаются в нескольких экземплярах, уникальные — в одном. На рынке видны только верхние карты стопок, у героя может быть не больше одного предмета каждого цвета (правила, с. 4 и 6).
+  Комментарии о влиянии на драфт — из разбора пользователя BoardGameGeek <a class="flink" style="margin:0" href="https://boardgamegeek.com/profile/LordTengil">LordTengil</a>.</p>
+  <details class="it-adv"><summary>Общие советы автора по драфту</summary><ul id="itAdvice"></ul></details>
+  <div class="it-bar">
+    <div class="pk-cls" id="itCol"></div>
+    <label class="sw"><input type="checkbox" id="itDraft"><span class="sw-t" aria-hidden="true"></span>Только влияющие на драфт</label>
+  </div>
+  <div class="it-list" id="itList"></div>
+</details>
 
 <details class="sec" id="sec-ref">
   <summary><h2>Справочник</h2><span class="hint"></span></summary>
@@ -491,76 +581,76 @@
   <div class="faq-bar"><span class="count">40 вопросов</span><a href="#" class="flink" id="faqAll">Развернуть все</a></div>
   <div class="faq">
     <div class="faq-sec"><h3>Статусы</h3>
-      <h4>Ожог</h4>
-      <details class="faq-q"><summary>Когда наносится урон от Ожога?</summary><div class="faq-a">После завершения атаки. Поэтому лечение, которое срабатывает при нанесении урона, происходит раньше — в том числе лечение при повышении уровня героя.</div></details>
-      <details class="faq-q"><summary>Срабатывает ли Ожог от бесплатной атаки или бесплатного розыгрыша заклинания?</summary><div class="faq-a">Да.</div></details>
-      <h4>Немота</h4>
-      <details class="faq-q"><summary>Может ли герой под Немотой разыгрывать заклинания? Сработают ли они?</summary><div class="faq-a">Да, может. Большинство заклинаний Немота не затрагивает, и они срабатывают полностью. Проще говоря: если заклинание сработало и о нём больше не нужно помнить, Немота на него не влияет. Если же оно даёт эффект, который нужно отслеживать после розыгрыша, этот эффект Немота отключает. Исключение — заклинания, которые откладывают фазу миньонов: это эффект не на героя, поэтому эту часть заклинания Немота не отменяет. (<a href="https://discord.com/channels/481825900275695616/1245381859073065073/1442889636857905194">ссылка на обсуждение в Discord</a>)</div></details>
+      <h4>Горение</h4>
+      <details class="faq-q"><summary>Когда наносится урон от Горения?</summary><div class="faq-a">После завершения атаки. Поэтому лечение, которое срабатывает при нанесении урона, происходит раньше — в том числе лечение при повышении уровня героя.</div></details>
+      <details class="faq-q"><summary>Срабатывает ли Горение от бесплатной атаки или бесплатного розыгрыша заклинания?</summary><div class="faq-a">Да.</div></details>
+      <h4>Молчание</h4>
+      <details class="faq-q"><summary>Может ли герой под Молчанием разыгрывать заклинания? Сработают ли они?</summary><div class="faq-a">Да, может. Большинство заклинаний Молчание не затрагивает, и они срабатывают полностью. Проще говоря: если заклинание сработало и о нём больше не нужно помнить, Молчание на него не влияет. Если же оно даёт эффект, который нужно отслеживать после розыгрыша, этот эффект Молчание отключает. Исключение — заклинания, которые откладывают фазу миньонов: это эффект не на героя, поэтому эту часть заклинания Молчание не отменяет. (<a href="https://discord.com/channels/481825900275695616/1245381859073065073/1442889636857905194">ссылка на обсуждение в Discord</a>)</div></details>
       <h4>Стойкость</h4>
-      <details class="faq-q"><summary>Что, если у юнита есть и Стойкость, и Броня?</summary><div class="faq-a">Броня работает с уроном, Стойкость — с потерей HP. Сначала броня уменьшает урон, а затем, если урон всё ещё больше 1, Стойкость позволяет потерять только 1 HP.</div></details>
+      <details class="faq-q"><summary>Что, если у бойца есть и Стойкость, и Броня?</summary><div class="faq-a">Броня работает с уроном, Стойкость — с потерей ОЗ. Сначала броня уменьшает урон, а затем, если урон всё ещё больше 1, Стойкость позволяет потерять только 1 ОЗ.</div></details>
     </div>
     <div class="faq-sec"><h3>Юниты</h3>
       <h4>Миньоны</h4>
-      <details class="faq-q"><summary>Заходят ли миньоны когда-нибудь в зону нексуса?</summary><div class="faq-a">Нет.</div></details>
-      <details class="faq-q"><summary>Сколько миньонов погибает от Ответного удара нексуса? Зависит ли это от нанесённого урона?</summary><div class="faq-a">Один. Сколько бы натиска ни потратили, урон осады наносится одним разом, поэтому от Ответного удара погибает один миньон.</div></details>
+      <details class="faq-q"><summary>Заходят ли миньоны когда-нибудь на участок портала?</summary><div class="faq-a">Нет.</div></details>
+      <details class="faq-q"><summary>Сколько миньонов погибает от Ответного удара портала? Зависит ли это от нанесённого урона?</summary><div class="faq-a">Один. Сколько бы импульса ни потратили, урон осады наносится одним разом, поэтому от Ответного удара погибает один миньон.</div></details>
       <h4>Герои</h4>
-      <details class="faq-q"><summary>Должен ли герой ближнего боя стоять в зоне нексуса, чтобы атаковать нексус?</summary><div class="faq-a">Да.</div></details>
+      <details class="faq-q"><summary>Должен ли герой ближнего боя стоять на участке портала, чтобы атаковать портал?</summary><div class="faq-a">Да.</div></details>
       <h4>Vorhild</h4>
-      <details class="faq-q"><summary>Как работает её способность Icy Shade и чем от неё отличается улучшенная Frozen Shade?</summary><div class="faq-a">Атакой она поражает один юнит в 1 или 2 зонах от себя. После повышения уровня её атаки ещё и накладывают Заморозку, а поскольку дальность становится «в пределах 2», она может бить и по своей зоне.</div></details>
-      <details class="faq-q"><summary>Можно ли разыграть The Ermine’s Eye в ход союзного героя?</summary><div class="faq-a">Да, за дополнительную стоимость 0 AP.</div></details>
-      <details class="faq-q"><summary>Какая у неё дальность атаки с Lightning Naginata?</summary><div class="faq-a">Vorhild может атаковать героев в своей зоне, в соседних зонах и врагов ровно в 2 зонах. Нагината не ограничивает способность с её листа. Оглушение срабатывает на все её атаки, даже на 2 зоны.</div></details>
+      <details class="faq-q"><summary>Как работает её способность Icy Shade и чем от неё отличается улучшенная Frozen Shade?</summary><div class="faq-a">Атакой она поражает один боец в 1 или 2 участках от себя. После повышения уровня её атаки ещё и накладывают Заморозку, а поскольку дальность становится «в пределах 2», она может бить и по своему участку.</div></details>
+      <details class="faq-q"><summary>Можно ли разыграть The Ermine’s Eye в ход союзного героя?</summary><div class="faq-a">Да, за дополнительную стоимость 0 ОА.</div></details>
+      <details class="faq-q"><summary>Какая у неё дальность атаки с Lightning Naginata?</summary><div class="faq-a">Vorhild может атаковать героев на своём участке, на соседних участках и врагов ровно в 2 участках. Нагината не ограничивает способность с её листа. Оглушение срабатывает на все её атаки, даже на 2 участка.</div></details>
       <h4>Nelaclen</h4>
-      <details class="faq-q"><summary>Способности каких героев может копировать Eldritch Consultation?</summary><div class="faq-a">Любого героя: готового, истощённого или возрождающегося, на поле или вне его. У аутсайдера способности нет.</div></details>
+      <details class="faq-q"><summary>Способности каких героев может копировать Eldritch Consultation?</summary><div class="faq-a">Любого героя: готового, истощённого или возрождающегося, на поле или вне его. У отродья способности нет.</div></details>
       <h4>Shaidrus</h4>
-      <details class="faq-q"><summary>Нужно ли Шайдрусу из-за Last Protector открывать карты, чтобы атаковать врагов с 1–2 HP?</summary><div class="faq-a">Да. Из-за −2 к силе открытая «2» не победит врага, поэтому такой враг не считается слабым.</div></details>
+      <details class="faq-q"><summary>Нужно ли Шайдрусу из-за Last Protector открывать карты, чтобы атаковать врагов с 1–2 ОЗ?</summary><div class="faq-a">Да. Из-за −2 к силе открытая «2» не победит врага, поэтому такой враг не считается слабым.</div></details>
       <h4>Akhuti</h4>
       <details class="faq-q"><summary>Может ли Silence Ray остановить уже разыгранное заклинание?</summary><div class="faq-a">Нет.</div></details>
       <h4>Монстры</h4>
-      <details class="faq-q"><summary>Можно ли выбрать целью несколько монстров в одной зоне или поразить их одной атакой?</summary><div class="faq-a">Нет. В стопке одновременно существует только один монстр, и целью можно выбрать только его.</div></details>
+      <details class="faq-q"><summary>Можно ли выбрать целью несколько монстров на одном участке или поразить их одной атакой?</summary><div class="faq-a">Нет. В стопке одновременно существует только один монстр, и целью можно выбрать только его.</div></details>
       <h4>Башни</h4>
       <details class="faq-q"><summary>Нужно ли уничтожать башни в определённом порядке?</summary><div class="faq-a">Нет.</div></details>
-      <details class="faq-q"><summary>Можно ли первой атаковать башню, ближайшую к нексусу?</summary><div class="faq-a">Да.</div></details>
-      <details class="faq-q"><summary>Нужно ли уничтожить все башни, чтобы атаковать нексус?</summary><div class="faq-a">Нет.</div></details>
-      <details class="faq-q"><summary>Можно ли войти в зону с башней, не пересекая границу, на которой она стоит?</summary><div class="faq-a">Да. Барьер запрещает пересекать только конкретную границу, но не закрывает доступ в зону другими путями.</div></details>
-      <details class="faq-q"><summary>Почему так? В MOBA-играх башни работают иначе.</summary><div class="faq-a">Такие вопросы понятны: в видеоиграх эти ограничения есть. В Onward их нет, чтобы не добавлять лишних правил. Это открывает более творческие ходы, но механика миньонов устроена так, что линии обычно продавливаются привычным образом.</div></details>
-      <h4>Аутсайдер</h4>
-      <details class="faq-q"><summary>Что происходит, когда аутсайдера приручают?</summary><div class="faq-a">Он переходит в вашу команду и становится одновременно героем и аутсайдером. Всё, что действует на аутсайдера, действует и на прирученного, а всё, что действует на героев, теперь тоже действует на него. Вы планируете и делаете им ход, как любым другим героем, — то есть у вас будет на один ход героя больше, чем у противника. На прирученного аутсайдера можно надеть предметы, если осталось золото.</div></details>
-      <details class="faq-q"><summary>Аутсайдер кажется слишком сильным — его хорошо протестировали?</summary><div class="faq-a">Да, и ещё раз да. Аутсайдер задуман как фактическое условие победы. Осторожнее с уничтожением его третьей руки или головы: приручить его может и противник.</div></details>
+      <details class="faq-q"><summary>Можно ли первой атаковать башню, ближайшую к порталу?</summary><div class="faq-a">Да.</div></details>
+      <details class="faq-q"><summary>Нужно ли уничтожить все башни, чтобы атаковать портал?</summary><div class="faq-a">Нет.</div></details>
+      <details class="faq-q"><summary>Можно ли войти на участок с башней, не пересекая границу, на которой она стоит?</summary><div class="faq-a">Да. Преграда запрещает пересекать только конкретную границу, но не закрывает доступ на участок другими путями.</div></details>
+      <details class="faq-q"><summary>Почему так? В MOBA-играх башни работают иначе.</summary><div class="faq-a">Такие вопросы понятны: в видеоиграх эти ограничения есть. В Onward их нет, чтобы не добавлять лишних правил. Это открывает более творческие ходы, но механика миньонов устроена так, что пути обычно продавливаются привычным образом.</div></details>
+      <h4>Отродье</h4>
+      <details class="faq-q"><summary>Что происходит, когда отродье приручают?</summary><div class="faq-a">Оно переходит в вашу команду и становится одновременно героем и отродьем. Всё, что действует на отродье, действует и на приручённое, а всё, что действует на героев, теперь тоже действует на него. Вы планируете и делаете им ход, как любым другим героем, — то есть у вас будет на один ход героя больше, чем у противника. На приручённое отродье можно надеть предметы, если осталось золото.</div></details>
+      <details class="faq-q"><summary>Отродье кажется слишком сильным — его хорошо протестировали?</summary><div class="faq-a">Да, и ещё раз да. Отродье задумано как фактическое условие победы. Осторожнее с уничтожением его третьей руки или головы: приручить его может и противник.</div></details>
     </div>
     <div class="faq-sec"><h3>Термины</h3>
       <h4>Ответный удар</h4>
       <details class="faq-q"><summary>Срабатывает ли Ответный удар, если цель не потеряла здоровье?</summary><div class="faq-a">Да. Даже если урон предотвращён, он всё равно был нанесён.</div></details>
-      <h4>Барьер</h4>
-      <details class="faq-q"><summary>Мешает ли Барьер врагам входить в зону с башней?</summary><div class="faq-a">Нет. Барьер запрещает только перемещаться или вести счёт зон через границу, на которой стоит башня.</div></details>
-      <details class="faq-q"><summary>Мешает ли Барьер выбирать цели?</summary><div class="faq-a">Не напрямую, но через границу с башней нельзя считать зоны. Если до юнита можно досчитать только через эту границу, выбрать его целью нельзя.</div></details>
-      <details class="faq-q"><summary>Можно ли считать зоны в обход Барьера?</summary><div class="faq-a">Да.</div></details>
+      <h4>Преграда</h4>
+      <details class="faq-q"><summary>Мешает ли Преграда врагам входить на участок с башней?</summary><div class="faq-a">Нет. Преграда запрещает только перемещаться или вести счёт участков через границу, на которой стоит башня.</div></details>
+      <details class="faq-q"><summary>Мешает ли Преграда выбирать цели?</summary><div class="faq-a">Не напрямую, но через границу с башней нельзя считать участки. Если до бойца можно досчитать только через эту границу, выбрать его целью нельзя.</div></details>
+      <details class="faq-q"><summary>Можно ли считать участки в обход Преграды?</summary><div class="faq-a">Да.</div></details>
       <h4>Цель</h4>
       <details class="faq-q"><summary>На моей карте нет символа мишени ◎. Это опечатка?</summary><div class="faq-a">Нет. Если на заклинании нет символа мишени, ему не нужно соблюдать правила выбора целей.</div></details>
-      <details class="faq-q"><summary>Можно ли при достаточной дальности выбрать целью зону за лесом?</summary><div class="faq-a">Да. Правило леса запрещает только выбирать целью юнитов, которые находятся в лесу.</div></details>
+      <details class="faq-q"><summary>Можно ли при достаточной дальности выбрать целью участок за джунглями?</summary><div class="faq-a">Да. Правило джунглей запрещает только выбирать целью бойцов, которые находятся в джунглях.</div></details>
       <h4>В пределах X</h4>
-      <details class="faq-q"><summary>Можно ещё пример подсчёта зон?</summary><div class="faq-a">В документе сообщества здесь схема с примером подсчёта зон — её можно посмотреть в <a href="https://docs.google.com/document/d/1mPRMGgT7OkKzkOduW1jc7jqk1hoP9pt1MaPk_NFteGY/edit?tab=t.0">официальных уточнениях правил</a> или в исходном FAQ.</div></details>
+      <details class="faq-q"><summary>Можно ещё пример подсчёта участков?</summary><div class="faq-a">В документе сообщества здесь схема с примером подсчёта участков — её можно посмотреть в <a href="https://docs.google.com/document/d/1mPRMGgT7OkKzkOduW1jc7jqk1hoP9pt1MaPk_NFteGY/edit?tab=t.0">официальных уточнениях правил</a> или в исходном FAQ.</div></details>
       <h4>Ход</h4>
       <details class="faq-q"><summary>Почему некоторые карты и предметы действуют только «во время хода»?</summary><div class="faq-a">Чтобы не нарушать фазу миньонов и их действие «Штурм», большинство эффектов не останавливают урон от миньонов. Броня без указанного окна времени или источника урона блокирует и урон при штурме миньонов.</div></details>
       <h4>Возрождение</h4>
-      <details class="faq-q"><summary>Когда герои возрождаются и что значит «возрождение» в Onward?</summary><div class="faq-a">Побеждённые герои возвращаются в игру. Когда ранее побеждённый герой становится готовым, им можно планировать. При планировании его ставят в зону нексуса своей команды. «Возрождающийся» — это герой, чей лист перевёрнут вверх ногами. Так бывает, только если побеждён истощённый герой или герой, который сейчас активен.</div></details>
-      <h4>HP</h4>
-      <details class="faq-q"><summary>Что значит «потерять HP»?</summary><div class="faq-a">Это уменьшить здоровье на некоторое значение. Когда итоговый урон от атаки или другого источника определён, вы теряете столько HP. Если эффект прямо велит «потерять HP», броня такую потерю не уменьшает.</div></details>
+      <details class="faq-q"><summary>Когда герои возрождаются и что значит «возрождение» в Onward?</summary><div class="faq-a">Побеждённые герои возвращаются в игру. Когда ранее побеждённый герой становится готовым, им можно планировать. При планировании его ставят на участок портала своей команды. «Возрождающийся» — это герой, чей лист перевёрнут вверх ногами. Так бывает, только если побеждён истощённый герой или герой, который сейчас активен.</div></details>
+      <h4>ОЗ</h4>
+      <details class="faq-q"><summary>Что значит «потерять ОЗ»?</summary><div class="faq-a">Это уменьшить здоровье на некоторое значение. Когда итоговый урон от атаки или другого источника определён, вы теряете столько ОЗ. Если эффект прямо велит «потерять ОЗ», броня такую потерю не уменьшает.</div></details>
     </div>
     <div class="faq-sec"><h3>Действия</h3>
       <h4>Заклинания и розыгрыш</h4>
-      <details class="faq-q"><summary>Можно ли объявить реактивный розыгрыш в ответ на розыгрыш в фазе покупок?</summary><div class="faq-a">Да.</div></details>
-      <details class="faq-q"><summary>Можно ли разыграть реактивное заклинание обычным действием розыгрыша?</summary><div class="faq-a">Да.</div></details>
-      <details class="faq-q"><summary>Может ли неактивный герой разыграть заклинание с дополнительной стоимостью в MP или AP?</summary><div class="faq-a">Фактически нет, технически да. Если герой получил MP или AP не от карты плана, он может потратить их на заклинания. Но так может только Nelaclen, и для этого ему нужно разыграть заклинания нескольких героев. У The Ermine’s Eye героини Vorhild тоже есть стоимость в AP, но вне её хода его можно разыграть за 0 AP.</div></details>
-      <details class="faq-q"><summary>Можно ли реактивно разыграть заклинание в ответ на действие «Пас»?</summary><div class="faq-a">Да. Это действие, и его нужно объявить, прежде чем оно будет выполнено.</div></details>
+      <details class="faq-q"><summary>Можно ли объявить встречное заклинание в ответ на розыгрыш в фазе покупки?</summary><div class="faq-a">Да.</div></details>
+      <details class="faq-q"><summary>Можно ли разыграть заклинание как встречное обычным действием розыгрыша?</summary><div class="faq-a">Да.</div></details>
+      <details class="faq-q"><summary>Может ли неактивный герой разыграть заклинание с дополнительной стоимостью в ОП или ОА?</summary><div class="faq-a">Фактически нет, технически да. Если герой получил ОП или ОА не от плана, он может потратить их на заклинания. Но так может только Nelaclen, и для этого ему нужно разыграть заклинания нескольких героев. У The Ermine’s Eye героини Vorhild тоже есть стоимость в ОА, но вне её хода его можно разыграть за 0 ОА.</div></details>
+      <details class="faq-q"><summary>Можно ли разыграть встречное заклинание в ответ на действие «Пас»?</summary><div class="faq-a">Да. Это действие, и его нужно объявить, прежде чем оно будет выполнено.</div></details>
       <h4>Перемещение</h4>
-      <details class="faq-q"><summary>Выбирается ли зона перемещения целью?</summary><div class="faq-a">Нет: выбор зоны — это не выбор цели. Герой всегда перемещается в выбранную зону. Даже если в ответ на объявление перемещения разыграли заклинания, герой затем всё равно переместится туда. Заклинания смещения не мешают дойти до выбранной зоны. Герой может даже уйти из неё рывком — перемещение всё равно завершится в изначально выбранной зоне.</div></details>
+      <details class="faq-q"><summary>Выбирается ли участок перемещения целью?</summary><div class="faq-a">Нет: выбор участка — это не выбор цели. Герой всегда перемещается на выбранный участок. Даже если в ответ на объявление перемещения разыграли заклинания, герой затем всё равно переместится туда. Заклинания вытеснения не мешают дойти до выбранного участка. Герой может даже уйти из неё рывком — перемещение всё равно завершится на изначально выбранном участке.</div></details>
       <h4>Атака</h4>
-      <details class="faq-q"><summary>Если герой может поразить несколько врагов, могут ли они быть в разных зонах?</summary><div class="faq-a">Да. Достаточно, чтобы для каждой цели соблюдались ограничения выбора целей; положение целей друг относительно друга неважно.</div></details>
+      <details class="faq-q"><summary>Если герой может поразить несколько врагов, могут ли они быть на разных участках?</summary><div class="faq-a">Да. Достаточно, чтобы для каждой цели соблюдались ограничения выбора целей; положение целей друг относительно друга неважно.</div></details>
       <details class="faq-q"><summary>В каком порядке применяются эффекты, добавленные к атаке (например, от Reptile String)?</summary><div class="faq-a">Если время не указано, эффекты применяются после нанесения урона.</div></details>
     </div>
     <div class="faq-sec"><h3>Прочее</h3>
-      <details class="faq-q"><summary>Когда я получу свою ульту?</summary><div class="faq-a">Каждую фазу плана вы берёте 2 карты и сбрасываете открытые карты при атаках по неслабым врагам, поэтому колода неизбежно закончится и сброс перемешается в новую колоду. Тогда в ней окажутся ульты, и их можно будет взять или открыть при атаке (это атака силой 4!).</div></details>
-      <details class="faq-q"><summary>Может ли герой «застрять» во вражеском нексусе или между двумя стенами на центральной линии?</summary><div class="faq-a">Да, такое возможно. Помните об этом и не попадайтесь!</div></details>
+      <details class="faq-q"><summary>Когда я получу своё коронное заклинание?</summary><div class="faq-a">Каждую фазу планирования вы берёте 2 карты и сбрасываете открытые карты при атаках по неслабым врагам, поэтому колода неизбежно закончится и сброс перемешается в новую колоду. Тогда в ней окажутся коронные заклинания, и их можно будет взять или открыть при атаке (это атака силой 4!).</div></details>
+      <details class="faq-q"><summary>Может ли герой «застрять» во вражеском портале или между двумя стенами на центральном пути?</summary><div class="faq-a">Да, такое возможно. Помните об этом и не попадайтесь!</div></details>
     </div>
   </div>
 </details>
@@ -589,48 +679,48 @@
 
 <script>
 const CLASSES = [
-  ["Убийца (Slayer)","Перехватывает инициативу, может убить вражеского героя одной атакой"],
-  ["Стрелок (Marksman)","Урон с дистанции, особенно после повышения уровня и красных предметов"],
-  ["Танк (Tank)","Защищает союзников, сбивает атаки и движение врагов"],
-  ["Контроллер (Controller)","Накладывает негативные статусы, лечит союзников"],
-  ["Маг (Mage)","Зачищает волны миньонов заклинаниями по области"],
-  ["Лайнер (Laner)","Продавливает линию к нексусу врага, поддерживает миньонов"],
-  ["Лесник (Jungler)","Быстрее всех копит золото, действует вне своего хода"],
-  ["Воин (Warrior)","Силён в командных боях: смещает и сбивает врагов, самый универсальный"]
+  ["Крушитель (Slayer)","Перехватывают инициативу и могут за одну атаку расправиться с вражеским героем."],
+  ["Стрелок (Marksman)","Непобедимые бойцы на большой дальности, особенно когда повысят уровень или снарядятся предметами для усиления урона (красными)."],
+  ["Защитник (Tank)","Помогают дружественным героям, заслоняя их собой или прерывая атаки или перемещение врагов."],
+  ["Мистик (Controller)","Влияют на поле боя, накладывая негативные статусы и исцеляя дружественных героев."],
+  ["Маг (Mage)","Лучше всех уничтожают целые волны миньонов своими заклинаниями."],
+  ["Штурмовик (Laner)","Как никто другой, расчищают пути к вражескому порталу, а ещё призывают и поддерживают миньонов."],
+  ["Охотник (Jungler)","Истребляют монстров и гребут золото быстрее всех, но ещё выполняют действия вне хода… Причём неожиданно!"],
+  ["Воин (Warrior)","Хороши в командных битвах, нарушении вражеского строя. Это самый сбалансированный класс."]
 ];
 // name, ru, title, faction, class, range, description
 const H = [
- ["Achla","Ачла","Одинокий ловчий","Таулот","Стрелок","ДБ","Отравленные ловушки: враг рядом теряет +1 HP при любом уроне, в том числе от союзников; мастер засад"],
- ["Akhuti","Ахути","Сияющий голос","Нуптен","Контроллер","ДБ","Враг, вошедший в соседнюю зону, получает НЕМОТУ и ЗАМОРОЗКУ — жёсткий контроль территории"],
- ["Akimo","Акимо","Клинок Вечного короля","Курумо","Убийца","БД","Сам себя поджигает ради +3 силы (+5 после уровня); ульта удваивает силу против отмеченного героя"],
- ["Astryda","Астрида","Голос глубин","Лиотан","Лайнер","ДБ","Убив миньона, может за 1 HP поставить своего миньона в спорную зону; сильный контроль линии"],
- ["Brylvar","Брюлвар","Неустрашимый защитник","Лиотан","Танк","БД","Союзные герои рядом получают +1 брони (+2 после уровня) — аура для командных драк"],
+ ["Achla","Ачла","Одинокий ловчий","Таулот","Стрелок","ДБ","Отравленные ловушки: враг рядом теряет +1 ОЗ при любом уроне, в том числе от союзников; мастер засад"],
+ ["Akhuti","Ахути","Сияющий голос","Нуптен","Мистик","ДБ","Враг, вошедший на соседний участок, получает МОЛЧАНИЕ и ЗАМОРОЗКУ — жёсткий контроль территории"],
+ ["Akimo","Акимо","Клинок Вечного короля","Курумо","Крушитель","БД","Сам себя поджигает ради +3 силы (+5 после уровня); коронное заклинание удваивает силу против отмеченного героя"],
+ ["Astryda","Астрида","Голос глубин","Лиотан","Штурмовик","ДБ","Убив миньона, может за 1 ОЗ поставить своего миньона на спорный участок; сильный контроль пути"],
+ ["Brylvar","Брилвар","Неустрашимый защитник","Лиотан","Защитник","БД","Союзные герои рядом получают +1 брони (+2 после уровня) — аура для командных драк"],
  ["Corjof","Корйоф","Серый дозорный","Лиотан","Маг","ДБ","Тратит очки движения на добор карт — больше заклинаний в руке"],
- ["Cotlic","Котлик","Десница Таулота","Таулот","Танк","БД","Союзные миньоны рядом получают +2 брони (после уровня и сам Котлик) — танк линии"],
- ["Doomies","Думис","Потерянный легион","Курумо","Лайнер","БД","+1 натиска за каждые 4 HP; толкает миньонов вперёд"],
- ["Ekhrit","Экрит","Укротительница бурь","Нуптен","Лайнер","ДБ","Никакой герой не может войти в её зону; после уровня защищает свою зону от целей и выдувает вошедших"],
- ["Freyhel","Фрейхель","Вечная королева","Лиотан","Контроллер","ДБ","Раз в ход лечит союзника на 3 HP (4 HP на дальности 2 после уровня); ульта превращает лечение в урон"],
+ ["Cotlic","Котлик","Десница Таулота","Таулот","Защитник","БД","Союзные миньоны рядом получают +2 брони (после уровня и сам Котлик) — защитник пути"],
+ ["Doomies","Думис","Потерянный легион","Курумо","Штурмовик","БД","+1 импульса за каждые 4 ОЗ; толкает миньонов вперёд"],
+ ["Ekhrit","Экрит","Укротительница бурь","Нуптен","Штурмовик","ДБ","Никакой герой не может войти на её участок; после уровня защищает свой участок от целей и выдувает вошедших"],
+ ["Freyhel","Фрейхель","Вечная королева","Лиотан","Мистик","ДБ","Раз в ход лечит союзника на 3 ОЗ (4 ОЗ на дальности 2 после уровня); коронное заклинание превращает лечение в урон"],
  ["Gulbjarn","Гульбьярн","Дикий владыка","Лиотан","Воин","БД","Атаки задевают ещё одного врага (не миньона) — хорош в свалке"],
- ["Haburat","Хабурат","Первый палач","Нуптен","Убийца","БД","+Х силы, где Х — число AP на его карте плана; может удвоить AP и выбрать жертву в любой точке карты"],
- ["Heraal","Хераал","Весенний охотник","Лиотан","Лесник","ДБ","Игнорирует ограничение на цели в лесу; очень мобильный"],
- ["Hogosai","Хогосай","Вечный страж","Курумо","Танк","БД","+1 брони (+3 после уровня); провокация заставляет врагов целить способностями только в него"],
- ["Ixatosk","Иксатоск","Посланник бездны","Таулот","Лесник","БД","Телепортирует соседнего союзника к себе (дважды за ход после уровня) — организует ганки"],
- ["Khenui","Хенуи","Танцующая с отражениями","Нуптен","Воин","БД","На линии стойка (Tough) к атакам, включая ответные — сложно выбить"],
+ ["Haburat","Хабурат","Первый палач","Нуптен","Крушитель","БД","+Х силы, где Х — число ОА на его плане; может удвоить ОА и выбрать жертву в любой точке карты"],
+ ["Heraal","Гераал","Весенний охотник","Лиотан","Охотник","ДБ","Игнорирует ограничение на цели в джунглях; очень мобильный"],
+ ["Hogosai","Хогосай","Вечный страж","Курумо","Защитник","БД","+1 брони (+3 после уровня); провокация заставляет врагов целить способностями только в него"],
+ ["Ixatosk","Иксатоск","Посланник бездны","Таулот","Охотник","БД","Телепортирует соседнего союзника к себе (дважды за ход после уровня) — организует ганки"],
+ ["Khenui","Хенуи","Танцующая с отражениями","Нуптен","Воин","БД","На пути Стойкость к атакам, включая ответные — сложно выбить"],
  ["Khepiax","Хепиакс","Владычица молний","Нуптен","Стрелок","ДБ","Каждое заклинание союзников добавляет 1 урон (2 после уровня) по врагу рядом с ней; атака может задеть до 4 целей"],
- ["Kichie","Кичие","Хранитель наследия","Курумо","Маг","ДБ","Лечится на 1 HP за каждого задетого — живучий чистильщик волн"],
- ["Kohai","Кохай","Колючий охотник","Таулот","Лайнер","ДБ","Притягивает и оглушает (STUN) вражеского героя до 2 зон; может выставлять миньонов в спорной зоне"],
- ["Kumaya","Кумая","Пепельная дева","Курумо","Лесник","БД","Враг, уходящий из её зоны, получает 2 урона и ожог; ганки из леса"],
- ["Miyuki","Миюки","Пробуждающая свет","Курумо","Контроллер","ДБ","Враги рядом платят 2 урона и ожог за каждое заклинание; лечит и переносит статусы; ульта спасает союзника от смерти (HP становится 5)"],
- ["Nantaca","Нантака","Неживая монархиня","Таулот","Убийца","БД","В лесу или реке +1 силы за каждого союзного миньона рядом"],
+ ["Kichie","Кичи","Хранитель наследия","Курумо","Маг","ДБ","Лечится на 1 ОЗ за каждого задетого — живучий чистильщик волн"],
+ ["Kohai","Кохай","Колючий охотник","Таулот","Штурмовик","ДБ","Притягивает и оглушает (STUN) вражеского героя до 2 участков; может выставлять миньонов на спорном участке"],
+ ["Kumaya","Кумая","Пепельная дева","Курумо","Охотник","БД","Враг, уходящий с её участка, получает 2 урона и горение; ганки из джунглей"],
+ ["Miyuki","Миюки","Пробуждающая свет","Курумо","Мистик","ДБ","Враги рядом платят 2 урона и горение за каждое заклинание; лечит и переносит статусы; коронное заклинание спасает союзника от смерти (ОЗ становится 5)"],
+ ["Nantaca","Нантака","Неживая монархиня","Таулот","Крушитель","БД","В джунглях или реке +1 силы за каждого союзного миньона рядом"],
  ["Nelaclen","Нелаклен","Безликий шептун","Таулот","Маг","ДБ","Может разыграть любое заклинание из руки, даже чужое — имя героя заменяется на его собственное"],
- ["Sakoshi","Сакоши","Укротитель лавы","Курумо","Стрелок","ДБ","Получив урон, отскакивает в соседнюю зону; может нести лишние предметы одного цвета"],
+ ["Sakoshi","Сакоши","Укротитель лавы","Курумо","Стрелок","ДБ","Получив урон, отскакивает на соседний участок; может нести лишние предметы одного цвета"],
  ["Setheru","Сетеру","Повелитель неба","Нуптен","Маг","ДБ","Канализирует заклинания и раз в ход возвращает своё заклинание из сброса; заряды сгорают при его гибели"],
- ["Shafathi","Шафати","Затенённый","Нуптен","Лесник","—","Игра на уклонении и «двойном существовании»; способности в Onward сверить по листу"],
- ["Shaidrus","Шайдрус","Последний свет","Нуптен","Танк","БД","+3 брони, но −2 силы; может привязать к союзнику свою тень-защиту"],
- ["Shyllavi","Шиллави","Стремительный клык","Лиотан","Убийца","БД","+3 силы, пока у неё 7+ HP: страшна на полном здоровье, её нужно сначала подранить"],
- ["Tlakali","Тлакали","Верховная жрица","Таулот","Контроллер","ДБ","Может потерять 1 HP вместо гибели союзного миньона рядом; усиливает своих"],
- ["Vorhild","Ворхильд","Белая тень","Лиотан","Стрелок","ДБ","Бьёт по соседним зонам и ровно через одну — держит дистанцию"],
- ["Yami","Ями","Пылающий вестник","Курумо","Воин","БД","Входя в зону, смещает вражеского героя (двух после уровня) — разбивает построение"],
+ ["Shafathi","Шафати","Затенённый","Нуптен","Охотник","—","Игра на уклонении и «двойном существовании»; способности в Onward сверить по листу"],
+ ["Shaidrus","Шайдрус","Последний свет","Нуптен","Защитник","БД","+3 брони, но −2 силы; может привязать к союзнику свою тень-защиту"],
+ ["Shyllavi","Шиллави","Стремительный клык","Лиотан","Крушитель","БД","+3 силы, пока у неё 7+ ОЗ: страшна на полном здоровье, её нужно сначала подранить"],
+ ["Tlakali","Тлакали","Верховная жрица","Таулот","Мистик","ДБ","Может потерять 1 ОЗ вместо гибели союзного миньона рядом; усиливает своих"],
+ ["Vorhild","Ворхильд","Белая тень","Лиотан","Стрелок","ДБ","Бьёт по соседним участкам и ровно через одну — держит дистанцию"],
+ ["Yami","Ями","Пылающий вестник","Курумо","Воин","БД","Входя на участок, вытесняет вражеского героя (двух после уровня) — разбивает построение"],
  ["Zacoal","Закоал","Падший сын","Таулот","Воин","БД","Атаки с телепортом — перемещает цели по карте (детали сверить по листу)"]
 ].map(r=>({name:r[0],ru:r[1],title:r[2],fac:r[3],cls:r[4],rng:r[5],desc:r[6]}));
 
@@ -638,7 +728,7 @@ const H = [
 const C = {
  Akimo:{g:[
    ["Sakoshi","Обычно убивает его одной атакой, если попадёт","a"],
-   ["Kichie","Живучесть Kichie не спасает от удара с одного раза; ожоги Akimo не страшны","a"],
+   ["Kichie","Живучесть Kichie не спасает от удара с одного раза; горение Akimo не страшно","a"],
    ["Hogosai","Брони Hogosai не хватает, а уклоняться ему почти нечем","a"],
    ["Kumaya","То же, что с Hogosai, хотя Kumaya уворачивается лучше","a"],
    ["Brylvar","Урон Akimo пробивает даже защиту Brylvar","a"],
@@ -646,52 +736,52 @@ const C = {
   b:[
    ["Akhuti","Отключает почти все его заклинания и помогает команде уворачиваться","a"],
    ["Ekhrit","Akimo просто не может её ударить","a"],
-   ["Tlakali","Обезоруживание делает его почти бесполезным","a"],
-   ["Miyuki","Тяжело убить, мгновенное обезоруживание, наказывает за самоподжог","a"],
+   ["Tlakali","Безоружность делает его почти бесполезным","a"],
+   ["Miyuki","Тяжело убить, мгновенная безоружность, наказывает за самоподжог","a"],
    ["Astryda","Её реакции хорошо ловят героев, которые вкладываются в убийство","a"],
-   ["Corjof","Мгновенное обезоруживание и ответные заклинания","a"]]},
+   ["Corjof","Мгновенная безоружность и ответные заклинания","a"]]},
  Sakoshi:{g:[],
   b:[
-   ["Akhuti","Выключает его пассивку, завязанную на смену дистанции","a"],
-   ["Kumaya","Постоянные ожоги и бесплатный урон; Дымовая завеса сильно его глушит","a"],
+   ["Akhuti","Выключает его свойство, завязанное на смену дистанции","a"],
+   ["Kumaya","Постоянное горение и бесплатный урон; Дымовая завеса сильно его глушит","a"],
    ["Gulbjarn","Может зажать и убить; с Формой медведя Sakoshi почти не работает","a"],
-   ["Ekhrit","Прокачанная Ekhrit не даёт целиться в свою зону","a"],
+   ["Ekhrit","Прокачанная Ekhrit не даёт целиться в свой участок","a"],
    ["Akimo","Обычно убивает его одной атакой","a"]]},
  Hogosai:{g:[
-   ["Doomies","Выравнивает волны миньонов против пушеров","a"],
-   ["Astryda","Перевес в миньонах значит меньше, ульта Hogosai чистит волну","a"],
+   ["Doomies","Выравнивает волны миньонов против команд, которые продвигают миньонов","a"],
+   ["Astryda","Перевес в миньонах значит меньше, коронное заклинание Hogosai чистит волну","a"],
    ["Khepiax","Броня гасит её мелкий урон","a"],
    ["Freyhel","Провокация Hogosai перенаправляет всё её лечение","a"]],
   b:[
    ["Nantaca","Он может чистить её волны, но небезопасно — Nantaca часто его убивает","a"],
-   ["Ekhrit","Hogosai нужно стоять в спорных зонах, Ekhrit этого не даёт","a"],
+   ["Ekhrit","Hogosai нужно стоять на спорных участках, Ekhrit этого не даёт","a"],
    ["Akimo","Броня не спасает от его урона","a"]]},
  Miyuki:{g:[
    ["Khepiax","Спам заклинаний рядом с Miyuki — «смертный приговор»","a"],
    ["Akimo","Наказывает за самоподжог, заклинания Miyuki хороши против него","a"],
    ["Nelaclen","Часть его взрывных ходов Miyuki гасит","a"],
-   ["Akhuti","Ей не мешает немота в свой ход, может подойти к Akhuti","a"]],
+   ["Akhuti","Ей не мешает молчание в свой ход, может подойти к Akhuti","a"]],
   b:[
    ["Vorhild","Бьёт из-за пределов её дальности, всех не спасти","a"],
-   ["Heraal","Нападает из леса после телепорта и быстро убивает","a"],
-   ["Kichie","Плата за заклинания его же и лечит; реакцией срывает её ульту","a"],
+   ["Heraal","Нападает из джунглей после телепорта и быстро убивает","a"],
+   ["Kichie","Плата за заклинания его же и лечит; реакцией срывает её коронное заклинание","a"],
    ["Yami","Сбивает позицию, от которой Miyuki зависит","a"],
-   ["Shyllavi","Прыжок с немотой позволяет добраться и убить","a"],
-   ["Brylvar","Броня снижает урон от её пассивки по всей команде (мягкий контр)","a"],
+   ["Shyllavi","Прыжок с молчанием позволяет добраться и убить","a"],
+   ["Brylvar","Броня снижает урон от её свойства по всей команде (мягкий контр)","a"],
    ["Freyhel","Подлечивает цели против её тактики на измор","a"]]},
  Doomies:{g:[
-   ["Cotlic","Сильно оспаривает его линию почти без риска","a"],
+   ["Cotlic","Сильно оспаривает его путь почти без риска","a"],
    ["Khenui","Миньоны хороши против неё, а Doomies она почти не угрожает","a"]],
   b:[
    ["Corjof","Быстро чистит волны, снимает здоровье и добивает","a"],
-   ["Ekhrit","Doomies нужно стоять в спорных зонах, Ekhrit не пускает","a"],
-   ["Yami","Утаскивает из спорных зон и через башни, сбивает ульту","a"],
+   ["Ekhrit","Doomies нужно стоять на спорных участках, Ekhrit не пускает","a"],
+   ["Yami","Утаскивает со спорных участков и через башни, сбивает коронное заклинание","a"],
    ["Hogosai","Выравнивает волны миньонов","a"]]},
  Kichie:{g:[
-   ["Miyuki","Плата за заклинания его лечит; реакцией срывает её ульту","a"],
-   ["Akhuti","Может ходить за ней и бить заклинаниями; её немота — только в его ход","a"],
-   ["Cotlic","Пробивающий урон по области ломает его защиту","a"],
-   ["Brylvar","Весь урон Kichie пробивающий — броня не помогает","a"],
+   ["Miyuki","Плата за заклинания его лечит; реакцией срывает её коронное заклинание","a"],
+   ["Akhuti","Может ходить за ней и бить заклинаниями; её молчание — только в его ход","a"],
+   ["Cotlic","Бронебойный урон по области ломает его защиту","a"],
+   ["Brylvar","Весь урон Kichie бронебойный — броня не помогает","a"],
    ["Shyllavi","Мгновенный ответный урон срывает её попытки убийства","a"]],
   b:[
    ["Heraal","Часто добирается до Kichie и убивает, ответить трудно","a"],
@@ -701,46 +791,46 @@ const C = {
    ["Cotlic","Ломает позиционную игру","a"],
    ["Brylvar","Растаскивает команду от его ауры","a"],
    ["Nantaca","Ломает позиционную игру","a"],
-   ["Doomies","Утаскивает из спорных зон и через башни, сбивает ульту","a"],
+   ["Doomies","Утаскивает со спорных участков и через башни, сбивает коронное заклинание","a"],
    ["Kumaya","Лучший ответ на неё: снимает Дымовую завесу и вытаскивает пойманных","a"],
    ["Heraal","Наказывает вторжения","a"],
    ["Ixatosk","Наказывает вторжения","a"],
    ["Freyhel","Уводит её от тех, кого нужно лечить","a"]],
   b:[
-   ["Akhuti","Не сдвинуть без притяжения; её немота и заморозка мешают всей команде","a"],
-   ["Ekhrit","Yami не может войти в её зону","a"],
+   ["Akhuti","Не сдвинуть без притяжения; её молчание и заморозка мешают всей команде","a"],
+   ["Ekhrit","Yami не может войти на её участок","a"],
    ["Gulbjarn","Форма медведя не даёт себя сместить","a"]]},
  Kumaya:{g:[
    ["Sakoshi","Сильно ограничивает его игру","a"],
-   ["Vorhild","Vorhild обычно не может бить её и в её зону, мешает пушу","a"],
+   ["Vorhild","Vorhild обычно не может бить её и по её участку, мешает продвижению","a"],
    ["Freyhel","Дымовая завеса не даёт Freyhel спасать","a"],
    ["Corjof","С Дымовой завесой защищает волны от его заклинаний","a"]],
   b:[
-   ["Haburat","Убийцы просто убивают её, не разбираясь с заклинаниями","a"],
-   ["Akimo","Убийцы просто убивают её","a"],
+   ["Haburat","Крушители просто убивают её, не разбираясь с заклинаниями","a"],
+   ["Akimo","Крушители просто убивают её","a"],
    ["Yami","Лучший ответ на Kumaya: снимает завесу, вытаскивает пойманных","a"],
-   ["Shafathi","Срывает её попытки взять Чужака, немота глушит контроль","a"],
-   ["Corjof","Без Дымовой завесы он обезоруживает её и отменяет ульту","a"]]},
+   ["Shafathi","Срывает её попытки взять отродье, молчание глушит контроль","a"],
+   ["Corjof","Без Дымовой завесы он обезоруживает её и отменяет коронное заклинание","a"]]},
  Shyllavi:{g:[
-   ["Akhuti","Прыжок с немотой — едва ли не лучший ответ на Akhuti","a"],
-   ["Miyuki","Может добраться и убить, хотя у Miyuki есть обезоруживание","a"],
+   ["Akhuti","Прыжок с молчанием — едва ли не лучший ответ на Akhuti","a"],
+   ["Miyuki","Может добраться и убить, хотя у Miyuki есть безоружность","a"],
    ["Brylvar","Прыжок не даёт ему ответить, быстро убивает","a"],
    ["Astryda","Прыгает на неё и не даёт реагировать (матчап обоюдный)","a"]],
   b:[
-   ["Shafathi","Немота и телепорты; мешает брать Чужака","a"],
+   ["Shafathi","Молчание и телепорты; мешает брать отродье","a"],
    ["Kichie","Мгновенный ответный урон срывает убийство","a"],
-   ["Corjof","Ответный урон, обезоруживание, Ледяная стена режет мобильность","a"],
-   ["Khepiax","Трудно удержаться выше 7 HP, Раскат грома — глобальный ответ","a"],
+   ["Corjof","Ответный урон, безоружность, Ледяная стена режет мобильность","a"],
+   ["Khepiax","Трудно удержаться выше 7 ОЗ, Раскат грома — глобальный ответ","a"],
    ["Astryda","Её заклинания и лечение мешают первым убийствам (матчап обоюдный)","a"]]},
  Brylvar:{g:[
-   ["Khepiax","Аура брони выключает её пассивку по всей команде","a"],
-   ["Miyuki","Снижает урон от её пассивки по команде (мягкий контр)","a"],
+   ["Khepiax","Аура брони выключает её свойство по всей команде","a"],
+   ["Miyuki","Снижает урон от её свойства по команде (мягкий контр)","a"],
    ["Achla","Броня обходит его ловушки на мелкий урон","a"],
    ["Gulbjarn","Броня работает против каждой из его атак","a"],
    ["Heraal","Плотная оборонительная игра мешает его нырянию","a"]],
   b:[
-   ["Kichie","Весь его урон пробивающий, Огненная звезда бьёт по группе","a"],
-   ["Haburat","Снимает его пассивку и прорубает броню","a"],
+   ["Kichie","Весь его урон бронебойный, Огненная звезда бьёт по группе","a"],
+   ["Haburat","Снимает его свойство и прорубает броню","a"],
    ["Shyllavi","Прыжок не даёт ответить хвостом, быстро убивает","a"],
    ["Akimo","Урона так много, что броня не спасает","a"],
    ["Yami","Растаскивает команду от его ауры","a"]]},
@@ -750,12 +840,12 @@ const C = {
    ["Miyuki","Бьёт из-за пределов её дальности","a"],
    ["Ekhrit","Против героев, контролирующих пространство","a"]],
   b:[
-   ["Kumaya","Обычно нельзя бить её и в её зону, Kumaya «липкая»","a"],
+   ["Kumaya","Обычно нельзя бить её и на её участок, Kumaya «липкая»","a"],
    ["Zacoal","Часто переносит Vorhild в плохие позиции","a"],
    ["Heraal","Легко телепортируется к ней, лишая преимущества дистанции","a"]]},
  Freyhel:{g:[
    ["Khepiax","Лечение в любой момент обесценивает её мелкий урон","a"],
-   ["Kichie","Его урон от заклинаний и ожогов Freyhel хорошо отлечивает","a"],
+   ["Kichie","Его урон от заклинаний и горения Freyhel хорошо отлечивает","a"],
    ["Miyuki","Держит цели в здоровье против тактики на измор","a"]],
   b:[
    ["Kumaya","Дымовая завеса не даёт спасать","a"],
@@ -767,89 +857,89 @@ const C = {
    ["Akimo","Наказывает героев, которые вкладываются в убийство","a"],
    ["Haburat","Наказывает героев, которые вкладываются в убийство","a"],
    ["Nantaca","Наказывает героев, которые вкладываются в убийство","a"],
-   ["Nelaclen","Её ульта особенно хороша против него","a"],
+   ["Nelaclen","Её коронное заклинание особенно хорошо против него","a"],
    ["Shafathi","Взгляд в ответ на его Эхо-ганк","a"],
    ["Khepiax","Взгляд в ответ на её Собирающуюся бурю","a"],
    ["Shyllavi","Заклинания и лечение мешают её первым убийствам (матчап обоюдный)","a"]],
   b:[
-   ["Tlakali","Сохраняет миньонов живыми — пассивка Astryda не срабатывает","a"],
+   ["Tlakali","Сохраняет миньонов живыми — свойство Astryda не срабатывает","a"],
    ["Corjof","Непревзойдённая зачистка волн, телепорт через карту","a"],
-   ["Hogosai","Перевес в миньонах значит меньше, ульта чистит волну","a"],
-   ["Shyllavi","Прыгает и не даёт реагировать, ульта чистит волны (матчап обоюдный)","a"]]},
+   ["Hogosai","Перевес в миньонах значит меньше, коронное заклинание чистит волну","a"],
+   ["Shyllavi","Прыгает и не даёт реагировать, коронное заклинание чистит волны (матчап обоюдный)","a"]]},
  Corjof:{g:[
-   ["Nantaca","Чистит волны пушеров и наказывает за вложения в убийство","a"],
-   ["Astryda","Чистит волны пушеров","a"],
-   ["Doomies","Чистит волны пушеров","a"],
+   ["Nantaca","Чистит волны миньонов у штурмовиков и наказывает за вложения в убийство","a"],
+   ["Astryda","Чистит волны миньонов у штурмовиков","a"],
+   ["Doomies","Чистит волны миньонов у штурмовиков","a"],
    ["Akimo","Наказывает героев, которые вкладываются в убийство","a"],
    ["Haburat","Наказывает героев, которые вкладываются в убийство","a"],
-   ["Kumaya","Без Дымовой завесы обезоруживает её и отменяет ульту","a"],
-   ["Khenui","Ультой уходит от её Магнетизма и чистит волну","a"],
+   ["Kumaya","Без Дымовой завесы обезоруживает её и отменяет коронное заклинание","a"],
+   ["Khenui","Коронным заклинанием уходит от её Магнетизма и чистит волну","a"],
    ["Shyllavi","Может обезоружить или ранить её в ответ (матчап полярный)","a"]],
   b:[
-   ["Gulbjarn","Форма медведя мешает его ульте, замедления не дают отступить","a"],
-   ["Ekhrit","Запрещает цели в своей зоне — спасает волны","a"],
+   ["Gulbjarn","Форма медведя мешает его коронному заклинанию, замедления не дают отступить","a"],
+   ["Ekhrit","Запрещает цели на своём участке — спасает волны","a"],
    ["Kumaya","С Дымовой завесой спасает волны от его заклинаний","a"],
-   ["Shaidrus","Ульта переносит волну — ульта Corjof промахивается","a"],
-   ["Zacoal","Ульта переносит Corjof и срывает его ульту","a"]]},
+   ["Shaidrus","Коронное заклинание переносит волну — коронное заклинание Corjof промахивается","a"],
+   ["Zacoal","Коронное заклинание переносит Corjof и срывает его коронное заклинание","a"]]},
  Gulbjarn:{g:[
-   ["Zacoal","Форма медведя полностью отменяет его смещения","a"],
+   ["Zacoal","Форма медведя полностью отменяет его вытеснения","a"],
    ["Yami","Форма медведя не даёт себя сместить","a"],
    ["Sakoshi","С Формой медведя Sakoshi почти не работает","a"],
-   ["Corjof","Форма медведя мешает его ульте","a"]],
+   ["Corjof","Форма медведя мешает его коронному заклинанию","a"]],
   b:[
    ["Brylvar","Броня работает против каждой его атаки","a"],
-   ["Ekhrit","Притянув её, Gulbjarn не может целиться в других в этой зоне","a"],
-   ["Akhuti","Немота выключает Форму медведя и атаку по двум целям","a"]]},
+   ["Ekhrit","Притянув её, Gulbjarn не может целиться в других на этом участке","a"],
+   ["Akhuti","Молчание выключает Форму медведя и атаку по двум целям","a"]]},
  Heraal:{g:[
-   ["Ekhrit","Достаёт её в лесу, где она обычно в безопасности","a"],
-   ["Miyuki","Нападает из леса и быстро убивает","a"],
+   ["Ekhrit","Достаёт её в джунглях, где она обычно в безопасности","a"],
+   ["Miyuki","Нападает из джунглей и быстро убивает","a"],
    ["Kichie","Добирается до него и убивает","a"],
    ["Vorhild","Телепортируется к ней, лишая дистанции","a"]],
   b:[
-   ["Yami","Выбивает его из леса, лишает ныряний","a"],
+   ["Yami","Выбивает его из джунглей, лишает ныряний","a"],
    ["Brylvar","Плотная оборонительная игра","a"],
    ["Ixatosk","Не даёт получить преимущество по золоту","a"],
    ["Shafathi","Не даёт получить преимущество по золоту","a"]]},
 
  // ---- дополнения: автор писал о них только в разборах базовых героев ----
  Achla:{g:[
-   ["Shyllavi","Лишний урон от ловушек быстро сбивает её ниже 7 HP","v"],
-   ["Doomies","Сила Doomies зависит от HP, ловушки быстро её снижают","v"]],
+   ["Shyllavi","Лишний урон от ловушек быстро сбивает её ниже 7 ОЗ","v"],
+   ["Doomies","Сила Doomies зависит от ОЗ, ловушки быстро её снижают","v"]],
   b:[
    ["Brylvar","Броня обходит ловушки, рассчитанные на мелкий урон","a"],
    ["Shaidrus","+3 брони гасят мелкие попадания, на которые опирается Achla","v"]]},
  Akhuti:{g:[
    ["Akimo","Отключает почти все его заклинания","a"],
-   ["Sakoshi","Выключает его пассивку","a"],
+   ["Sakoshi","Выключает его свойство","a"],
    ["Yami","Её не сдвинуть без притяжения","a"],
-   ["Gulbjarn","Немота выключает Форму медведя","a"]],
+   ["Gulbjarn","Молчание выключает Форму медведя","a"]],
   b:[
-   ["Shyllavi","Прыжок с немотой добирается до неё","a"],
+   ["Shyllavi","Прыжок с молчанием добирается до неё","a"],
    ["Kichie","Ходит за ней и бьёт заклинаниями","a"],
-   ["Vorhild","Бьёт её из-за пределов зоны контроля","a"],
-   ["Miyuki","Не боится немоты в свой ход","a"]]},
+   ["Vorhild","Бьёт её из-за пределов участка контроля","a"],
+   ["Miyuki","Не боится молчания в свой ход","a"]]},
  Cotlic:{g:[
    ["Corjof","+2 брони миньонам против заклинаний мешают зачистке","v"],
    ["Khepiax","Броня миньонов гасит её мелкий урон по волне","v"]],
   b:[
-   ["Doomies","Оспаривает его линию почти без риска","a"],
-   ["Kichie","Пробивающий урон по области ломает защиту","a"],
+   ["Doomies","Оспаривает его путь почти без риска","a"],
+   ["Kichie","Бронебойный урон по области ломает защиту","a"],
    ["Yami","Ломает позиционную игру","a"]]},
  Ekhrit:{g:[
    ["Akimo","Он не может её ударить","a"],
-   ["Hogosai","Не пускает в спорные зоны","a"],
-   ["Doomies","Не пускает в спорные зоны","a"],
-   ["Yami","Yami не может войти в её зону","a"],
+   ["Hogosai","Не пускает на спорные участки","a"],
+   ["Doomies","Не пускает на спорные участки","a"],
+   ["Yami","Yami не может войти на её участок","a"],
    ["Corjof","Защищает волны от его заклинаний","a"],
-   ["Gulbjarn","Притянутая Ekhrit закрывает другие цели в зоне","a"],
-   ["Sakoshi","Прокачанная не даёт целиться в свою зону","a"],
-   ["Shyllavi","Прыжок не работает против её зоны","a"]],
+   ["Gulbjarn","Притянутая Ekhrit закрывает другие цели на участке","a"],
+   ["Sakoshi","Прокачанная не даёт целиться в свой участок","a"],
+   ["Shyllavi","Прыжок не работает против её участка","a"]],
   b:[
-   ["Heraal","Достаёт её в лесу","a"],
+   ["Heraal","Достаёт её в джунглях","a"],
    ["Vorhild","Бьёт по ней с дистанции","a"]]},
  Haburat:{g:[
    ["Kumaya","Просто убивает её","a"],
-   ["Brylvar","Снимает пассивку и прорубает броню","a"]],
+   ["Brylvar","Снимает свойство и прорубает броню","a"]],
   b:[
    ["Astryda","Наказывает за вложения в убийство","a"],
    ["Corjof","Наказывает за вложения в убийство","a"]]},
@@ -859,16 +949,16 @@ const C = {
    ["Yami","Наказывает вторжения","a"],
    ["Gulbjarn","Форма медведя мешает подтягивать и переносить героев","v"]]},
  Khenui:{g:[
-   ["Akimo","Стойкость на линии: за удар не больше 1 HP","v"],
-   ["Shyllavi","Стойкость на линии гасит удар с одного раза","v"],
-   ["Haburat","Стойкость на линии гасит удар с одного раза","v"]],
+   ["Akimo","Стойкость на пути: за удар не больше 1 ОЗ","v"],
+   ["Shyllavi","Стойкость на пути гасит удар с одного раза","v"],
+   ["Haburat","Стойкость на пути гасит удар с одного раза","v"]],
   b:[
    ["Doomies","Миньоны хороши против неё","a"],
-   ["Corjof","Ультой уходит от её Магнетизма","a"]]},
+   ["Corjof","Коронным заклинанием уходит от её Магнетизма","a"]]},
  Khepiax:{g:[
-   ["Shyllavi","Не даёт держаться выше 7 HP","a"]],
+   ["Shyllavi","Не даёт держаться выше 7 ОЗ","a"]],
   b:[
-   ["Brylvar","Аура брони выключает её пассивку","a"],
+   ["Brylvar","Аура брони выключает её свойство","a"],
    ["Hogosai","Броня гасит её урон","a"],
    ["Miyuki","Спам заклинаний рядом с Miyuki смертелен","a"],
    ["Freyhel","Отлечивает её мелкий урон","a"],
@@ -878,7 +968,7 @@ const C = {
    ["Freyhel","Уводит её от тех, кого нужно лечить","a"]],
   b:[
    ["Gulbjarn","Форма медведя, судя по всему, не даёт себя притянуть","v"],
-   ["Ekhrit","Нельзя притянуть героя в её зону","v"]]},
+   ["Ekhrit","Нельзя притянуть героя на её участок","v"]]},
  Nantaca:{g:[
    ["Hogosai","Часто убивает его, пока он чистит её волны","a"]],
   b:[
@@ -888,38 +978,40 @@ const C = {
  Nelaclen:{g:[],
   b:[
    ["Miyuki","Гасит часть его взрывных ходов","a"],
-   ["Astryda","Её ульта особенно хороша против него","a"],
-   ["Akhuti","Немота отключает его главную способность — чужие заклинания","v"]]},
+   ["Astryda","Её коронное заклинание особенно хорошо против него","a"],
+   ["Akhuti","Молчание отключает его главную способность — чужие заклинания","v"]]},
  Setheru:{g:[],
   b:[
-   ["Miyuki","Каждое заклинание рядом с ней стоит 2 урона и ожог","v"],
-   ["Akhuti","Немота отключает канализацию заклинаний","v"]]},
+   ["Miyuki","Каждое заклинание рядом с ней стоит 2 урона и горение","v"],
+   ["Akhuti","Молчание отключает канализацию заклинаний","v"]]},
  Shafathi:{g:[
-   ["Shyllavi","Немота и телепорты, мешает ей брать Чужака","a"],
-   ["Kumaya","Срывает её попытки взять Чужака","a"],
+   ["Shyllavi","Молчание и телепорты, мешает ей брать отродье","a"],
+   ["Kumaya","Срывает её попытки взять отродье","a"],
    ["Heraal","Не даёт ему преимущества по золоту","a"]],
   b:[
    ["Astryda","Взгляд в ответ на его Эхо-ганк","a"]]},
  Shaidrus:{g:[
-   ["Corjof","Ульта переносит волну — ульта Corjof промахивается","a"],
+   ["Corjof","Коронное заклинание переносит волну — коронное заклинание Corjof промахивается","a"],
    ["Achla","+3 брони гасят мелкие попадания","v"]],
   b:[
-   ["Kichie","Пробивающий урон игнорирует его броню","v"]]},
+   ["Kichie","Бронебойный урон игнорирует его броню","v"]]},
  Tlakali:{g:[
-   ["Akimo","Обезоруживание делает его почти бесполезным","a"],
-   ["Astryda","Сохраняет миньонов — её пассивка не срабатывает","a"]],
+   ["Akimo","Безоружность делает его почти бесполезным","a"],
+   ["Astryda","Сохраняет миньонов — её свойство не срабатывает","a"]],
   b:[
-   ["Kichie","Пробивающий урон по области заставляет терять HP за каждого миньона","v"],
+   ["Kichie","Бронебойный урон по области заставляет терять ОЗ за каждого миньона","v"],
    ["Corjof","Зачистка волн разом — Tlakali не успевает спасать миньонов","v"]]},
  Zacoal:{g:[
    ["Vorhild","Переносит её в плохие позиции","a"],
-   ["Corjof","Ультой срывает его ульту","a"]],
+   ["Corjof","Коронным заклинанием срывает его коронное заклинание","a"]],
   b:[
-   ["Gulbjarn","Форма медведя полностью отменяет смещения","a"]]}
+   ["Gulbjarn","Форма медведя полностью отменяет вытеснения","a"]]}
 };
 
-const ABIL={"Hogosai":{"p":["Igneous Body","Хогосай имеет +1 броню. Вражеские миньоны должны атаковать его, если это возможно."],"c":[["Brimstone Shield","0/3","1 соседний отряд имеет +3 брони и «Ответный удар: ГОРЕНИЕ» в этом ходу."],["Infernal Taunt","2/2","Прикрепите к Хогосаю, пока он не будет побеждён. Он получает +1 броню и способность «Ответный удар: ГОРЕНИЕ. Когда оппонент выбирает цель для заклинания или способности, он должен, если возможно, выбрать целью Хогосая."],["Burst","3/1","Дополнительная стоимость: выберите X — 1, 2 или 3. Нанесите X УРОНА Хогосаю. Нанесите 1 УРОН и нанесите ОГЛУШЕНИЕ X врагам в 1 соседней зоне."],["Scorching Shove","4/1","Вытолкните и наложите ГОРЕНИЕ на 1 вражеского героя в 1 соседнюю зону. Если вы вытолкнули его, перейдите в целевую зону."],["Supernova","3/2","Нанесите 3 УРОНА и наложите ГОРЕНИЕ всех врагов в 1 соседней зоне."]]},"Brylvar":{"p":["Stoic Defender","Соседние дружественные герои имеют +1 броню. (Включая Брильвара.)"],"c":[["Frost Shield","0/3","1 соседний отряд имеет +3 брони и «Ответный удар: ЗАМОРОЗКА» в этом ходу."],["Pangolin Form","2/2","Прикрепите к Брильвару, пока он не будет побеждён. У него +1 броня. Если соседний герой получат УРОН, Брильвар вместо этого может получить любое его количество. (Оба героя используют собственную броню.)"],["Tail Slam","3/1","Нанесите 2 УРОНА и наложите БЕЗМОЛВИЕ на до X врагов в 1 соседней зоне, где X равно броне Брилвара."],["Rolling Shove","4/1","Вытолкните и наложите ЗАМОРОЗКУ 1 вражеского героя в 1 соседнюю зону. Если вы вытолкнули его, перейдите в целевую зону."],["Spiked Scales","3/2","В этом ходу 1 соседний юнит имеет +4 брони и «Ответный удар: X УРОНА», где X — его броня."]]},"Cotlic":{"p":["Xotlan Protects","Соседние дружественные миньоны имеют +2 брони против карточек, атак и способностей."],"c":[["Bone Shield","0/3","1 соседний отряд имеет +3 брони и в этом ходу «Ответный удар: ОБЕЗОРУЖИВАНИЕ."],["Flesh to Stone","2/2","Прикрепите к Котлику, пока он не будет побеждён. У него +2 брони, и он теряет 1 AP каждый раз, когда начинает ход. Когда оппонент выбирает цель для атаки или произнесения заклинания, он должен, если возможно, нацелиться на Котлика."],["Totem of Pain","3/1","Нанесите 2 УРОНА и ОБЕЗОРУЖТЕ до 2 врагов в зоне Котлика. Если во время применения этого заклинания там есть 3 или более дружественных миньонов, вместо этого выберите 3х врагов."],["Shield Shove","4/1","Вытолкните и ОБЕЗОРУЖТЕ 1 вражеского героя в 1 соседнюю зону. Если вы вытолкнули его, перейдите в целевую зону."],["My Kingdom!","3/2","Сразу после этого хода выполните пуш линии в зоне Котлика с импульсом +2."]]},"Shaidrus":{"p":["Last Protector","Шайдрус имеет +3 брони и -2 силы."],"c":[["Void Shield","0/3","1 соседний отряд имеет +3 брони и «Ответный удар: нанесите БЕЗМОЛВИЕ» в этом ходу."],["Shaidrus Shadow","2/2","Прикрепите к 1 дружественному герою в пределах 2 зон, пока Шайдрус не будет побежден. Если герой с этой картой должен получить УРОН, Шайдрус должен получить его вместо этого. (Оба героя используют свою броню)."],["Shields Whirlwind","3/1","Нанесите 1 УРОН и нанесите ГОРЕНИЕ до 2х врагов в зоне Шаидруса. Если в зоне более 5 вражеских миньёнов - выберите целью 3х врагов вместо 2х."],["Judgement Shove","4/1","Вытолкните и ОГЛУШИТЕ 1 вражеского героя в 1 соседнюю зону. Если вы вытолкнули его, перейдите в целевую зону."],["None Shall Enter","3/2","Телепортируйте Шайдруса и всех миньонов из 1 соседней зоне в зону, отмеченную буквой «M» на той же линии. Затем восстановите все разрушенные дружественные башни на этой линии."]]},"Miyuki":{"p":["Spiritual Wake","Соседние вражеские герои должны получить 2 УРОНА и ГОРЕНИЕ в качестве дополнительной стоимости розыгрыша карты."],"c":[["Spirit Heal","0/3","Восстановите 3 HP 1 юниту в пределах 2 зон. Если у цели есть статус, вы можете перенести его 1 другому соседнему с Миюки герою."],["Choking Sparks","2/2","Нанесите ГОРЕНИЕ и прикрепите к 1 вражескому герою в пределах 2 зон, пока Миюки или этот герой не будут побеждены. Если герой с этой картой теряет 1 HP из-за ГОРЕНИЯ, вместо этого он потеряет 2 HP."],["Lifesteal Touch","3/1","Прикрепите к 1 дружественному герою в пределах 3 зон, пока он не будет побежден. Когда герой с этой картой наносит атакой 1 или более УРОНА исцелите ему 2 HP."],["Crippling Ray","4/1","Выберите два разных статуса: ОБЕЗОРУЖИВАНИЕ, БЕЗМОЛВИЕ, ОГЛУШЕНИЕ или ГОРЕНИЕ. Нанесите выбранные статусы 1 вражескому герою в пределах 2 зон."],["Soul Guide","1/3","Если 1 аутсайдер или дружественный герой в пределах 3 зон должен быть побежден в этом ходу, вместо этого установите его HP на 5."]]},"Freyhel":{"p":["Enduring Queen","Действие: исцелите 3 HP 1 соседнему герою. (Один раз за ход Фрейхель"],"c":[["Nourish Heal","0/3","Восстановите 3 HP 1 юниту в пределах 2 зон."],["Breezing Nova","2/2","Выберите «дружественный» или «вражеский». Исцелите 2 HP каждому соседнему герою выбранного типа."],["Withering Gift","3/1","Прикрепите к Фрейхель, пока она не будет побеждена. Если она исцеляет отряд, вместо этого она может нанести такое же количество УРОНА."],["Life Drain","4/1","Нанесите 2 УРОНА и наложите ЗАМОРОЗКУ на 1 соседнего вражеского героя или миньона. Если вы нанесете УРОН, вылечите 2 HP 1 другому ближайшему юниту."],["Glacial Rebirth","1/3","Восстановите 3 HP и снимите все статусы с 1 юнита в любом месте. Если этот отряд дружественный, вместо этого вылечите 8 HP."]]},"Tlakali":{"p":["Ritual of Sacrifice","Если соседний дружественный миньон должен быть побежден, Вместо этого Тлакали может потерять 1 HP. (До одного раза в ход каждого героя)"],"c":[["Ritual Heal","0/3","Восстановите 3 HP 1 соседнему юниту и удалите 1 жетон статуса с него. Если Тлакали находится в зоне столкновения, этот юнит в этом ходу получает +1 броню."],["Scarifier's Curse","2/2","Прикрепите к 1 ближайшему вражескому герою, до тех пор, пока Тлакали или этот герой не будут побеждены. Наложите ОБЕЗОРУЖИВАНИЕ на прикрепленного героя. Когда он потеряет этот статус, наложите его снова."],["Ritual of Sacrifice","3/1","Дополнительная стоимость: нанесите 2 УРОНА 1 дружественному герою в пределах 2 зон. Восстановите 6 HP 1 соседнему юниту и снимите с него 1 статус. Вы не можете выбрать один и тот же отряд."],["Twisted Allegiance","4/1","Дополнительная стоимость: нанесите 2 УРОНА 1 дружественному герою в пределах 2 зон. Восстановите 8 HP Тлакали."],["The Call of Taulot","1/3","Выберите одно: - Подготовьте 1 возражадающегося героя. - Подготовте 1 уставшего героя, который был побежден в этот день. - Удалите 1 жетон аутсайдера с линии"]]},"Akhuti":{"p":["Radiant Silence","Когда вражеский герой входит в соседнюю зону, Наложите на него БЕЗМОЛВИЕ и ЗАМОРОЗКУ."],"c":[["Radiant Healing","0/3","Восстановите 2 HP до 2 соседним юнитам и снимите 1 из их статусов. Любой из этих юнитов, не достигший начального уровня здоровья, в этом ходу получает +1 броню."],["Flash Ray","2/2","Переместите 1 другого дружественного героя в пределах 3 зон в 1 зону, смежную к нему."],["Silence Ray","3/1","Наложите ЗАМОРОЗКУ и ГОРЕНИЕ на 1 героя в пределах 2 зон. Он не может применять заклинания в этом ходу."],["Peacekeeping Ray","4/1","Вы можете снять 1 статус с 1 юнита в пределах 2 зон. В следующий раз, когда они будут терять HP в этом ходу - предотвратите это."],["Nupten Touch","1/3","Вылечите 8 HP, снимите все статусы и повысьте уровень 1 дружественного героя в пределах 3 зон."]]},"Akimo":{"p":["Blade of the Everking","Акимо получает +3 к силе, если у него есть ГОРЕНИЕ. Действие: Акимо получает ГОРЕНИЕ."],"c":[["Scorching Dive","0/3","Переместитесь в 1 смежную зону. Если вы это сделаете, вы можете нанести 2 УРОНА и наложить ГОРЕНИЕ на 1 вражеского героя или аутсайдера."],["Kurumo's Brand","2/2","Нанесите 3 УРОНА и наложите ГОРЕНИЕ на 1 соседнего вражеского героя или аутсайдера. В следующий раз, когда этот враг войдет в какую-либо зону в этом ходу, телепортируйте туда Акимо."],["Ishiro Unleashed","3/1","Дополнительная стоимость: 1 HP. Следующая атака Акимо в этом ходу имеет +5 силы, а также наносит ГОРЕНИЕ."],["Bloodthirst","4/1","Применяйте только в вашу фазу покупок. В этом раунде у Акимо +3 инициативы и +1 силы. Следующая фаза миньонов отложена до конца этого раунда."],["Akimo's Oath","3/2","Прикрепите к 1 соседнему вражескому герою. Удвойте силу Акимо, пока он атакует этого героя."]]},"Shyllavi":{"p":["Restless Wildcat","Шиллави получает +3 к силе, если у нее 7 и более HP."],"c":[["Freezing Dive","0/3","Переместитесь в 1 соседнюю зону. Если вы это сделаете, вы можете нанести 2 УРОНА и наложить ЗАМОРОЗКУ на 1 вражеского героя или аутсайдера."],["Wildcat Form","2/2","Прикрепите к Шиллави, пока она не будет побеждена. У нее есть +1 броня и «Ответный удар: ОБЕЗОРУЖИВАНИЕ»."],["Biding Time","3/1","Применяйте только в вашу фазу покупок Исцелите 3 HP Шиллави. В этом раунде у нее +3 инициативы. Следующая фаза миньонов отложена до конца этого раунда."],["Feline Pounce","4/1","Телепортируйтесь в 1 зону, в 2 зонах от вас. Если вы это сделаете, наложите БЕЗМОЛВИЕ на 1 героя и предотвратите применение им заклинаний в этом ходу."],["Dance of the Predator","3/2","Дополнительная стоимость: 1 AP. Переместитесь в 1 зону в пределах 2 зон. Если вы это сделаете, атакуйте каждого вражеского героя и каждого вражеского миньона там."]]},"Nantaca":{"p":["Sepulchral Tendrils","Нантака имеет +1 к силе за каждого соседнего дружественного миньона, пока она находится в джунглях или реке."],"c":[["Withering Pull","0/3","Нанесите 2 УРОНА, ОБЕЗОРУЖТЕ и притяните 1 смежного вражеского героя, игнорируя ограничение прицеливания в джунгли."],["Unburial Rite","2/2","Дополнительная стоимость: 1 MP. Если Нантака находится в зоне столкновения, поместите туда 1 дружественного миньона. Все зоны столкновения в этот ход являются джунглями."],["Sinkhole","3/1","Нанесите 1 УРОН, ОГЛУШИТЕ и притяните каждого соседнего вражеского. В этом ходу предотвратите эффекты «перемещение», «телепорт» и «выталкивания» в их заклинаниях."],["Living Jungle","4/1","Примените только в вашей фазе покупок и только если Нантака находится в джунглях. Телепортируйтесь в 1 зону джунглей в любое место, где нет вражеских героев. В этом раунде у нее +2 инициативы. Следующая фаза миньонов отложена до конца этого раунда."],["Obey the Monarch","3/2","Поместите 2 дружественных миньонов в 1 соседнюю зону столкновения. В этот ход все зоны являются джунглями."]]},"Haburat":{"p":["Executioner","Хабурат имеет силу +X, где X равена количеству AP на его карте плана."],"c":[["Shining Dive","0/3","Передвинтесь в 1 соседнюю зону. Если вы это сделали, вы можете нанести 2 УРОНА и ОГЛУШИТЬ 1 вражеского героя или аутсайдера там."],["Haburat Shadow","2/2","Прикрепите к 1 ближайшему вражескому герою, пока Хабурат или этот герой не будут побеждены. Прикрепленный герой всегда находится в пределах досягаемости Хабурата (применяется правило джунглей)."],["Overdue Execution","3/1","Применяйте только в вашей фазе покупок В этом раунде Хабурат имеет +X инициативы и +X силы, где X - номер дня. Выберите 1 вражеского героя в любом месте, Хабурат может атаковать его только в этом раунде."],["Weave","4/1","Выберите 1 соседнего врага. Следующая атака Хабурата в этом ходу игнорирует правило «Слабых врагов» и наносит любой избыточный УРОН выбранному врагу. Избыточный УРОН - это любой УРОН, превышающий необходимый для уничтожения цели."],["Lightning Blades","3/2","Применяйте только в вашу фазу покупок Удвойте AP на карте плана Хабурата в этом раунде."]]},"Sakoshi":{"p":["Run and Hide","Когда Сакоши теряет 1 или более HP, он может продвинутся в 1 смежную зону."],"c":[["Quick Shot","0/3","Атакуйте 1 врага в зоне Сакоши."],["Bouncy Shurikens","2/2","Дополнительная стоимость: 1 MP и 1 AP. Атакуйте до 3 соседних врагов."],["Airship Drop","3/1","Дополнительная стоимость: 1 MP и 1 HP. Телепортируйтесь в 1 зону куда угодно. Если вы это сделаете, вы можете нанести 1 УРОН 1 врагу там. Затем потеряйте все MP и AP."],["Counterfeits","4/1","Применяйте только в вашу фазу покупок. Купите предмет стоимостью до 12 золотых, не оплачивая его стоимость. Наденьте его на Сакоши, игнорируя ограничение в 1 предмет каждого цвета."],["Shuriken Storm","1/3","Применяйте только вашу фазу покупок Сакоши получает 3 AP. В этом раунде он может предпринимать действия атаки, но в качестве цели может выбрать только героя и/или аутсайдера."]]},"Vorhild":{"p":["Icy Shade","Ворхильд может атаковать смежных врагов, и врагов ровно через 2 зоны."],"c":[["Precise Shot","0/3","Атакуйте 1 врага в двух зонах от Ворхильд"],["Ermine Form","2/2","Прикрепите к Ворхильде, пока она не объявит атаку или произнесет заклинание. У нее есть Стойкость во время хода любого героя."],["Long Shot","3/1","Дополнительная стоимость: 1 MP. Выберите 1 не соседнюю зону. Нанесите 1 УРОН и ЗАМОРОЗЬТЕ 1 вражеского героя или миньона там."],["Barrage","4/1","Дополнительная стоимость: 1 AP. Атакуйте каждого соседнего вражеского героя."],["The Ermine's Eye","1/3","Дополнительная стоимость: все AP. Выберите 1 вражеского героя в 1 зоне в любом месте и атакуйте его с +3 к силе за каждую AP, потраченную на его применение."]]},"Achla":{"p":["Poisoned Traps","Когда 1 соседний вражеский герой теряет HP во время хода любого героя, он теряет на 1 HP больше."],"c":[["Guerrilla Shot","0/3","Атакуйте 1 соседнего враг в джунглях, игнорируя ограничение на выбор цели в джунглях."],["Spiked Bait","2/2","Выберите 1 зону джунглей в любом месте. Нанесите 1 УРОН и ОГЛУШИТЕ 1 врага там."],["Poison Sting","3/1","Прикрепите к 1 вражескому герою в пределах 2 зон, пока он не истощится или не исцелится. Когда этот герой завершает действие, нанесите ему 1 УРОН."],["Ambush","4/1","Дополнительная стоимость: 2 MP. Дважды атакуйте 1 смежного вражеского героя, игнорируюя ограничение выбора цели в джунглях."],["Coma Toxin","1/3","Нанесите 8 УРОНА 1 соседнему вражескому герою, игнорируя ограничение выбора цели в джунглях."]]},"Khepiax":{"p":["Lady of Lightning","Добавьте следующий эффект в конец каждого заклинания дружественного героя: \"Хепиакс наносит 1 УРОН до 1 вражеского героя, соседнего с Хепиаксом.\""],"c":[["Lightning Shot","0/3","Атакуйте 1 соседнего врага на линии."],["Chain Lightning","2/2","Дополнительная стоимость: сбросьте 1 карту из руки. Следующая атака Хепиакса в этом ходу может быть нацелена еще на 3 врагов в его зоне."],["Gathering Storm","3/1","Примените только в начале хода Хепиакса. Дополнительная стоимость: все AP и все MP. Возьмите 4 карты."],["Thunderclap","4/1","Выберите 1 не соседнюю линию. Нанесите 1 УРОН и наложите БЕЗМОЛВИЕ 1 вражескому герою там."],["Become the Storm","1/3","Дополнительная стоимость: победите 1 соседнего дружественного миньона. Нанесите 4 УРОНА, разделенных между 4 врагами в любом месте (даже в разных зонах)."]]},"Kichie":{"p":["Rejuvenating Fire","Когда Кичи наносит УРОН, исцелите ему 1 HP за каждую юнит, которому он нанес урон."],"c":[["Burning Bolts","0/3","Нанесите 1 УРОН и наложите ГОРЕНИЕ на 2 врагов, не являющихся монстрами, в 1 соседней зоне."],["Flaming Star","2/2","Выберите 1 зону в пределах 2 зон. Нанесите 1 УРОН и наложите ГОРЕНИЕ на каждого соседнего для выбранной зоны вражеского героя"],["Fireball","3/1","Дополнительная стоимость: 1 AP. Нанесите 1 УРОН и наложите ГОРЕНИЕ до 5 врагам в 1 соседней зоне."],["Blazing Dart","4/1","Нанесите 3 УРОН и наложите ГОРЕНИЕ на 1 соседнего вражеского героя."],["Mindfulness","1/3","Возьмите 4 карты, затем, положите 2 карты из своей руки поверх колоды. Нанесите 1 УРОН и наложите ГОРЕНИЕ на 2 соседних врагов."]]},"Corjof":{"p":["Gathering Scryer","Действие: потратьте 1 MP чтобы взять 1 карту. (Один раз за ход Коржофа.)"],"c":[["Ice Bolts","0/3","Нанесите 1 УРОН и ЗАМОРОЗЬТЕ до 2 врагов, не являющихся монстрами, в 1 соседней зоне."],["Blizzard","2/2","Дополнительная стоимость: сбросьте 1 карту из руки. Нанесите 1 УРОН и ЗАМОРОЗЬТЕ до 5 врагов в 1 соседней зоне."],["Disarming Darts","3/1","Дополнительная стоимость: сбросьте 1 карту из руки. Нанесите 2 УРОНА и ОБЕЗОРУЖТЕ до 2 соседних врагов."],["Icewall","4/1","Дополнительная стоимость: сбросьте 1 карту из руки. Нанесите 4 УРОНА и ЗАМОРОЗЬТЕ всех вражеских героев в 1 соседней зоне. В следующий раз, когда один из них покинет эту зону в этом ходу, предотвратите это."],["Rain of Shards","1/3","Дополнительная стоимость: сбросьте 1 карту из руки. Телепортируйтесь в 1 другую зону куда угодно. Если вы это сделаете, нанесите 2 УРОНА и ЗАМОРОЗЬТЕ каждого врага там."]]},"Nelaclen":{"p":["Eldritch Whispers","Нелаклен может применять любые заклинания в вашей руке. Если он использует не свое заклинание, замените любые имена героев на нём на «Нелаклен»."],"c":[["Abyssal Bolts","0/3","Нанесите 1 УРОН и ОБЕЗОРУЖТЕ до 2 врагов, не являющихся монстрами, в 1 соседней зоне."],["Mask Darts","2/2","Выберите ГОРЕНИЕ, ЗАМОРОЗКА, ОГЛУШЕНИЕ, БЕЗМОЛВИЕ Нанесите 2 УРОНА и примените выбранный статус 1 к соседнему врагу."],["Totem of Void","3/1","Выберите 1 не ультимативную карту в своей стопке сброса. Если возможно, Нелаклен применяет его, как если бы он был у вас в руке."],["Earthquake","4/1","Дополнительная стоимость: 2 MP. Нанесите 1 УРОН и ОБЕЗОРУЖТЕ до 5 врагов в 1 соседней зоне."],["Heart of Taulot","1/3","Нанесите 8 УРОНА 1 соседнему аутсайдеру, игнорируя его способности Стойкость и Ответный удар."]]},"Setheru":{"p":["Skytear Master","Чтобы подготовить заклинание, поместите его лицевой стороной вверх рядом с полем. В начале каждой фазы плана добавьте 1 золотой жетон из резерва как «заряд» для каждого подготавливаемого заклинания. Сетеру может использовать подготовленное заклинание, сбросив его и все заряды на нем. Когда Сетеру побеждён, сбросьте все заряды."],"c":[["Skytear Bolts","0/3","Нанесите 1 УРОН и наложите БЕЗМОЛВИЕ на 2 врагов, не являющихся монстрами, в 1 соседней зоне."],["Word of Darts","2/2","Подготовьте в вашу фазу покупок. Нанесите Х УРОНА и наложите БЕЗМОЛВИЕ на 1 соседнего вражеского героя, где X — количество жетонов заряда на нем."],["Word of Void","3/1","Подготовьте в вашу фазу покупок. Нанесите 1 УРОН и ОГЛУШИТЕ до X врагов в 1 соседней зоне, где X - количество зарядов на ней."],["Word of Command","4/1","Подготовьте в вашу фазу покупок. Для каждых 2 зарядов выберите любой эффект: - Возьмите 1 карту. - Вытолкните 1 соседнего героя. - В этом раунде у Сетеру +1 импульс."],["The Last Word","1/3","Удвойте заряды 1 подготовленного заклинания. Затем разыграйте его, не сбрасывая ни эту карту, ни её заряды."]]},"Doomies":{"p":["Lost Legion","Думики имеют +1 импульс за каждые 4 HP, которые у них есть."],"c":[["Summon Scatter","0/3","Дополнительная стоимость: 1 HP. Поместите 1 дружественного миньона в 1 соседнюю зону столкновения."],["Siege Masters","2/2","Применяйте только в фазу ваших покупок. Сразу после этого раунда пушите дружественными миньонами в зоне Думиков."],["Join Us","3/1","Прикрепите к Думикам, пока они не будут побеждены. Когда соседний вражеский миньон побежден, вылечите Думикам 2 HP."],["Rocket Jump","4/1","Дополнительная стоимость: нанесите 3 УРОНА 1 соседнему дружественному миньону. Телепортируйтесь в 1 зону столкновения в любом месте. Если вы это сделаете, нанесите 1 УРОН и ОБЕЗОРУЖТЕ до 2 врагов там."],["BOOM!!!","3/2","Примените только в фазу ваших покупок. Сразу после этого раунда нанесите 4 УРОНА 1 вражескому нексусу или башне в пределах 3 зон, игнорируя его способности «Стойкость» и «Ответный удар»."]]},"Astryda":{"p":["Voice of the Tide","Когда Астрида побеждает вражеского миньона, она может потерять 1 HP, чтобы разместить 1 дружественного миньона в 1 соседнюю зону столкновения. (Один раз за ход Астриды.)"],"c":[["Summon Wave","0/3","Дополнительная стоимость: 1 AP. Если Астрида находится в зоне столкновения, поместите туда 2 дружественных миньонов."],["Freeze Push","2/2","Применяйте только в вешй фазе покупок и прекрепите к Астриде до конца этого раунда. Предотвратите пуш всех соседних миньонов."],["Lullaby","3/1","Восстановите 3 HP Астриде и ОБЕЗОРУЖТЕ 1 вражеского героя в 1 соседней зоне."],["Gaze","4/1","Предотвратите применение эффектов следующего заклинания для 1 вражеского героя в пределах 2 зон в этом ходу."],["Song of the Siren","1/3","Наложите БЕЗМОЛВИЕ на 1 вражеского героя в пределах 2 зон, игнорируя ограничение выбора цели в джунглях. Он также теряет 1 MP, 1 AP и не пожет применять заклинания в этом ходу."]]},"Kohai":{"p":["Barbed Hooks","Действие: притяните и ОГЛУШИТЕ 1 вражеского героя в пределах 2 зон. (Один раз за ход Кохая.)"],"c":[["Summon Ancestors","0/3","Дополнительная стоимость: сбросьте 1 карту из руки. Если Кохай находится в зоне столкновения, поместите туда 2 дружественных миньонов."],["Hooked Prey","2/2","Притяните и ОБЕЗОРУЖТЕ 1 вражеского героя в пределах 2 зон. Они не могут объявлять действия в этом ходу."],["Grit and Grin","3/1","Вылечите 4 HP Кохаю. В этом ходу у него +1 броня, и когда противник выбирает цель для атаки, он должен, если возможно, выбрать целью Кохая."],["Quick Call","4/1","Притяните и ОБЕЗОРУЖТЕ 1 дружественного героя в пределах 2 зон."],["Tower Reel","1/3","Дополнительная стоимость: 1 HP. Телепортируйтесь в 1 другую зону с башней или нексусом. Если вы это сделаете, нанесите 1 УРОН и наложите ОГЛУШЕНИЕ до 6 врагам там."]]},"Ekhrit":{"p":["Winds Gather","Предотвратите вход ЛЮБОГО героя в зону Эхрит."],"c":[["Summon Gale","0/3","Дополнительная стоимость: 1 MP. Поместите 1 дружественного миньона в 1 соседнюю зону столкновения."],["Stasis Push","2/2","Примените только в вашу фазу покупок и прикрепите к Эхрит до конца этого раунда. В этом раунде предотвратите пуш миньонов, кроме соседних с Эхрит."],["Windborne","3/1","Передвинте 1 другого дружественного героя в пределах 2 зон до 2 раз. В этом ходу он получает +1 импульс."],["Tornado","4/1","Вытолкните и ЗАМОРОЗИТЕ всех остальных героев в зоне Экрит."],["Windblast","1/3","Вытолкните, нанесите 2 УРОНА и ОГЛУШИТЕ до 4 соседних врагов."]]},"Kumaya":{"p":["Ashen Maiden","Когда вражеский герой покидает зону с Кумаи, она может нанести 2 УРОНА и нанести ГОРЕНИЕ на него."],"c":[["Shroud Smite","0/3","В этом ходу Кумая имеет +2 брони. Затем, атакуйте с силой +2 аутсайдера или монстра в зоне с Кумаи."],["Smokescreen","2/2","Прикрепите к Кумаи, пока она не будет побеждена. Враги за пределами зоне Кумаи не могут атаковать юнитов в ее зоне или саму зону."],["Explosive Resolve","3/1","В этом ходу Кумая имеет +2 брони. Нанесите 2 УРОНА и наложите ГОРЕНИЕ до 2 вражеских героев в ее зоне."],["Ashen Gank","4/1","Применяйте только в том случае, если Кумая находится в джунглях без вражеских героев. Передвинтесь к 1 смежной зоне на линии. Если вы это сделаете, атакуйте там 1 вражеского героя с +2 к силе."],["Ahasan Mark","3/2","Передвинтесь в 1 смежную зону. Если вы это сделаете, вы можете нанести 5 УРОНА и наложить БЕЗМОЛВИЕ на 1 врага."]]},"Heraal":{"p":["Jungle Runner","Гераал игнорирует ограничение выбора цели в джунглях. Действие: если Гераал находится в джунглях, телепортируйтесь в 1 джунгли в пределах 2 зон. (Один раз за ход Гераала.)"],"c":[["Ironwood Smite","0/3","В этом ходу у Гераала +2 брони. Нанесите 3 УРОНА 1 ближайшему монстру или аутсайдеру."],["Elk Form","2/2","Прикрепляйтесь к Гераалу, пока он не будет побеждён. Когда Гераал входит в зону, он может нанести 2 УРОНА 1 монстру или аутсайдеру там. (Один раз за ход Гераала.)"],["Vital Rebound","3/1","Исцелите 3 HP Гераалу. Нанесите 2 УРОНА и ОГЛУШИТЕ 1 соседнего вражеского героя."],["Hunting Gank","4/1","Применяйте, только если Гераал находится в джунглях без вражеских героев. Телепортируйтесь в 1 другую зону джунглей, где нет вражеских героев. Затем атакуйте 1 соседнего вражеского героя на линии."],["The Wilds Ride","1/3","Применяйте только в вашей фазе покупок. Сразу после того, как Гераал завершит этот раунд (пас), нанесите Х УРОНА 1 врагу в зоне Гераала, где Х — количество MP, которое он потратил в этом ходу. Этот УРОН игнорирует способность Стойкость."]]},"Ixatosk":{"p":["Underworld Dweller","Действие: телепортируйте 1 соседнего дружественного героя в 1 зону, смежную к Иксатоску. (Один раз за ход Иксатоска.)"],"c":[["Burrowing Smite","0/3","Если Иксатоск не является целью, передвинтесь в 1 соседнюю зону с монстром или аутсайдером. Если вы это сделаете, нанесите ему 2 УРОНА и игнорируйте его способности «Ответный удар» и «Стойкость»."],["Split Form","2/2","Прикрепляйтесь к Иксатоску, пока он не будет побеждён. Когда фаза джунглей заканчивается, вы можете нанести 1 УРОН 1 монстру или аутсайдеру в пределах 2 зон."],["Counterstrike","3/1","В этом ходу Иксатоск имеет +2 брони. Нанесите 2 УРОНА 1 вражескому герою в зоне Иксатоска."],["Tunnel Gank","4/1","Телепортируйте 1 соседнего дружественного героя к 1 зоне джунглей без вражеских героев. В этом ходу этот герой имеет +1 к силе."],["Skytear Predator","3/2","Применяйте только в вашей фазе покупок В этом раунде Иксатоск имеет +X силы и +X брони, где X — это MP на его плане. В этом раунде атаки Иксатоска могут быть нацелены только на аутсайдера, игнорируя его Стойкость."]]},"Shafathi":{"p":["Shadow Over Space","Шафати имеет +3 инициативы. Соседние враги имеют -1 инициативу."],"c":[["Smite Stasis","0/3","Выберите 1 монстра или монстра в любом месте. В следующий раз, когда в этом ходу ему должен быть нанесен УРОН - предотвратите весь УРОН."],["Shafathi Shadow","2/2","Присоедените к Шафати, пока он не будет побежден. Когда он победит монстра, получите +3 золота."],["Dematerialize","3/1","Шафари получает Стойкость на этот ход. Нанесите 1 УРОН и наложите БЕЗМОЛВИЕ 1 вражескому герою в его зоне."],["Echo Gank","4/1","Применяйте, только если Шафати находится в джунглях без вражеских героев. Дополнительная стоимость: сбросьте 3 карты из руки. Подготовьте Шафати."],["Split Second","3/2","Применяйте только в вешей фазе покупок. Телепортируйтесь в 1 зону столкновения. Если вы это сделаете, нанесите 2 УРОНА и БЕЗМОЛВИЕ до 2 врагов в ней."]]},"Yami":{"p":["Harbinger of Revenge","Когда Ями входит в зону во время своего хода, она может вытолкнуть оттуда 1 вражеского героя."],"c":[["Haunting Lead","0/3","При следующем пуше, вражеские миньоны в 1 соседней зоне, теряют 3 импульса (вплоть до минимума 0)."],["Flame Swipe","2/2","Нанесите 2 УРОНА и нанесите ГОРЕНИЕ 2-ум врагам в зоне Ями. Если на момент произношения этого заклинания там находится 4 или более врагов, вместо этого выберите целью 3х врагов."],["Ghost Walk","3/1","Ями получает 2 MP. В этом ходу она может совершать действия движения, и у нее есть Стойкость."],["Get Over Here","4/1","Притяните и ОГЛУШИТЕ 1 соседнего вражеского героя."],["Kneel Before Me","3/2","Телепортируйтесь в 1 зону в пределах 2 зон. Если вы это сделаете, нанесите 1 УРОН и ЗАМОРОЗЬТЕ до 3 врагов."]]},"Gulbjarn":{"p":["Rabid Brawl","Атаки Гульбьярна могут поражать 1 дополнительного врага, не являющегося миньоном."],"c":[["Fearless Lead","0/3","Прикрепите к Гульбьярну до конца этого раунда. Гульбьярн имеет +2 импульса."],["Bear Form","2/2","Прикрепите к Гульбьярну, пока он не будет побеждён. Гульбьярн имеет +1 броню. Предотвращайте эффекты «перемещения», «телепортации» и «выталкивания» от заклинаний и способностей соседних вражеских героев."],["Iron Grasp","3/1","Нанесите 3 УРОНА, РАЗОРУЖИТЕ и притяните 1 соседнего вражеского героя. Ни Гульбьярн, ни цель не могут произносить заклинания в этом ходу."],["Feral Grapple","4/1","Нанесите 3 УРОНА и притяните 1 соседнего врага. Если вы нанесли 1 или более УРОНА, вылечите Гульбьярну 3 HP."],["Feral Brawl","3/2","Вылечите Гульбьярну 4 HP. Притяните и ЗАМОРОЗЬТЕ до 2 вражеских героев в пределах 2 зон."]]},"Zacoal":{"p":["*Kradoom*","Атаки Закоала также могут телепортировать целевого героя в 1 зону в пределах 2 зон от Закоала."],"c":[["Towering Lead","0/3","Прикрепите к Закоалу до конца этого хода. Соседние дружественные миньоны имеют +3 брони."],["*Whheeeeee*","2/2","ЗАМОРОЗЬТЕ и телепортируйте 1 соседнего героя в смежную с этим героем зону. Этот герой не может произносить заклинания в этом ходу."],["*Thud* *Thud*","3/1","В этом ходу, когда Закоал телепортирует юнит в зону, он может нанести 1 УРОН и ОБЕЗОРУЖИТЬ до 2 врагов там."],["*Clonk*","4/1","Закоал в этом ходу имеет +2 брони. Нанесите 3 УРОНА 1 соседнему вражескому герою."],["*Slam*","3/2","Атакуйте 1 врага в зоне действия Закоала с силой +2. Если атака поразила героя, вы можете телепортировать его в любую зону, кроме нексуса Закоала."]]},"Khenui":{"p":["Refraction Dance","Пока Хенуи находится на линии, у нее есть Стойкость против атак (в том числе и от «Ответного удара»)."],"c":[["Deceptive Lead","0/3","Прикрепите к Хенуи до конца этого раунда. Предотвратите способность «Ответный удар» от соседних врагов."],["Pirouette Blow","2/2","Дополнительная стоимость: 1 MP. Нанесите 1 УРОН и заморозьте до 3 соседних врагов."],["Elusive Spin","3/1","В этом ходу у Хенуи +3 брони. Нанесите БЕЗМОЛВИЕ или ОГЛУШЕНИЕ 1 соседнему вражескому герою."],["Magnetic Presence","4/1","Применяйте только в вашей фазе покупок. Прикрепите к Хенуи до конца раунда. Вражеские герои в пределах 3 зон не могут атаковать, если они не находятся рядом с Хенуи или у них не осталось 0 MP. Если эти герои объявляют действие движения, они должны подойти ближе к ней. (Не работает на движение от заклинаний)"],["Echo Dance","3/2","Применяйте только в вашей фазе покупок. Хенуи имеет +2 инициативы в этом раунде и может телепортироваться в 1 другую зону куда угодно. Если вы это сделаете, нанесите 2 УРОНА и ОБЕЗОРУЖТЕ 1 вражеского героя в этой зоне."]]}};
-const CLS_ORDER = ["Убийца","Стрелок","Танк","Контроллер","Маг","Лайнер","Лесник","Воин"];
+const ABIL={"Hogosai":{"p":["Igneous Body","Хогосай имеет +1 броню. Вражеские миньоны должны атаковать его, если это возможно."],"c":[["Brimstone Shield","0/3","1 соседний боец имеет +3 брони и «Ответный удар: ГОРЕНИЕ» в этом ходу."],["Infernal Taunt","2/2","Прикрепите к Хогосаю, пока он не будет побеждён. Он получает +1 броню и способность «Ответный удар: ГОРЕНИЕ. Когда оппонент выбирает цель для заклинания или способности, он должен, если возможно, выбрать целью Хогосая."],["Burst","3/1","Дополнительная стоимость: выберите X — 1, 2 или 3. Нанесите X УРОНА Хогосаю. Нанесите 1 УРОН и нанесите ОГЛУШЕНИЕ X врагам на 1 соседнем участке."],["Scorching Shove","4/1","Вытолкните и наложите ГОРЕНИЕ на 1 вражеского героя на 1 соседний участок. Если вы вытолкнули его, перейдите на целевой участок."],["Supernova","3/2","Нанесите 3 УРОНА и наложите ГОРЕНИЕ всех врагов на 1 соседнем участке."]]},"Brylvar":{"p":["Stoic Defender","Соседние дружественные герои имеют +1 броню. (Включая Брилвара.)"],"c":[["Frost Shield","0/3","1 соседний боец имеет +3 брони и «Ответный удар: ЗАМОРОЗКА» в этом ходу."],["Pangolin Form","2/2","Прикрепите к Брилвару, пока он не будет побеждён. У него +1 броня. Если соседний герой получат УРОН, Брилвар вместо этого может получить любое его количество. (Оба героя используют собственную броню.)"],["Tail Slam","3/1","Нанесите 2 УРОНА и наложите МОЛЧАНИЕ на до X врагов на 1 соседнем участке, где X равно броне Брилвара."],["Rolling Shove","4/1","Вытолкните и наложите ЗАМОРОЗКУ 1 вражеского героя на 1 соседний участок. Если вы вытолкнули его, перейдите на целевой участок."],["Spiked Scales","3/2","В этом ходу 1 соседний боец имеет +4 брони и «Ответный удар: X УРОНА», где X — его броня."]]},"Cotlic":{"p":["Xotlan Protects","Соседние дружественные миньоны имеют +2 брони против карточек, атак и способностей."],"c":[["Bone Shield","0/3","1 соседний боец имеет +3 брони и в этом ходу «Ответный удар: БЕЗОРУЖНОСТЬ."],["Flesh to Stone","2/2","Прикрепите к Котлику, пока он не будет побеждён. У него +2 брони, и он теряет 1 ОА каждый раз, когда начинает ход. Когда оппонент выбирает цель для атаки или произнесения заклинания, он должен, если возможно, нацелиться на Котлика."],["Totem of Pain","3/1","Нанесите 2 УРОНА и ОБЕЗОРУЖТЕ до 2 врагов на участке Котлика. Если во время применения этого заклинания там есть 3 или более дружественных миньонов, вместо этого выберите 3х врагов."],["Shield Shove","4/1","Вытолкните и ОБЕЗОРУЖТЕ 1 вражеского героя на 1 соседний участок. Если вы вытолкнули его, перейдите на целевой участок."],["My Kingdom!","3/2","Сразу после этого хода продвиньте миньонов с участка Котлика с импульсом +2."]]},"Shaidrus":{"p":["Last Protector","Шайдрус имеет +3 брони и -2 силы."],"c":[["Void Shield","0/3","1 соседний боец имеет +3 брони и «Ответный удар: нанесите МОЛЧАНИЕ» в этом ходу."],["Shaidrus Shadow","2/2","Прикрепите к 1 дружественному герою в пределах 2 участков, пока Шайдрус не будет побежден. Если герой с этой картой должен получить УРОН, Шайдрус должен получить его вместо этого. (Оба героя используют свою броню)."],["Shields Whirlwind","3/1","Нанесите 1 УРОН и нанесите ГОРЕНИЕ до 2х врагов на участке Шайдруса. Если на участке более 5 вражеских миньонов - выберите целью 3х врагов вместо 2х."],["Judgement Shove","4/1","Вытолкните и ОГЛУШИТЕ 1 вражеского героя на 1 соседний участок. Если вы вытолкнули его, перейдите на целевой участок."],["None Shall Enter","3/2","Телепортируйте Шайдруса и всех миньонов с 1 соседнего участка на участок, отмеченный буквой «M», на том же пути. Затем восстановите все разрушенные дружественные башни на этом пути."]]},"Miyuki":{"p":["Spiritual Wake","Соседние вражеские герои должны получить 2 УРОНА и ГОРЕНИЕ в качестве дополнительной стоимости розыгрыша карты."],"c":[["Spirit Heal","0/3","Восстановите 3 ОЗ 1 бойцу в пределах 2 участков. Если у цели есть статус, вы можете перенести его 1 другому соседнему с Миюки герою."],["Choking Sparks","2/2","Нанесите ГОРЕНИЕ и прикрепите к 1 вражескому герою в пределах 2 участков, пока Миюки или этот герой не будут побеждены. Если герой с этой картой теряет 1 ОЗ из-за ГОРЕНИЯ, вместо этого он потеряет 2 ОЗ."],["Lifesteal Touch","3/1","Прикрепите к 1 дружественному герою в пределах 3 участков, пока он не будет побежден. Когда герой с этой картой наносит атакой 1 или более УРОНА исцелите ему 2 ОЗ."],["Crippling Ray","4/1","Выберите два разных статуса: БЕЗОРУЖНОСТЬ, МОЛЧАНИЕ, ОГЛУШЕНИЕ или ГОРЕНИЕ. Нанесите выбранные статусы 1 вражескому герою в пределах 2 участков."],["Soul Guide","1/3","Если 1 отродье или дружественный герой в пределах 3 участков должен быть побежден в этом ходу, вместо этого установите его ОЗ на 5."]]},"Freyhel":{"p":["Enduring Queen","Действие: исцелите 3 ОЗ 1 соседнему герою. (Один раз за ход Фрейхель"],"c":[["Nourish Heal","0/3","Восстановите 3 ОЗ 1 бойцу в пределах 2 участков."],["Breezing Nova","2/2","Выберите «дружественный» или «вражеский». Исцелите 2 ОЗ каждому соседнему герою выбранного типа."],["Withering Gift","3/1","Прикрепите к Фрейхель, пока она не будет побеждена. Если она исцеляет боец, вместо этого она может нанести такое же количество УРОНА."],["Life Drain","4/1","Нанесите 2 УРОНА и наложите ЗАМОРОЗКУ на 1 соседнего вражеского героя или миньона. Если вы нанесете УРОН, вылечите 2 ОЗ 1 другому ближайшему бойцу."],["Glacial Rebirth","1/3","Восстановите 3 ОЗ и снимите все статусы с 1 бойца в любом месте. Если этот боец дружественный, вместо этого вылечите 8 ОЗ."]]},"Tlakali":{"p":["Ritual of Sacrifice","Если соседний дружественный миньон должен быть побежден, Вместо этого Тлакали может потерять 1 ОЗ. (До одного раза в ход каждого героя)"],"c":[["Ritual Heal","0/3","Восстановите 3 ОЗ 1 соседнему бойцу и удалите 1 жетон статуса с него. Если Тлакали находится на спорном участке, этот боец в этом ходу получает +1 броню."],["Scarifier's Curse","2/2","Прикрепите к 1 ближайшему вражескому герою, до тех пор, пока Тлакали или этот герой не будут побеждены. Наложите БЕЗОРУЖНОСТЬ на прикрепленного героя. Когда он потеряет этот статус, наложите его снова."],["Ritual of Sacrifice","3/1","Дополнительная стоимость: нанесите 2 УРОНА 1 дружественному герою в пределах 2 участков. Восстановите 6 ОЗ 1 соседнему бойцу и снимите с него 1 статус. Вы не можете выбрать один и тот же боец."],["Twisted Allegiance","4/1","Дополнительная стоимость: нанесите 2 УРОНА 1 дружественному герою в пределах 2 участков. Восстановите 8 ОЗ Тлакали."],["The Call of Taulot","1/3","Выберите одно: - Подготовьте 1 возражадающегося героя. - Подготовте 1 уставшего героя, который был побежден в этот день. - Удалите 1 жетон отродья с пути"]]},"Akhuti":{"p":["Radiant Silence","Когда вражеский герой входит на соседний участок, Наложите на него МОЛЧАНИЕ и ЗАМОРОЗКУ."],"c":[["Radiant Healing","0/3","Восстановите 2 ОЗ до 2 соседним бойцам и снимите 1 из их статусов. Любой из этих бойцов, не достигший начального уровня здоровья, в этом ходу получает +1 броню."],["Flash Ray","2/2","Переместите 1 другого дружественного героя в пределах 3 участков на 1 участок, смежный с ним."],["Silence Ray","3/1","Наложите ЗАМОРОЗКУ и ГОРЕНИЕ на 1 героя в пределах 2 участков. Он не может применять заклинания в этом ходу."],["Peacekeeping Ray","4/1","Вы можете снять 1 статус с 1 бойца в пределах 2 участков. В следующий раз, когда они будут терять ОЗ в этом ходу - предотвратите это."],["Nupten Touch","1/3","Вылечите 8 ОЗ, снимите все статусы и повысьте уровень 1 дружественного героя в пределах 3 участков."]]},"Akimo":{"p":["Blade of the Everking","Акимо получает +3 к силе, если у него есть ГОРЕНИЕ. Действие: Акимо получает ГОРЕНИЕ."],"c":[["Scorching Dive","0/3","Переместитесь на 1 смежный участок. Если вы это сделаете, вы можете нанести 2 УРОНА и наложить ГОРЕНИЕ на 1 вражеского героя или отродье."],["Kurumo's Brand","2/2","Нанесите 3 УРОНА и наложите ГОРЕНИЕ на 1 соседнего вражеского героя или отродье. В следующий раз, когда этот враг войдет на какой-либо участок в этом ходу, телепортируйте туда Акимо."],["Ishiro Unleashed","3/1","Дополнительная стоимость: 1 ОЗ. Следующая атака Акимо в этом ходу имеет +5 силы, а также наносит ГОРЕНИЕ."],["Bloodthirst","4/1","Применяйте только в вашу фазу покупки. В этом раунде у Акимо +3 инициативы и +1 силы. Следующая фаза миньонов отложена до конца этого раунда."],["Akimo's Oath","3/2","Прикрепите к 1 соседнему вражескому герою. Удвойте силу Акимо, пока он атакует этого героя."]]},"Shyllavi":{"p":["Restless Wildcat","Шиллави получает +3 к силе, если у нее 7 и более ОЗ."],"c":[["Freezing Dive","0/3","Переместитесь на 1 соседний участок. Если вы это сделаете, вы можете нанести 2 УРОНА и наложить ЗАМОРОЗКУ на 1 вражеского героя или отродье."],["Wildcat Form","2/2","Прикрепите к Шиллави, пока она не будет побеждена. У нее есть +1 броня и «Ответный удар: БЕЗОРУЖНОСТЬ»."],["Biding Time","3/1","Применяйте только в вашу фазу покупки Исцелите 3 ОЗ Шиллави. В этом раунде у нее +3 инициативы. Следующая фаза миньонов отложена до конца этого раунда."],["Feline Pounce","4/1","Телепортируйтесь на 1 участок, в 2 участках от вас. Если вы это сделаете, наложите МОЛЧАНИЕ на 1 героя и предотвратите применение им заклинаний в этом ходу."],["Dance of the Predator","3/2","Дополнительная стоимость: 1 ОА. Переместитесь на 1 участок в пределах 2 участков. Если вы это сделаете, атакуйте каждого вражеского героя и каждого вражеского миньона там."]]},"Nantaca":{"p":["Sepulchral Tendrils","Нантака имеет +1 к силе за каждого соседнего дружественного миньона, пока она находится в джунглях или реке."],"c":[["Withering Pull","0/3","Нанесите 2 УРОНА, ОБЕЗОРУЖТЕ и притяните 1 смежного вражеского героя, игнорируя ограничение прицеливания в джунгли."],["Unburial Rite","2/2","Дополнительная стоимость: 1 ОП. Если Нантака находится на спорном участке, поместите туда 1 дружественного миньона. Все спорные участки в этот ход являются джунглями."],["Sinkhole","3/1","Нанесите 1 УРОН, ОГЛУШИТЕ и притяните каждого соседнего вражеского. В этом ходу предотвратите эффекты «перемещение», «телепорт» и «выталкивания» в их заклинаниях."],["Living Jungle","4/1","Примените только в вашей фазе покупки и только если Нантака находится в джунглях. Телепортируйтесь на 1 участок джунглей в любое место, где нет вражеских героев. В этом раунде у нее +2 инициативы. Следующая фаза миньонов отложена до конца этого раунда."],["Obey the Monarch","3/2","Поместите 2 дружественных миньонов на 1 соседний спорный участок. В этот ход все участки являются джунглями."]]},"Haburat":{"p":["Executioner","Хабурат имеет силу +X, где X равена количеству ОА на его плане."],"c":[["Shining Dive","0/3","Передвинтесь на 1 соседний участок. Если вы это сделали, вы можете нанести 2 УРОНА и ОГЛУШИТЬ 1 вражеского героя или отродье там."],["Haburat Shadow","2/2","Прикрепите к 1 ближайшему вражескому герою, пока Хабурат или этот герой не будут побеждены. Прикрепленный герой всегда находится в пределах досягаемости Хабурата (применяется правило джунглей)."],["Overdue Execution","3/1","Применяйте только в вашей фазе покупки В этом раунде Хабурат имеет +X инициативы и +X силы, где X - номер дня. Выберите 1 вражеского героя в любом месте, Хабурат может атаковать его только в этом раунде."],["Weave","4/1","Выберите 1 соседнего врага. Следующая атака Хабурата в этом ходу игнорирует правило «Слабых врагов» и наносит любой избыточный УРОН выбранному врагу. Избыточный УРОН - это любой УРОН, превышающий необходимый для уничтожения цели."],["Lightning Blades","3/2","Применяйте только в вашу фазу покупки Удвойте ОА на плане Хабурата в этом раунде."]]},"Sakoshi":{"p":["Run and Hide","Когда Сакоши теряет 1 или более ОЗ, он может продвинутся на 1 смежный участок."],"c":[["Quick Shot","0/3","Атакуйте 1 врага на участке Сакоши."],["Bouncy Shurikens","2/2","Дополнительная стоимость: 1 ОП и 1 ОА. Атакуйте до 3 соседних врагов."],["Airship Drop","3/1","Дополнительная стоимость: 1 ОП и 1 ОЗ. Телепортируйтесь на 1 участок куда угодно. Если вы это сделаете, вы можете нанести 1 УРОН 1 врагу там. Затем потеряйте все ОП и ОА."],["Counterfeits","4/1","Применяйте только в вашу фазу покупки. Купите предмет стоимостью до 12 золотых, не оплачивая его стоимость. Наденьте его на Сакоши, игнорируя ограничение в 1 предмет каждого цвета."],["Shuriken Storm","1/3","Применяйте только вашу фазу покупки Сакоши получает 3 ОА. В этом раунде он может предпринимать действия атаки, но в качестве цели может выбрать только героя и/или отродье."]]},"Vorhild":{"p":["Icy Shade","Ворхильд может атаковать смежных врагов, и врагов ровно через 2 участка."],"c":[["Precise Shot","0/3","Атакуйте 1 врага в двух участках от Ворхильд"],["Ermine Form","2/2","Прикрепите к Ворхильде, пока она не объявит атаку или произнесет заклинание. У нее есть Стойкость во время хода любого героя."],["Long Shot","3/1","Дополнительная стоимость: 1 ОП. Выберите 1 не соседний участок. Нанесите 1 УРОН и ЗАМОРОЗЬТЕ 1 вражеского героя или миньона там."],["Barrage","4/1","Дополнительная стоимость: 1 ОА. Атакуйте каждого соседнего вражеского героя."],["The Ermine's Eye","1/3","Дополнительная стоимость: все ОА. Выберите 1 вражеского героя на 1 участке в любом месте и атакуйте его с +3 к силе за каждую ОА, потраченную на его применение."]]},"Achla":{"p":["Poisoned Traps","Когда 1 соседний вражеский герой теряет ОЗ во время хода любого героя, он теряет на 1 ОЗ больше."],"c":[["Guerrilla Shot","0/3","Атакуйте 1 соседнего враг в джунглях, игнорируя ограничение на выбор цели в джунглях."],["Spiked Bait","2/2","Выберите 1 участок джунглей в любом месте. Нанесите 1 УРОН и ОГЛУШИТЕ 1 врага там."],["Poison Sting","3/1","Прикрепите к 1 вражескому герою в пределах 2 участков, пока он не истощится или не исцелится. Когда этот герой завершает действие, нанесите ему 1 УРОН."],["Ambush","4/1","Дополнительная стоимость: 2 ОП. Дважды атакуйте 1 смежного вражеского героя, игнорируюя ограничение выбора цели в джунглях."],["Coma Toxin","1/3","Нанесите 8 УРОНА 1 соседнему вражескому герою, игнорируя ограничение выбора цели в джунглях."]]},"Khepiax":{"p":["Lady of Lightning","Добавьте следующий эффект в конец каждого заклинания дружественного героя: \"Хепиакс наносит 1 УРОН до 1 вражеского героя, соседнего с Хепиаксом.\""],"c":[["Lightning Shot","0/3","Атакуйте 1 соседнего врага на пути."],["Chain Lightning","2/2","Дополнительная стоимость: сбросьте 1 карту из руки. Следующая атака Хепиакса в этом ходу может быть нацелена еще на 3 врагов на его участке."],["Gathering Storm","3/1","Примените только в начале хода Хепиакса. Дополнительная стоимость: все ОА и все ОП. Возьмите 4 карты."],["Thunderclap","4/1","Выберите 1 не соседний путь. Нанесите 1 УРОН и наложите МОЛЧАНИЕ 1 вражескому герою там."],["Become the Storm","1/3","Дополнительная стоимость: победите 1 соседнего дружественного миньона. Нанесите 4 УРОНА, разделенных между 4 врагами в любом месте (даже на разных участках)."]]},"Kichie":{"p":["Rejuvenating Fire","Когда Кичи наносит УРОН, исцелите ему 1 ОЗ за каждую боец, которому он нанес урон."],"c":[["Burning Bolts","0/3","Нанесите 1 УРОН и наложите ГОРЕНИЕ на 2 врагов, не являющихся монстрами, на 1 соседнем участке."],["Flaming Star","2/2","Выберите 1 участок в пределах 2 участков. Нанесите 1 УРОН и наложите ГОРЕНИЕ на каждого соседнего для выбранного участка вражеского героя"],["Fireball","3/1","Дополнительная стоимость: 1 ОА. Нанесите 1 УРОН и наложите ГОРЕНИЕ до 5 врагам на 1 соседнем участке."],["Blazing Dart","4/1","Нанесите 3 УРОН и наложите ГОРЕНИЕ на 1 соседнего вражеского героя."],["Mindfulness","1/3","Возьмите 4 карты, затем, положите 2 карты из своей руки поверх колоды. Нанесите 1 УРОН и наложите ГОРЕНИЕ на 2 соседних врагов."]]},"Corjof":{"p":["Gathering Scryer","Действие: потратьте 1 ОП чтобы взять 1 карту. (Один раз за ход Коржофа.)"],"c":[["Ice Bolts","0/3","Нанесите 1 УРОН и ЗАМОРОЗЬТЕ до 2 врагов, не являющихся монстрами, на 1 соседнем участке."],["Blizzard","2/2","Дополнительная стоимость: сбросьте 1 карту из руки. Нанесите 1 УРОН и ЗАМОРОЗЬТЕ до 5 врагов на 1 соседнем участке."],["Disarming Darts","3/1","Дополнительная стоимость: сбросьте 1 карту из руки. Нанесите 2 УРОНА и ОБЕЗОРУЖТЕ до 2 соседних врагов."],["Icewall","4/1","Дополнительная стоимость: сбросьте 1 карту из руки. Нанесите 4 УРОНА и ЗАМОРОЗЬТЕ всех вражеских героев на 1 соседнем участке. В следующий раз, когда один из них покинет этот участок в этом ходу, предотвратите это."],["Rain of Shards","1/3","Дополнительная стоимость: сбросьте 1 карту из руки. Телепортируйтесь на 1 другой участок куда угодно. Если вы это сделаете, нанесите 2 УРОНА и ЗАМОРОЗЬТЕ каждого врага там."]]},"Nelaclen":{"p":["Eldritch Whispers","Нелаклен может применять любые заклинания в вашей руке. Если он использует не свое заклинание, замените любые имена героев на нём на «Нелаклен»."],"c":[["Abyssal Bolts","0/3","Нанесите 1 УРОН и ОБЕЗОРУЖТЕ до 2 врагов, не являющихся монстрами, на 1 соседнем участке."],["Mask Darts","2/2","Выберите ГОРЕНИЕ, ЗАМОРОЗКА, ОГЛУШЕНИЕ, МОЛЧАНИЕ Нанесите 2 УРОНА и примените выбранный статус 1 к соседнему врагу."],["Totem of Void","3/1","Выберите 1 не коронную карту в своей стопке сброса. Если возможно, Нелаклен применяет его, как если бы он был у вас в руке."],["Earthquake","4/1","Дополнительная стоимость: 2 ОП. Нанесите 1 УРОН и ОБЕЗОРУЖТЕ до 5 врагов на 1 соседнем участке."],["Heart of Taulot","1/3","Нанесите 8 УРОНА 1 соседнему отродью, игнорируя его способности Стойкость и Ответный удар."]]},"Setheru":{"p":["Skytear Master","Чтобы подготовить заклинание, поместите его лицевой стороной вверх рядом с полем. В начале каждой фазы планирования добавьте 1 золотой жетон из резерва как «заряд» для каждого подготавливаемого заклинания. Сетеру может использовать подготовленное заклинание, сбросив его и все заряды на нем. Когда Сетеру побеждён, сбросьте все заряды."],"c":[["Skytear Bolts","0/3","Нанесите 1 УРОН и наложите МОЛЧАНИЕ на 2 врагов, не являющихся монстрами, на 1 соседнем участке."],["Word of Darts","2/2","Подготовьте в вашу фазу покупки. Нанесите Х УРОНА и наложите МОЛЧАНИЕ на 1 соседнего вражеского героя, где X — количество жетонов заряда на нем."],["Word of Void","3/1","Подготовьте в вашу фазу покупки. Нанесите 1 УРОН и ОГЛУШИТЕ до X врагов на 1 соседнем участке, где X - количество зарядов на ней."],["Word of Command","4/1","Подготовьте в вашу фазу покупки. Для каждых 2 зарядов выберите любой эффект: - Возьмите 1 карту. - Вытолкните 1 соседнего героя. - В этом раунде у Сетеру +1 импульс."],["The Last Word","1/3","Удвойте заряды 1 подготовленного заклинания. Затем разыграйте его, не сбрасывая ни эту карту, ни её заряды."]]},"Doomies":{"p":["Lost Legion","Думики имеют +1 импульс за каждые 4 ОЗ, которые у них есть."],"c":[["Summon Scatter","0/3","Дополнительная стоимость: 1 ОЗ. Поместите 1 дружественного миньона на 1 соседний спорный участок."],["Siege Masters","2/2","Применяйте только в фазу ваших покупок. Сразу после этого раунда продвиньте дружественных миньонов с участка Думиков."],["Join Us","3/1","Прикрепите к Думикам, пока они не будут побеждены. Когда соседний вражеский миньон побежден, вылечите Думикам 2 ОЗ."],["Rocket Jump","4/1","Дополнительная стоимость: нанесите 3 УРОНА 1 соседнему дружественному миньону. Телепортируйтесь на 1 спорный участок в любом месте. Если вы это сделаете, нанесите 1 УРОН и ОБЕЗОРУЖТЕ до 2 врагов там."],["BOOM!!!","3/2","Примените только в фазу ваших покупок. Сразу после этого раунда нанесите 4 УРОНА 1 вражескому порталу или башне в пределах 3 участков, игнорируя его способности «Стойкость» и «Ответный удар»."]]},"Astryda":{"p":["Voice of the Tide","Когда Астрида побеждает вражеского миньона, она может потерять 1 ОЗ, чтобы разместить 1 дружественного миньона на 1 соседний спорный участок. (Один раз за ход Астриды.)"],"c":[["Summon Wave","0/3","Дополнительная стоимость: 1 ОА. Если Астрида находится на спорном участке, поместите туда 2 дружественных миньонов."],["Freeze Push","2/2","Применяйте только в вашей фазе покупки и прикрепите к Астриде до конца этого раунда. Предотвратите продвижение всех соседних миньонов."],["Lullaby","3/1","Восстановите 3 ОЗ Астриде и ОБЕЗОРУЖТЕ 1 вражеского героя на 1 соседнем участке."],["Gaze","4/1","Предотвратите применение эффектов следующего заклинания для 1 вражеского героя в пределах 2 участков в этом ходу."],["Song of the Siren","1/3","Наложите МОЛЧАНИЕ на 1 вражеского героя в пределах 2 участков, игнорируя ограничение выбора цели в джунглях. Он также теряет 1 ОП, 1 ОА и не пожет применять заклинания в этом ходу."]]},"Kohai":{"p":["Barbed Hooks","Действие: притяните и ОГЛУШИТЕ 1 вражеского героя в пределах 2 участков. (Один раз за ход Кохая.)"],"c":[["Summon Ancestors","0/3","Дополнительная стоимость: сбросьте 1 карту из руки. Если Кохай находится на спорном участке, поместите туда 2 дружественных миньонов."],["Hooked Prey","2/2","Притяните и ОБЕЗОРУЖТЕ 1 вражеского героя в пределах 2 участков. Они не могут объявлять действия в этом ходу."],["Grit and Grin","3/1","Вылечите 4 ОЗ Кохаю. В этом ходу у него +1 броня, и когда противник выбирает цель для атаки, он должен, если возможно, выбрать целью Кохая."],["Quick Call","4/1","Притяните и ОБЕЗОРУЖТЕ 1 дружественного героя в пределах 2 участков."],["Tower Reel","1/3","Дополнительная стоимость: 1 ОЗ. Телепортируйтесь на 1 другой участок с башней или порталом. Если вы это сделаете, нанесите 1 УРОН и наложите ОГЛУШЕНИЕ до 6 врагам там."]]},"Ekhrit":{"p":["Winds Gather","Предотвратите вход ЛЮБОГО героя на участок Эхрит."],"c":[["Summon Gale","0/3","Дополнительная стоимость: 1 ОП. Поместите 1 дружественного миньона на 1 соседний спорный участок."],["Stasis Push","2/2","Примените только в вашу фазу покупки и прикрепите к Эхрит до конца этого раунда. В этом раунде предотвратите продвижение миньонов, кроме соседних с Эхрит."],["Windborne","3/1","Передвинте 1 другого дружественного героя в пределах 2 участков до 2 раз. В этом ходу он получает +1 импульс."],["Tornado","4/1","Вытолкните и ЗАМОРОЗИТЕ всех остальных героев на участке Экрит."],["Windblast","1/3","Вытолкните, нанесите 2 УРОНА и ОГЛУШИТЕ до 4 соседних врагов."]]},"Kumaya":{"p":["Ashen Maiden","Когда вражеский герой покидает участок с Кумаи, она может нанести 2 УРОНА и нанести ГОРЕНИЕ на него."],"c":[["Shroud Smite","0/3","В этом ходу Кумая имеет +2 брони. Затем, атакуйте с силой +2 отродье или монстра на участке с Кумаи."],["Smokescreen","2/2","Прикрепите к Кумаи, пока она не будет побеждена. Враги за пределами участка Кумаи не могут атаковать бойцов на её участке или сам участок."],["Explosive Resolve","3/1","В этом ходу Кумая имеет +2 брони. Нанесите 2 УРОНА и наложите ГОРЕНИЕ до 2 вражеских героев на её участке."],["Ashen Gank","4/1","Применяйте только в том случае, если Кумая находится в джунглях без вражеских героев. Передвинтесь к 1 смежному участку на пути. Если вы это сделаете, атакуйте там 1 вражеского героя с +2 к силе."],["Ahasan Mark","3/2","Передвинтесь на 1 смежный участок. Если вы это сделаете, вы можете нанести 5 УРОНА и наложить МОЛЧАНИЕ на 1 врага."]]},"Heraal":{"p":["Jungle Runner","Гераал игнорирует ограничение выбора цели в джунглях. Действие: если Гераал находится в джунглях, телепортируйтесь в 1 джунгли в пределах 2 участков. (Один раз за ход Гераала.)"],"c":[["Ironwood Smite","0/3","В этом ходу у Гераала +2 брони. Нанесите 3 УРОНА 1 ближайшему монстру или отродью."],["Elk Form","2/2","Прикрепляйтесь к Гераалу, пока он не будет побеждён. Когда Гераал входит на участок, он может нанести 2 УРОНА 1 монстру или отродью там. (Один раз за ход Гераала.)"],["Vital Rebound","3/1","Исцелите 3 ОЗ Гераалу. Нанесите 2 УРОНА и ОГЛУШИТЕ 1 соседнего вражеского героя."],["Hunting Gank","4/1","Применяйте, только если Гераал находится в джунглях без вражеских героев. Телепортируйтесь на 1 другой участок джунглей, где нет вражеских героев. Затем атакуйте 1 соседнего вражеского героя на пути."],["The Wilds Ride","1/3","Применяйте только в вашей фазе покупки. Сразу после того, как Гераал завершит этот раунд (пас), нанесите Х УРОНА 1 врагу на участке Гераала, где Х — количество ОП, которое он потратил в этом ходу. Этот УРОН игнорирует способность Стойкость."]]},"Ixatosk":{"p":["Underworld Dweller","Действие: телепортируйте 1 соседнего дружественного героя на 1 участок, смежный с Иксатоском. (Один раз за ход Иксатоска.)"],"c":[["Burrowing Smite","0/3","Если Иксатоск не является целью, передвинтесь на 1 соседний участок с монстром или отродьем. Если вы это сделаете, нанесите ему 2 УРОНА и игнорируйте его способности «Ответный удар» и «Стойкость»."],["Split Form","2/2","Прикрепляйтесь к Иксатоску, пока он не будет побеждён. Когда фаза джунглей заканчивается, вы можете нанести 1 УРОН 1 монстру или отродью в пределах 2 участков."],["Counterstrike","3/1","В этом ходу Иксатоск имеет +2 брони. Нанесите 2 УРОНА 1 вражескому герою на участке Иксатоска."],["Tunnel Gank","4/1","Телепортируйте 1 соседнего дружественного героя к 1 участку джунглей без вражеских героев. В этом ходу этот герой имеет +1 к силе."],["Skytear Predator","3/2","Применяйте только в вашей фазе покупки В этом раунде Иксатоск имеет +X силы и +X брони, где X — это ОП на его плане. В этом раунде атаки Иксатоска могут быть нацелены только на отродье, игнорируя его Стойкость."]]},"Shafathi":{"p":["Shadow Over Space","Шафати имеет +3 инициативы. Соседние враги имеют -1 инициативу."],"c":[["Smite Stasis","0/3","Выберите 1 монстра или монстра в любом месте. В следующий раз, когда в этом ходу ему должен быть нанесен УРОН - предотвратите весь УРОН."],["Shafathi Shadow","2/2","Присоедените к Шафати, пока он не будет побежден. Когда он победит монстра, получите +3 золота."],["Dematerialize","3/1","Шафати получает Стойкость на этот ход. Нанесите 1 УРОН и наложите МОЛЧАНИЕ 1 вражескому герою на его участке."],["Echo Gank","4/1","Применяйте, только если Шафати находится в джунглях без вражеских героев. Дополнительная стоимость: сбросьте 3 карты из руки. Подготовьте Шафати."],["Split Second","3/2","Применяйте только в вашей фазе покупки. Телепортируйтесь на 1 спорный участок. Если вы это сделаете, нанесите 2 УРОНА и МОЛЧАНИЕ до 2 врагов в ней."]]},"Yami":{"p":["Harbinger of Revenge","Когда Ями входит на участок во время своего хода, она может вытолкнуть оттуда 1 вражеского героя."],"c":[["Haunting Lead","0/3","При следующем продвижении вражеские миньоны на 1 соседнем участке, теряют 3 импульса (вплоть до минимума 0)."],["Flame Swipe","2/2","Нанесите 2 УРОНА и нанесите ГОРЕНИЕ 2-ум врагам на участке Ями. Если на момент произношения этого заклинания там находится 4 или более врагов, вместо этого выберите целью 3х врагов."],["Ghost Walk","3/1","Ями получает 2 ОП. В этом ходу она может совершать действия движения, и у нее есть Стойкость."],["Get Over Here","4/1","Притяните и ОГЛУШИТЕ 1 соседнего вражеского героя."],["Kneel Before Me","3/2","Телепортируйтесь на 1 участок в пределах 2 участков. Если вы это сделаете, нанесите 1 УРОН и ЗАМОРОЗЬТЕ до 3 врагов."]]},"Gulbjarn":{"p":["Rabid Brawl","Атаки Гульбьярна могут поражать 1 дополнительного врага, не являющегося миньоном."],"c":[["Fearless Lead","0/3","Прикрепите к Гульбьярну до конца этого раунда. Гульбьярн имеет +2 импульса."],["Bear Form","2/2","Прикрепите к Гульбьярну, пока он не будет побеждён. Гульбьярн имеет +1 броню. Предотвращайте эффекты «перемещения», «телепортации» и «выталкивания» от заклинаний и способностей соседних вражеских героев."],["Iron Grasp","3/1","Нанесите 3 УРОНА, РАЗОРУЖИТЕ и притяните 1 соседнего вражеского героя. Ни Гульбьярн, ни цель не могут произносить заклинания в этом ходу."],["Feral Grapple","4/1","Нанесите 3 УРОНА и притяните 1 соседнего врага. Если вы нанесли 1 или более УРОНА, вылечите Гульбьярну 3 ОЗ."],["Feral Brawl","3/2","Вылечите Гульбьярну 4 ОЗ. Притяните и ЗАМОРОЗЬТЕ до 2 вражеских героев в пределах 2 участков."]]},"Zacoal":{"p":["*Kradoom*","Атаки Закоала также могут телепортировать целевого героя на 1 участок в пределах 2 участков от Закоала."],"c":[["Towering Lead","0/3","Прикрепите к Закоалу до конца этого хода. Соседние дружественные миньоны имеют +3 брони."],["*Whheeeeee*","2/2","ЗАМОРОЗЬТЕ и телепортируйте 1 соседнего героя в смежный с этим героем участок. Этот герой не может произносить заклинания в этом ходу."],["*Thud* *Thud*","3/1","В этом ходу, когда Закоал телепортирует боец на участок, он может нанести 1 УРОН и ОБЕЗОРУЖИТЬ до 2 врагов там."],["*Clonk*","4/1","Закоал в этом ходу имеет +2 брони. Нанесите 3 УРОНА 1 соседнему вражескому герою."],["*Slam*","3/2","Атакуйте 1 врага на участке действия Закоала с силой +2. Если атака поразила героя, вы можете телепортировать его на любой участок, кроме портала Закоала."]]},"Khenui":{"p":["Refraction Dance","Пока Хенуи находится на пути, у нее есть Стойкость против атак (в том числе и от «Ответного удара»)."],"c":[["Deceptive Lead","0/3","Прикрепите к Хенуи до конца этого раунда. Предотвратите способность «Ответный удар» от соседних врагов."],["Pirouette Blow","2/2","Дополнительная стоимость: 1 ОП. Нанесите 1 УРОН и заморозьте до 3 соседних врагов."],["Elusive Spin","3/1","В этом ходу у Хенуи +3 брони. Нанесите МОЛЧАНИЕ или ОГЛУШЕНИЕ 1 соседнему вражескому герою."],["Magnetic Presence","4/1","Применяйте только в вашей фазе покупки. Прикрепите к Хенуи до конца раунда. Вражеские герои в пределах 3 участков не могут атаковать, если они не находятся рядом с Хенуи или у них не осталось 0 ОП. Если эти герои объявляют действие движения, они должны подойти ближе к ней. (Не работает на движение от заклинаний)"],["Echo Dance","3/2","Применяйте только в вашей фазе покупки. Хенуи имеет +2 инициативы в этом раунде и может телепортироваться на 1 другой участок куда угодно. Если вы это сделаете, нанесите 2 УРОНА и ОБЕЗОРУЖТЕ 1 вражеского героя на этом участке."]]}};
+const ITEMS=[{"n":"Broadsword","c":"r","r":"o","p":9,"e":"+2 силы.","d":"no","t":"Очень надёжный предмет на все случаи: любой герой с ним угрожает отродью или может убить героя за один ход. На драфт почти не влияет: предметов на урон много, и в партии они попадутся, даже если сейчас не наверху. Особенно хорош на Heraal, Kumaya, Vorhild, Achla, Sakoshi, Gulbjarn — героях с хорошей мобильностью, атакующими заклинаниями или контролем, от которого трудно уйти."},{"n":"Burrower’s Kiss","c":"r","r":"o","p":6,"e":"Действие: нанесите 1 бронебойный урон 1 ◎ вражескому герою или миньону поблизости. Раз в ход.","d":"no","t":"На драфт не влияет. Неплох на улучшенной стороне Sakoshi, но ему обычно нужны другие красные предметы. Неплох и на Astryda: освобождает её атаки для других задач."},{"n":"Frenzy Vial","c":"r","r":"o","p":3,"e":"+1 сила.","d":"no","t":"На драфт не влияет. Позволяет любому герою добить отродье картой с 2+ ОА или героя — картой с 3 ОА."},{"n":"Bear Axe","c":"r","r":"u","p":7,"e":"Первая карта атаки всегда даёт один «+».","d":"some","t":"Прежде всего может «закупорить» стопку уникальных красных предметов. Самый случайный из красных: можно открыть карту «+1» и потратить эффект впустую, поэтому покупают его редко. Если вашему герою очень нужен определённый уникальный красный предмет, это стоит учесть — хотя рассчитывать на предмет, которого нет наверху, странно."},{"n":"Book of Low Tides","c":"r","r":"u","p":5,"e":"Когда этот герой объявляет атаку, посмотрите 2 верхние карты своей колоды и положите их в любом порядке.","d":"no","t":"Кажется, что он для героев, которые много атакуют, но скорее наоборот: эффект срабатывает и при атаке по слабым врагам, а узнанные карты вы возьмёте в следующей фазе планирования — и тогда захочется снова атаковать тем же героем. На драфт не влияет."},{"n":"Deceiving Gloves","c":"r","r":"u","p":9,"e":"Атаки могут поразить ещё 1 ◎ врага, это должен быть герой.","d":"yes","t":"Интересен в основном на Vorhild — с ним она привлекательнее на драфте. Кажется, что подойдёт Achla, но на практике нет: атаковать им нескольких героев почти не получается, а его ловушки не работают, если бить заклинаниями по цели в джунглях. Achla нужны предметы на урон."},{"n":"Frost Warhammer","c":"r","r":"u","p":10,"e":"+2 силы. Атаки также накладывают ЗАМОРОЗКУ.","d":"no","t":"Ещё один предмет на силу. На Vorhild хуже остальных: с предметом на силу она обычно повышает уровень и получает заморозку бесплатно. Зато стоит всего на 1 золото дороже Broadsword."},{"n":"Oculus Mirror","c":"r","r":"u","p":6,"e":"Действие: потратьте 1 ОП, чтобы получить 1 ОА. Раз в ход.","d":"no","t":"Непонятно, на ком он особенно хорош. Плох на Corjof, но тот не зависит от предметов, так что на драфт это не влияет."},{"n":"Staff of the Void","c":"r","r":"u","p":11,"e":"+2 силы. Атаки наносят бронебойный урон.","d":"yes","t":"С ним наверху стоит дважды подумать, прежде чем брать защитника. У защитников и так много контрпиков: все маги и многие другие герои наносят бронебойный урон, а тут ещё этот предмет."},{"n":"Boots of Flash","c":"y","r":"o","p":8,"e":"+1 ОП (когда этот герой планирует).","d":"yes","t":"Отличен почти на любом герое. С ним наверху на драфте ценнее: Haburat — он хочет планировать с картами с большим ОА; Yami и Zacoal — лишнее ОП для их вытеснений; Corjof — больше ОП для его свойства и дорогих заклинаний, ему часто не хватает ОП; Khenui — её свойство получает намного больше пользы: если она сносит несколько башен, это сильно помогает продвижению почти без риска."},{"n":"Lightning Naginata","c":"y","r":"o","p":6,"e":"Дальность атаки — «поблизости». Атаки также накладывают ОГЛУШЕНИЕ.","d":"yes","t":"Очень хороша на Gulbjarn. Дальность он получает бесплатно при повышении уровня, но с нагинатой наверху на него всё равно стоит посмотреть внимательнее: уровень повышается не в каждой партии и иногда слишком поздно. Хороша и на любом крушителе: герои часто прячутся в джунглях, но можно бить замеченных героев и одновременно угрожать отродью. Nantaca автор не берёт, если нагинаты нет наверху, хотя её коронное заклинание прямо мешает этому предмету."},{"n":"Speed Vial","c":"y","r":"o","p":3,"e":"+1 инициатива. При покупке получите приоритет.","d":"no","t":"На драфт не влияет. Не закрывает обычные жёлтые предметы: дешёвый и удобный, его часто покупают."},{"n":"Cape of the Winds","c":"y","r":"u","p":11,"e":"+2 ОП (когда этот герой начинает ход).","d":"yes","t":"Хорош на любом герое, но нишевее Boots of Flash — не даёт инициативы. С ним наверху ценнее Haburat, Corjof, Yami, Zacoal и Khenui."},{"n":"Growth Ward","c":"y","r":"u","p":7,"e":"При покупке потеряйте приоритет. Противники планируют в открытую. Когда этот герой теряет ОЗ, сбросьте этот предмет.","d":"no","t":"Автор покупает его только на герое, который надолго выбыл из игры, — тогда он отличный. На драфт не влияет."},{"n":"Nuptial Astrolabe","c":"y","r":"u","p":9,"e":"+3 инициативы. При покупке получите приоритет.","d":"no","t":"Хороший предмет, его часто покупают, когда он появляется: в тот ход, когда очень нужно ходить первым, он спасает. На драфт не влияет."},{"n":"Shiny Mask","c":"y","r":"u","p":6,"e":"+2 инициативы. При покупке получите приоритет.","d":"no","t":"То же, что Nuptial Astrolabe."},{"n":"Sunset Ward","c":"y","r":"u","p":9,"e":"При покупке потеряйте приоритет. Противники планируют в открытую. Когда этот герой начинает ход или побеждён, сбросьте этот предмет.","d":"no","t":"То же, что Growth Ward. На драфт не влияет."},{"n":"Volley Crossbow","c":"y","r":"u","p":5,"e":"Первая атака за ход может поразить цель в пределах 3 участков.","d":"yes","t":"Страшен на крушителях: когда он наверху, крушители становятся сильнее."},{"n":"Heal Vial","c":"b","r":"o","p":4,"e":"Действие: сбросьте, чтобы вылечить 4 ОЗ и снять 1 статус с этого героя.","d":"no","t":"Пока он в игре, мелкий неубивающий урон слабее; ещё он «защищает» от бронебойного урона магов. Но он и Recall Scroll — обычные предметы, поэтому на драфт не влияют."},{"n":"Recall Scroll","c":"b","r":"o","p":3,"e":"Сбросьте в фазе покупки: в конце этого раунда телепортируйтесь на участок своего портала и вылечите 8 ОЗ.","d":"no","t":"Покупать его стоит охотнее, чем Heal Vial: его можно использовать вне хода уязвимого героя."},{"n":"Undergrowth Armor","c":"b","r":"o","p":6,"e":"+1 броня.","d":"yes","t":"С ним наверху все защитники привлекательнее: у каждого есть свойство, которое защищает союзников или заставляет врагов целиться в него. Но не берите защитников слишком рано и если у противника много магов или другого бронебойного урона."},{"n":"Box of Spirits","c":"b","r":"u","p":6,"e":"Если этот герой должен быть побеждён, вместо этого установите его ОЗ на 3 и сбросьте этот предмет.","d":"yes","t":"Отличный предмет. Пока он в игре, крушители на драфте слабее."},{"n":"Charm of Renewal","c":"b","r":"u","p":5,"e":"+1 броня против атак. Отмените «+» на картах атак, нацеленных на этого героя.","d":"no","t":"Не защищает от заклинаний и свойств. Поэтому он не так хорош ни на Brylvar, ни против него: у Brylvar есть заклинания «+X», зависящие от брони в момент розыгрыша. Не очень хорош и на Hogosai — в него и так целятся заклинаниями и свойствами."},{"n":"Chrysalis Sallet","c":"b","r":"u","p":7,"e":"Если этот герой должен потерять 3 ОЗ или больше в ход любого героя, он теряет только 2 ОЗ.","d":"yes","t":"Хорош против крушителей: пока он в игре, они на драфте заметно слабее."},{"n":"Doll of Zuunan","c":"b","r":"u","p":8,"e":"Ответный удар: 2 урона (только против героев).","d":"yes","t":"Может полностью заглушить ваши заклинания, если вы взяли Khepiax, а противник купил этот предмет. С ним наверху подумайте дважды, прежде чем брать Khepiax."},{"n":"Shell of the Moon","c":"b","r":"u","p":12,"e":"+2 брони в ход любого героя.","d":"yes","t":"Особенно хорош на защитниках: их свойства работают с бронёй в ходы героев или делают их главной целью. Но защитников и так рискованно брать."},{"n":"Totem Shield","c":"b","r":"u","p":7,"e":"+2 брони против атак.","d":"no","t":"На Hogosai хуже, чем на других защитниках: в него целятся почти всем, кроме атак. На драфт не влияет."},{"n":"Blossoming Banner","c":"g","r":"o","p":8,"e":"+1 импульс каждому спорному участку поблизости с дружественными миньонами.","d":"some","t":"Отличен почти на любом герое — возможно, самый выгодный предмет в игре за свою цену. Если он наверху, можно чуть раньше взять Ekhrit. На бумаге Kumaya с Дымовой завесой с ним выглядит лучше, но ей обычно важнее быть рядом с вражескими героями, а не с волной."},{"n":"Horn of the Hunt","c":"g","r":"o","p":4,"e":"+1 импульс, если этот герой в пределах 2 участков от портала.","d":"no","t":"Хорош почти только для обороны от волны, подошедшей к вашему порталу; в атаке обычно срабатывает один ход. Чтобы останавливать продвижение, лучше берите мага или героя с зачисткой волн. На драфт не влияет: скорее закрывает другие обычные зелёные предметы, но зелёные почти не влияют на драфт."},{"n":"Punisher Blade","c":"g","r":"o","p":5,"e":"Одна атака за ход может поразить ещё 1 ◎ врага, это должен быть миньон.","d":"no","t":"На драфт не влияет. Хороший бюджетный предмет, если отстаёте по золоту."},{"n":"Destroyer","c":"g","r":"u","p":9,"e":"Атаки могут поразить ещё 1 ◎ врага, это должен быть миньон или башня.","d":"yes","t":"Ещё один отличный предмет для Vorhild, намного лучше Deceiving Gloves: он зелёный, так что можно взять и предмет на урон, а лишнюю атаку по миньону провести проще, чем по герою. Автор не берёт Vorhild, если нет ни одного из этих двух предметов."},{"n":"Knife Boots","c":"g","r":"u","p":5,"e":"Когда этот герой входит на участок, нанесите 1 урон 1 ◎ вражескому миньону там.","d":"some","t":"Нишевый предмет. С ним наверху сильнее Sakoshi, а также другие герои с мобильностью в заклинаниях — но не настолько, чтобы менять драфт."},{"n":"Minion Vial","c":"g","r":"u","p":9,"e":"Действие: поместите 1 дружественного миньона на 1 ◎ спорный участок поблизости. Раз в ход.","d":"no","t":"На драфт не влияет."},{"n":"Reptile String","c":"g","r":"u","p":6,"e":"Атаки могут также вытеснить цель и наложить на неё ЗАМОРОЗКУ.","d":"yes","t":"Делает стрелков и Heraal привлекательнее — особенно Achla и Heraal, которые умеют игнорировать ограничение на цели в джунглях. Стрелки часто страдают от врагов, которые прячутся в джунглях. Бои за джунгли рядом с отродьем — частая история: вытесненный герой не сможет ответить встречными заклинаниями, а заморозка на его следующий ход очень раздражает. Автор считает этот предмет важным для драфта; к тому же он зелёный, и Achla с Heraal могут взять ещё и красные предметы."},{"n":"Scaledrum","c":"g","r":"u","p":11,"e":"+2 импульса, если у героя 5 ОЗ или больше.","d":"no","t":"Работает, когда вы проигрываете путь, — тогда он хорош; в атаке даёт один ход. Один путь вы почти всегда проигрываете, так что его берут в ответ, чтобы оборонять этот путь. Но зачистка волн важнее: автор не собирает команду без неё. Особенно хорош с Khepiax. На драфт не влияет."},{"n":"Scepter of Kamnu","c":"g","r":"u","p":9,"e":"Когда вражеские миньоны поблизости начинают тратить импульс, они теряют 2 импульса.","d":"no","t":"По сути то же, что Scaledrum, только с другими условиями."}];
+const ITEM_ADVICE=["Перед драфтом видны верхние предметы рынка, поэтому стоит учитывать, как они влияют на выбор героев. Вы не обязательно купите верхний предмет первым, но если он вам подходит, это помогает в любом случае; а если вам или противнику приходится брать предмет, только чтобы он не достался другому, — это уже ощутимо.", "Многие предметы усиливают крушителей, но безоружность их ломает. Против одного героя с безоружностью можно играть, а Tlakali прикреплённым заклинанием просто выключает крушителя. Берите крушителей ближе к концу драфта и не берите, если у противника 2+ героя с безоружностью или Tlakali.", "Многим героям предметы не обязательны — это бонус или ответ на ситуацию. Не собирайте команду только из героев, зависимых от предметов; удобно, когда такой герой один, обычно это наносящий урон.", "Защитники уязвимы к бронебойному урону и вытеснению, а маги сильны и без защитников у противника. Берите защитников поздно, когда видно, есть ли у противника маг, — или не берите вовсе. Зачистка волн решает."];
+const CLS_ORDER = ["Крушитель","Стрелок","Защитник","Мистик","Маг","Штурмовик","Охотник","Воин"];
 const FAC_ORDER = ["Лиотан","Курумо","Таулот","Нуптен"];
 
 document.getElementById("classes").innerHTML =
@@ -952,22 +1044,74 @@ function dsHtml(n){
   return `<span class="ds" role="group" aria-label="Статус в драфте">`+["my","enemy","ban"].map(k=>
     `<button type="button" class="ds-btn b-${k}" data-ds="${k}" data-h="${esc(n)}" aria-pressed="${DRAFT[n]===k}">${DS_LABEL[k]}</button>`).join("")+`</span>`;
 }
+// ---- Настройки драфта и порядок «как в моба-играх» (правила, с. 16) ----
+const DSET={size:4, side:"dark", order:true};
+try{ Object.assign(DSET, JSON.parse(localStorage.getItem("onward-dset")||"{}")); }catch(e){}
+function saveDset(){ try{ localStorage.setItem("onward-dset", JSON.stringify(DSET)); }catch(e){} }
+function draftSteps(size){
+  const B=t=>({t:"ban",team:t,n:1}), P=(t,n)=>({t:"pick",team:t,n});
+  return size===3
+    ? [B("D"),B("L"),P("D",1),P("L",2),P("D",1),B("D"),B("L"),P("D",1),P("L",1)]
+    : [B("D"),B("L"),P("D",1),P("L",2),P("D",1),B("D"),B("L"),P("D",1),P("L",2),P("D",1)];
+}
+function teamGroup(t){ return (t==="D")===(DSET.side==="dark") ? "my" : "enemy"; }
+function draftState(groups){
+  const st=draftSteps(DSET.size); const need={ban:0,my:0,enemy:0};
+  for(let i=0;i<st.length;i++){
+    const s=st[i], g=s.t==="ban"?"ban":teamGroup(s.team);
+    need[g]+=s.n;
+    const have=groups[g].length;
+    if(have<need[g]) return {i, steps:st, step:s, g, left:need[g]-have};
+  }
+  return {i:st.length, steps:st, done:true};
+}
+const TEAM={D:"Тьма",L:"Свет"};
+function renderOrder(groups){
+  const box=document.getElementById("dorder");
+  if(!DSET.order){ box.innerHTML=""; return null; }
+  const ds=draftState(groups);
+  const desc=s=>{ const g=s.t==="ban"?"":(teamGroup(s.team)==="my"?" (мы)":" (противник)");
+    const who=`<span class="tm ${s.team}">${TEAM[s.team]}${s.t==="ban"?(teamGroup(s.team)==="my"?" (мы)":" (противник)"):g}</span>`;
+    return s.t==="ban" ? `Исключение · ${who} убирает 1 героя` : `Выбор · ${who} — ${s.n===1?"1 герой":s.n+" героя"}`; };
+  const dots=ds.steps.map((s,i)=>`<span class="ost ${s.t} ${s.team}${i<ds.i?" done":i===ds.i?" cur":""}" title="${i+1}. ${s.t==="ban"?"исключение":"выбор"} · ${TEAM[s.team]}${s.n>1?" ×"+s.n:""}">${s.t==="ban"?"✕":(s.n>1?"2":"1")}</span>`).join("");
+  box.innerHTML=`<div class="dord${ds.done?" fin":""}"><div class="dord-h">Порядок драфта · <span class="dord-n">${ds.done?"завершён":"шаг "+(ds.i+1)+" из "+ds.steps.length}</span></div>
+    <div class="dord-now">${ds.done?"Все герои выбраны — удачной партии!":"Сейчас: "+desc(ds.step)+(ds.step.n>1&&ds.left<ds.step.n?` · осталось ${ds.left}`:"")}</div>
+    ${!ds.done&&ds.steps[ds.i+1]?`<div class="dord-next">Далее: ${desc(ds.steps[ds.i+1])}</div>`:""}
+    <div class="dord-dots">${dots}</div>
+    ${DSET.size===3?'<div class="dord-note">Для 3 героев порядок в правилах не описан — это та же схема, сокращённая до 3 героев.</div>':""}</div>`;
+  return ds.done?null:ds.g;
+}
+function renderDset(){
+  const seg=(key,opts)=>`<span class="seg">${opts.map(([v,t])=>`<button type="button" data-set="${key}" data-v="${v}" aria-pressed="${String(DSET[key])===String(v)}">${t}</button>`).join("")}</span>`;
+  document.getElementById("dset").innerHTML=
+    `<span class="dset-i">Героев ${seg("size",[[4,"4"],[3,"3"]])}</span>`+
+    `<span class="dset-i">Играем за ${seg("side",[["dark","Тьму"],["light","Свет"]])}</span>`+
+    `<label class="sw"><input type="checkbox" id="dOrder"${DSET.order?" checked":""}><span class="sw-t" aria-hidden="true"></span>Порядок драфта</label>`;
+}
+document.getElementById("dset").addEventListener("click",e=>{
+  const b=e.target.closest("[data-set]"); if(!b) return;
+  DSET[b.dataset.set]= b.dataset.set==="size" ? +b.dataset.v : b.dataset.v; saveDset(); renderDset(); renderDraftBar();
+});
+document.getElementById("dset").addEventListener("change",e=>{ if(e.target.id==="dOrder"){ DSET.order=e.target.checked; saveDset(); renderDraftBar(); } });
+renderDset();
 let BAN_OPEN=true; try{ BAN_OPEN=localStorage.getItem("onward-bans")!=="0"; }catch(e){}
 function renderDraftBar(){
   const groups={my:[],enemy:[],ban:[]};
   Object.entries(DRAFT).forEach(([n,v])=>{ if(BYNAME[n]&&groups[v]) groups[v].push(n); });
   const total=groups.my.length+groups.enemy.length+groups.ban.length;
   const T={my:"Мы",enemy:"Противник",ban:"Баны"};
+  const act=renderOrder(groups), SZ=DSET.size;
+  const side=k=> k==="ban"?"": ` <span class="tm ${((k==="my")===(DSET.side==="dark"))?"D":"L"}">${((k==="my")===(DSET.side==="dark"))?"Тьма":"Свет"}</span>`;
   const slot=n=>{ const h=BYNAME[n];
     return `<div class="dslot" role="button" tabindex="0" data-go="${esc(n)}" title="${esc(h.ru+", "+h.fac)}">
       <span class="dnm">${esc(h.name)}</span><span class="dcl"><span>${esc(h.cls)}</span>${rngIcon(h.rng)}</span>
       <button type="button" class="dx" data-clear="${esc(n)}" aria-label="Снять отметку с ${esc(h.name)}">×</button></div>`; };
   document.getElementById("draftbar").innerHTML=["my","enemy","ban"].map((k,i)=>{
-    const list=groups[k], slots=Math.max(4, Math.ceil(list.length/4)*4);
-    const body=`<div class="dslots">${list.map(slot).join("")}${`<button type="button" class="dslot empty" data-add="${k}">+ выбрать</button>`.repeat(slots-list.length)}</div>`;
-    if(k==="ban") return `<details class="dgroup ban" id="dban"${BAN_OPEN?" open":""}><summary class="dgroup-h"><span class="chev" aria-hidden="true"></span>${T[k]} <span class="dn">${list.length}/4</span>`+
+    const per = k==="ban"?4:SZ, list=groups[k], slots=Math.max(per, Math.ceil(list.length/per)*per);
+    const body=`<div class="dslots" style="grid-template-columns:repeat(${k==="ban"?4:Math.max(SZ,Math.min(4,list.length))},minmax(0,1fr))">${list.map(slot).join("")}${`<button type="button" class="dslot empty" data-add="${k}">+ выбрать</button>`.repeat(slots-list.length)}</div>`;
+    if(k==="ban") return `<details class="dgroup ban${act==="ban"?" active":""}" id="dban"${(BAN_OPEN||act==="ban")?" open":""}><summary class="dgroup-h"><span class="chev" aria-hidden="true"></span>${T[k]} <span class="dn">${list.length}/4</span>${act==="ban"?'<span class="dnow">сейчас</span>':""}`+
       `<span class="dbanlist">${list.length?"· "+list.map(esc).join(", "):""}</span></summary>${body}</details>`;
-    return `<div class="dgroup ${k}"><div class="dgroup-h">${T[k]} <span class="dn">${list.length}/4</span>`+
+    return `<div class="dgroup ${k}${act===k?" active":""}"><div class="dgroup-h">${T[k]}${side(k)} <span class="dn">${list.length}/${SZ}</span>${act===k?'<span class="dnow">сейчас</span>':""}`+
       (i===0&&total?`<a href="#" class="flink" id="draftReset">Сбросить драфт</a>`:"")+`</div>${body}</div>`;
   }).join("")+(total?"":`<p class="dhint">Нажмите на пустую ячейку, чтобы выбрать героя, или отмечайте героев кнопками «Мой», «Враг» и «Бан» в таблице ниже.</p>`);
   const db=document.getElementById("dban");
@@ -995,11 +1139,25 @@ function cpList(items, emptyText){
 }
 // по умолчанию все три блока свёрнуты; состояние держится только до перезагрузки, отдельно для каждого героя
 const CP_STATE={};
+// ---- поиск по способностям ----
+let QS="";
+const reEsc=t=>t.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+function hl(text){ const e=esc(text); if(!QS) return e; const q=esc(QS); return e.replace(new RegExp(reEsc(q),"gi"),m=>`<mark>${m}</mark>`); }
+const squash=t=>t.toLowerCase().replace(/[\s’'\-]/g,"");
+const has=(t,q)=>{ const l=t.toLowerCase(); return l.includes(q) || (q.length>2 && squash(l).includes(squash(q))); };
+function abilHits(name,q){
+  const a=ABIL[name]; if(!a||!q) return [];
+  const out=[]; if(has(a.p[0]+" "+a.p[1],q)) out.push(a.p[0]);
+  a.c.forEach(c=>{ if(has(c[0]+" "+c[2],q)) out.push(c[0]); });
+  return out;
+}
 function abilList(name){
   const a=ABIL[name]; if(!a) return '<p class="cp-empty">Нет данных</p>';
-  const last=a.c.length-1;
-  return `<ul class="ab-list"><li class="ab-p"><div class="ab-h"><span class="tagp">Пассивка</span><b>${esc(a.p[0])}</b></div><div class="cp-why">${esc(a.p[1])}</div></li>`+
-    a.c.map((c,i)=>`<li${i===last?' class="ab-u"':""}><div class="ab-h">${i===last?'<span class="tagu">★ Ульта</span>':""}<b>${esc(c[0])}</b><span class="ab-cost" title="MP/AP">${esc(c[1]||"")}</span></div><div class="cp-why">${esc(c[2])}</div></li>`).join("")+
+  const last=a.c.length-1, q=QS.toLowerCase();
+  const hitP=q&&has(a.p[0]+" "+a.p[1],q);
+  return `<ul class="ab-list"><li class="ab-p${hitP?" ab-hit":""}"><div class="ab-h"><span class="tagp">Свойство</span><b>${hl(a.p[0])}</b></div><div class="cp-why">${hl(a.p[1])}</div></li>`+
+    a.c.map((c,i)=>{ const hit=q&&has(c[0]+" "+c[2],q);
+      return `<li class="${i===last?"ab-u":""}${hit?" ab-hit":""}"><div class="ab-h">${i===last?'<span class="tagu">★ Коронное</span>':""}<b>${hl(c[0])}</b><span class="ab-cost" title="ОП/ОА">${esc(c[1]||"")}</span></div><div class="cp-why">${hl(c[2])}</div></li>`; }).join("")+
     `</ul>`;
 }
 function cpBlock(n,k,title,body,cnt){
@@ -1010,7 +1168,7 @@ function cpHtml(name){
   return `<div class="cp">`+
     cpBlock(name,"good","Силён против",cpList(c.g,"Автор не выделяет явных целей"),c.g.length)+
     cpBlock(name,"bad","Слаб против",cpList(c.b,"Автор не выделяет явных угроз"),c.b.length)+
-    cpBlock(name,"abil","Способности",abilList(name),ABIL[name]?"пассивка и 5 карт":"")+`</div>`;
+    cpBlock(name,"abil","Способности",abilList(name),ABIL[name]?"свойство и 5 карт":"")+`</div>`;
 }
 function toggleHero(tb, force){
   const n=tb.dataset.h, open = force===undefined ? !OPEN.has(n) : force;
@@ -1041,18 +1199,22 @@ document.getElementById("heroes").addEventListener("keydown",e=>{
   if((e.key==="Enter"||e.key===" ") && e.target.matches("tbody.hero > tr:first-child")){ e.preventDefault(); toggleHero(e.target.parentElement); }
 });
 function render(){
-  const s=q.value.trim().toLowerCase();
-  let rows=H.filter(h=>
-    (!fCls.value||h.cls===fCls.value)&&(!fRng.value||h.rng===fRng.value)&&
-    (!fDraft.value||(fDraft.value==="free"?!DRAFT[h.name]:DRAFT[h.name]===fDraft.value))&&
-    (!s||[h.name,h.ru,h.title,h.desc,h.cls,h.fac].join(" ").toLowerCase().includes(s)));
+  QS=q.value.trim(); const s=QS.toLowerCase();
+  const HITS={};
+  let rows=H.filter(h=>{
+    if(!((!fCls.value||h.cls===fCls.value)&&(!fRng.value||h.rng===fRng.value)&&
+      (!fDraft.value||(fDraft.value==="free"?!DRAFT[h.name]:DRAFT[h.name]===fDraft.value)))) return false;
+    if(!s) return true;
+    HITS[h.name]=abilHits(h.name,s);
+    return has([h.name,h.ru,h.title,h.desc,h.cls,h.fac].join(" "),s) || HITS[h.name].length>0;
+  });
   rows.sort((a,b)=>(cmp(a,b,sortKey)||coll.compare(a.name,b.name))*dir);
   const tbl=document.getElementById("heroes");
   tbl.querySelectorAll("tbody").forEach(b=>b.remove());
   tbl.insertAdjacentHTML("beforeend", rows.map(h=>`<tbody class="hero${OPEN.has(h.name)?" open":""}${DRAFT[h.name]?" st-"+DRAFT[h.name]:""}" data-h="${h.name}"><tr tabindex="0" aria-expanded="${OPEN.has(h.name)}">
-    <td class="c-name"><span class="chev" aria-hidden="true"></span><span class="name">${esc(h.name)}</span> <span class="ru">${esc(h.ru)}</span><span class="title">${esc(h.title)}, <span class="tfac f-${h.fac}">${h.fac}</span></span>${dsHtml(h.name)}</td>
-    <td class="c-cls">${h.cls}</td><td class="c-rng">${rngIcon(h.rng)}</td><td class="c-desc">${esc(h.desc)}</td></tr>
-    <tr class="desc-row"><td colspan="3">${esc(h.desc)}</td></tr>
+    <td class="c-name"><span class="chev" aria-hidden="true"></span><span class="name">${esc(h.name)}</span> <span class="ru">${esc(h.ru)}</span><span class="title">${esc(h.title)}, <span class="tfac f-${h.fac}">${h.fac}</span></span>${HITS[h.name]&&HITS[h.name].length?`<span class="hitln">Найдено в способностях: ${HITS[h.name].map(hl).join(", ")}</span>`:""}${dsHtml(h.name)}</td>
+    <td class="c-cls">${h.cls}</td><td class="c-rng">${rngIcon(h.rng)}</td><td class="c-desc">${hl(h.desc)}</td></tr>
+    <tr class="desc-row"><td colspan="3">${hl(h.desc)}</td></tr>
     <tr class="cp-row"><td colspan="${SPAN()}">${cpHtml(h.name)}</td></tr></tbody>`).join(""));
   document.getElementById("count").textContent=`показано ${rows.length} из ${H.length}`;
   const act=[q.value.trim(),fCls.value,fRng.value,fDraft.value].filter(Boolean).length;
@@ -1199,16 +1361,46 @@ document.getElementById("pickOut").addEventListener("keydown",e=>{
 });
 renderPick();
 renderDraftBar();
+// ---- Тема оформления: авто → тёмная → светлая ----
+(()=>{ const btn=document.getElementById("themeBtn"), lbl=document.getElementById("themeLbl");
+  const L={auto:"Авто",dark:"Тёмная",light:"Светлая"}, NEXT={auto:"dark",dark:"light",light:"auto"};
+  let mode="auto"; try{ const t=localStorage.getItem("onward-theme"); if(t==="dark"||t==="light") mode=t; }catch(e){}
+  const apply=()=>{ if(mode==="auto") document.documentElement.removeAttribute("data-theme"); else document.documentElement.setAttribute("data-theme",mode);
+    lbl.textContent=L[mode]; btn.dataset.mode=mode; btn.title="Тема: "+L[mode].toLowerCase()+" (нажмите, чтобы сменить)";
+    try{ if(mode==="auto") localStorage.removeItem("onward-theme"); else localStorage.setItem("onward-theme",mode); }catch(e){} };
+  btn.addEventListener("click",()=>{ mode=NEXT[mode]; apply(); }); apply();
+})();
+// ---- Предметы ----
+(()=>{
+  const COL={r:"Красные",y:"Жёлтые",b:"Синие",g:"Зелёные"}, DT={yes:"влияет на драфт",some:"немного влияет",no:"не влияет на драфт"};
+  let col=""; const names=H.map(h=>h.name).sort((a,b)=>b.length-a.length);
+  const heroRe=new RegExp("\\b("+names.join("|")+")\\b","g");
+  document.getElementById("itAdvice").innerHTML=ITEM_ADVICE.map(t=>`<li>${esc(t).replace(heroRe,'<button type="button" class="cp-hero" data-go="$1">$1</button>')}</li>`).join("");
+  function draw(){
+    document.getElementById("itCol").innerHTML=[["","Все"],...Object.entries(COL)].map(([k,t])=>`<button type="button" class="pk-c${k?" ic-"+k:""}" data-col="${k}" aria-pressed="${col===k}">${t}</button>`).join("");
+    const only=document.getElementById("itDraft").checked;
+    const list=ITEMS.filter(i=>(!col||i.c===col)&&(!only||i.d!=="no"));
+    document.getElementById("itList").innerHTML=list.map(i=>`<div class="it c-${i.c}"><div class="it-h"><b>${esc(i.n)}</b><span class="it-rar">${i.r==="u"?"уникальный":"обычный"}</span><span class="it-cost">${i.p} золота</span></div>
+      <div class="it-e">${esc(i.e)}</div>
+      <details><summary><span class="dtag ${i.d}">${DT[i.d]}</span>комментарий</summary><div class="it-t">${esc(i.t).replace(heroRe,'<button type="button" class="cp-hero" data-go="$1">$1</button>')}</div></details></div>`).join("");
+  }
+  document.getElementById("sec-items").addEventListener("click",e=>{
+    const c=e.target.closest("[data-col]"); if(c){ col=c.dataset.col; draw(); return; }
+    const g=e.target.closest(".cp-hero"); if(g){ goHero(g.dataset.go); }
+  });
+  document.getElementById("itDraft").addEventListener("change",draw);
+  draw();
+})();
 // ---- Панель способностей внизу ----
 let SH_IDX=0;
 const sheet=document.getElementById("sheet"), track=document.getElementById("shTrack");
 function deck(){ return Object.keys(DRAFT).filter(n=>DRAFT[n]==="my"&&ABIL[n]); }
 function abilTable(n){
   const a=ABIL[n], h=BYNAME[n];
-  const rows=[`<tr class="passive"><td class="an"><span class="tagp">Пассивка</span>${esc(a.p[0])}</td><td class="ac">—</td><td>${esc(a.p[1])}</td></tr>`]
-    .concat(a.c.map((c,i)=>`<tr class="${i===a.c.length-1?"ult":""}"><td class="an">${i===a.c.length-1?'<span class="tagu">★ Ульта</span>':""}${esc(c[0])}</td><td class="ac">${esc(c[1]||"")}</td><td>${esc(c[2])}</td></tr>`));
+  const rows=[`<tr class="passive"><td class="an"><span class="tagp">Свойство</span>${esc(a.p[0])}</td><td class="ac">—</td><td>${esc(a.p[1])}</td></tr>`]
+    .concat(a.c.map((c,i)=>`<tr class="${i===a.c.length-1?"ult":""}"><td class="an">${i===a.c.length-1?'<span class="tagu">★ Коронное</span>':""}${esc(c[0])}</td><td class="ac">${esc(c[1]||"")}</td><td>${esc(c[2])}</td></tr>`));
   return `<div class="sh-slide"><div class="sh-inner"><p class="sh-sub">${esc(h.ru)} · ${esc(h.cls)} · <span class="tfac f-${h.fac}">${h.fac}</span>${DRAFT[n]==="my"?' · <span class="pst my">наш пик</span>':DRAFT[n]==="enemy"?' · <span class="pst enemy">у противника</span>':""}</p>
-    <table class="abil"><thead><tr><th>Способность</th><th>MP/AP</th><th>Эффект</th></tr></thead><tbody>${rows.join("")}</tbody></table></div></div>`;
+    <table class="abil"><thead><tr><th>Способность</th><th>ОП/ОА</th><th>Эффект</th></tr></thead><tbody>${rows.join("")}</tbody></table></div></div>`;
 }
 function renderSheet(){
   const d=deck();
