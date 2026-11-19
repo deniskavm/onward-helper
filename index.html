@@ -53,6 +53,11 @@
     flex-wrap:wrap;user-select:none;-webkit-tap-highlight-color:transparent}
   details.sec > summary::-webkit-details-marker{display:none}
   details.sec > summary h2{margin:18px 0 8px;display:flex;align-items:center;gap:6px}
+  details.sec[open] > summary{position:sticky;top:0;z-index:5;background:var(--bg);margin:0 -20px;padding:0 20px}
+  details.sec[open] > summary h2{margin:10px 0 8px}
+  #heroes tbody.hero{scroll-margin-top:64px}
+  details.sec[open] > summary.stuck{box-shadow:0 1px 0 var(--line),0 6px 12px -8px rgba(0,0,0,.25)}
+  @media (max-width:760px){ details.sec[open] > summary{margin:0 -10px;padding:0 10px} }
   details.sec > summary h2::before{content:"";width:7px;height:7px;border-right:2px solid var(--muted);
     border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s;margin:0 6px 4px 2px}
   details.sec:not([open]) > summary h2::before{transform:rotate(-45deg);margin:0 6px 0 0}
@@ -79,6 +84,31 @@
   .sw input:checked + .sw-t::after{transform:translateX(16px)}
   .sw input:focus-visible + .sw-t{outline:2px solid var(--accent);outline-offset:2px}
   body.no-cp #heroes details[data-cp="good"], body.no-cp #heroes details[data-cp="bad"], body.no-cp #sec-pick{display:none}
+  .ref-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  .ref-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+  .ref-card h3{margin:2px 0 8px;font-size:15px}
+  .ref-hp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .ref-hp div{display:flex;flex-direction:column;gap:2px;background:var(--chip);border-radius:8px;padding:8px}
+  .ref-hp b{font-size:17px;color:var(--kur)}
+  .ref-hp span{font-size:12.5px;color:var(--muted);line-height:1.3}
+  .ref-st{display:flex;align-items:center;justify-content:space-between;gap:6px}
+  .ref-st > div{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px;flex:1}
+  .ref-arr{color:var(--muted);font-size:18px}
+  .ref-sheet{display:block;width:22px;height:32px;border:2px solid var(--accent);border-radius:4px;position:relative;background:var(--chip)}
+  .ref-sheet::after{content:"";position:absolute;left:3px;right:3px;top:3px;height:6px;background:var(--accent);border-radius:2px}
+  .ref-sheet.r90{transform:rotate(90deg)} .ref-sheet.r180{transform:rotate(180deg)}
+  .ref-note{font-size:12.5px;color:var(--muted);margin:10px 0 0;line-height:1.4}
+  .ref-terms{margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px 14px}
+  .ref-terms > div{padding:8px 0;border-top:1px solid var(--line);break-inside:avoid}
+  .ref-terms > div:nth-child(-n+2){border-top:none}
+  .ref-terms dt{font-weight:700;font-size:14.5px;margin-bottom:2px}
+  .ref-terms dd{margin:0;font-size:14px;line-height:1.45}
+  .ref-pg{color:var(--muted);font-size:12.5px;white-space:nowrap}
+  @media (max-width:760px){
+    .ref-cards{grid-template-columns:1fr}
+    .ref-terms{grid-template-columns:1fr;padding:4px 12px}
+    .ref-terms > div:nth-child(2){border-top:1px solid var(--line)}
+  }
   .faq-bar{display:flex;align-items:center;gap:10px;margin:0 0 8px}
   .faq{display:grid;gap:10px}
   .faq-sec{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
@@ -181,8 +211,17 @@
   .tagp,.tagu{display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
   .tagu{color:var(--accent)}
   @media (max-width:760px){
-    .abil .an{white-space:normal}
-    .abil th,.abil td{padding:6px 7px;font-size:13px}
+    .abil thead{display:none}
+    .abil, .abil tbody{display:block}
+    .abil tr{display:grid;grid-template-columns:1fr auto;align-items:baseline;border-bottom:1px solid var(--line);padding:7px 9px}
+    .abil tr:last-child{border-bottom:none}
+    .abil td{border:none;padding:0;font-size:13.5px}
+    .abil td.an{white-space:normal}
+    .abil td.ac{padding-left:10px}
+    .abil td:nth-child(3){grid-column:1/-1;padding-top:3px;line-height:1.45}
+    .abil tr.passive td{background:none}
+    .abil tr.passive{background:var(--chip)}
+    .abil tr.passive td.ac{display:none}
     .sh-nav{width:34px;height:34px}
   }
   .dpanel{display:grid;gap:10px}
@@ -216,6 +255,32 @@
   details.dgroup > summary:hover{color:var(--ink)}
   .dbanlist{font-weight:400;color:var(--muted);display:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
   details.dgroup:not([open]) .dbanlist{display:inline}
+  .dgroup .dslot.empty{cursor:pointer;font:inherit;font-size:12px;width:100%}
+  .dgroup .dslot.empty:hover{border-color:var(--accent);color:var(--accent);border-style:dashed}
+  .dgroup.my .dslot.empty:hover{color:var(--lio);border-color:var(--lio)}
+  .dgroup.enemy .dslot.empty:hover{color:var(--kur);border-color:var(--kur)}
+  .pk-wrap{position:fixed;inset:0;z-index:40;display:flex;align-items:center;justify-content:center;padding:16px}
+  .pk-wrap[hidden]{display:none}
+  .pk-back{position:absolute;inset:0;background:rgba(0,0,0,.35)}
+  .pk{position:relative;background:var(--bg);border:1px solid var(--line);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.25);
+    width:min(560px,100%);max-height:min(640px,86vh);display:flex;flex-direction:column;padding:12px 14px 14px;gap:8px}
+  .pk-head{display:flex;align-items:center;gap:8px}
+  .pk-head h3{margin:0;font-size:16px;flex:1}
+  .pk-head h3 .t-my{color:var(--lio)} .pk-head h3 .t-enemy{color:var(--kur)} .pk-head h3 .t-ban{color:var(--muted)}
+  .pk-x{font:inherit;font-size:22px;line-height:1;width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+  .pk input[type=search]{flex:0 0 auto;min-width:0;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);width:100%}
+  .pk-cls{display:flex;flex-wrap:wrap;gap:5px}
+  .pk-c{font:inherit;font-size:12.5px;padding:4px 9px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--muted);cursor:pointer}
+  .pk-c[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+  .pk-list{flex:1 1 auto;min-height:0;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;padding:2px;-webkit-overflow-scrolling:touch}
+  .pk-h{font:inherit;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:7px 9px;cursor:pointer;color:var(--ink);min-width:0}
+  .pk-h:hover,.pk-h:focus-visible{border-color:var(--accent);outline:none}
+  .pk-h b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pk-h .dcl{margin-top:2px}
+  .pk-h .pk-f{font-size:11.5px;font-weight:600}
+  .pk-empty{color:var(--muted);font-size:14px;grid-column:1/-1;padding:8px 2px}
+  @media (max-width:760px){ .pk-wrap{align-items:flex-end;padding:0} .pk{border-radius:14px 14px 0 0;max-height:82vh;width:100%;padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+    .pk-list{grid-template-columns:repeat(2,minmax(0,1fr))} }
   .dhint{font-size:12.5px;color:var(--muted);margin:0}
   @media (max-width:420px){ .dslots{gap:5px} .dnm{font-size:13px;padding-right:12px} .dcl{font-size:11px;gap:2px} .dcl .rng svg{width:13px;height:13px} .dslot{padding:5px 4px 5px 7px} .dx{width:15px;height:15px;line-height:15px;font-size:13px;top:2px;right:1px} }
   .ds{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
@@ -308,7 +373,7 @@
 <details class="sec" id="sec-heroes">
   <summary><h2>Герои</h2><span class="hint"></span></summary>
   <div class="fbar">
-    <button type="button" class="ftoggle" id="ftoggle" aria-expanded="true" aria-controls="fbody"><span class="chev" aria-hidden="true"></span>Фильтры<span class="fact" id="fact"></span></button>
+    <button type="button" class="ftoggle" id="ftoggle" aria-expanded="true" aria-controls="fbody"><span class="chev" aria-hidden="true"></span>Фильтры и настройки<span class="fact" id="fact"></span></button>
     <span class="count" id="count"></span>
     <a href="#" class="flink" id="reset">Сбросить</a>
   </div>
@@ -373,6 +438,52 @@
     </table>
   </div>
   </details>
+
+<details class="sec" id="sec-ref">
+  <summary><h2>Справочник</h2><span class="hint"></span></summary>
+  <p class="sub" style="margin-bottom:10px">Со страницы «Справочник» официальных правил «Лига героев» (с. 20). Статусы — в отдельном разделе выше. В скобках — страница правил с подробностями.</p>
+  <div class="ref-cards">
+    <div class="ref-card"><h3>Очки здоровья</h3>
+      <div class="ref-hp"><div><b>9 ОЗ</b><span>герои и порталы</span></div><div><b>1 ОЗ</b><span>миньоны, башни, монстры</span></div><div><b>5 ОЗ ×4</b><span>отродье — 4 жизни по 5 ОЗ</span></div></div>
+    </div>
+    <div class="ref-card"><h3>Состояния героя</h3>
+      <div class="ref-st">
+        <div><span class="ref-sheet r0" aria-hidden="true"></span><b>Готовый</b></div><span class="ref-arr" aria-hidden="true">→</span>
+        <div><span class="ref-sheet r90" aria-hidden="true"></span><b>Истощённый</b></div><span class="ref-arr" aria-hidden="true">→</span>
+        <div><span class="ref-sheet r180" aria-hidden="true"></span><b>Поверженный</b></div>
+      </div>
+      <p class="ref-note">Состояние отмечают, поворачивая планшет героя на 90° по часовой стрелке (с. 13). В фазе обновления истощённые герои становятся готовыми, а поверженные — истощёнными.</p>
+    </div>
+  </div>
+  <dl class="ref-terms">
+    <div><dt>Боец</dt><dd>Что угодно с ОЗ. <span class="ref-pg">(с. 13)</span></dd></div>
+    <div><dt>Бронебойный урон</dt><dd>Игнорируйте броню цели.</dd></div>
+    <div><dt>Броня</dt><dd>Каждый раз, когда боец с бронёй должен получить урон, не получайте количество урона, равное значению брони. Броня при этом не уничтожается и действует каждый раз. Некоторая броня работает только против эффектов определённых типов. Не учитывайте такую, когда нужно разыграть эффект по значению брони.</dd></div>
+    <div><dt>В пределах</dt><dd>См. раздел «Расстояния». <span class="ref-pg">(с. 12)</span></dd></div>
+    <div><dt>Войти</dt><dd>Некоторые эффекты активируются всегда, когда боец входит на участок по любой причине (перемещение, вытеснение, притяжение и т. д.).</dd></div>
+    <div><dt>Вражеский</dt><dd>Бойцы не из вашей команды.</dd></div>
+    <div><dt>Вытеснить</dt><dd>Поместите вытесненного героя на соседний участок. Игнорируйте свойство «Преграда». (Относится только к героям.)</dd></div>
+    <div><dt>Дружественный</dt><dd>Бойцы из вашей команды.</dd></div>
+    <div><dt>Импульс</dt><dd>Каждый миньон на спорном участке приносит 1 импульс своей команде. Каждый герой также приносит 1 импульс своей команде. <span class="ref-pg">(с. 10)</span></dd></div>
+    <div><dt>Инициатива</dt><dd>Число ОП на плане плюс любые дополнительные ОП или бонусные инициативы. <span class="ref-pg">(с. 7)</span></dd></div>
+    <div><dt>Лечить</dt><dd>Увеличьте число ОЗ бойца (не больше, чем до начального). Порталы лечить нельзя.</dd></div>
+    <div><dt>ОА</dt><dd>Очки атаки. <span class="ref-pg">(с. 7)</span></dd></div>
+    <div><dt>ОЗ</dt><dd>Очки здоровья. <span class="ref-pg">(с. 12)</span></dd></div>
+    <div><dt>ОП</dt><dd>Очки перемещения. <span class="ref-pg">(с. 7)</span></dd></div>
+    <div><dt>Ответный удар</dt><dd>Подробно — в разделе «Ответный удар» правил. <span class="ref-pg">(с. 12)</span></dd></div>
+    <div><dt>Поблизости</dt><dd>Соседние участки и тот, откуда вы считаете соседство. Бойцы поблизости — это те, что находятся на участках поблизости (то есть формулировка «герои поблизости» включает и самого героя).</dd></div>
+    <div><dt>Преграда</dt><dd>Препятствует соседству врагов.</dd></div>
+    <div><dt>Прикрепить</dt><dd>Положите заклинание рядом с планшетом соответствующего героя и применяйте эффект этого заклинания, пока не сбросите.</dd></div>
+    <div><dt>Притянуть</dt><dd>Поместите притянутого героя на участок с бойцом, который притягивает. (Относится только к героям.)</dd></div>
+    <div><dt>Сила</dt><dd>Урон, наносимый атакой (минимум 0). Изначально это 0, затем сила повышается картами атаки, предметами, свойствами и т. д.</dd></div>
+    <div><dt>Соседство</dt><dd>Два участка соседние, если у них общая граница, отмеченная двумя треугольными стрелками. Бойцы на соседних участках — соседние. Боец не может соседствовать сам с собой.</dd></div>
+    <div><dt>Спорный участок</dt><dd>Участок с миньонами.</dd></div>
+    <div><dt>Стойкость</dt><dd>Если боец со свойством «Стойкость» (например, портал) должен потерять 2 ОЗ или больше, он теряет лишь 1 ОЗ. Когда миньоны осаждают портал, они игнорируют это свойство.</dd></div>
+    <div><dt>Телепортировать</dt><dd>Поставьте бойца на указанный участок. Боец считается телепортированным, только если его участок сменился.</dd></div>
+    <div><dt>Уйти</dt><dd>Некоторые эффекты активируются всегда, когда боец уходит с участка по любой причине (перемещение, вытеснение, притяжение и т. д.).</dd></div>
+    <div><dt>Урон</dt><dd>Подробно — в разделе «Здоровье (ОЗ) и урон» правил. <span class="ref-pg">(с. 12)</span></dd></div>
+  </dl>
+</details>
 
 <details class="sec" id="sec-faq">
   <summary><h2>Community FAQ с сайта BGG</h2><span class="hint"></span></summary>
@@ -454,6 +565,15 @@
   </div>
 </details>
 </main>
+<div id="picker" class="pk-wrap" hidden>
+  <div class="pk-back" data-close></div>
+  <div class="pk" role="dialog" aria-modal="true" aria-labelledby="pkTitle">
+    <div class="pk-head"><h3 id="pkTitle"></h3><button type="button" class="pk-x" data-close aria-label="Закрыть">×</button></div>
+    <input type="search" id="pkQ" placeholder="Поиск героя…" autocomplete="off">
+    <div class="pk-cls" id="pkCls"></div>
+    <div class="pk-list" id="pkList"></div>
+  </div>
+</div>
 <div id="sheet" class="sheet collapsed" hidden>
   <div class="sh-bar">
     <button type="button" class="sh-nav" id="shPrev" aria-label="Предыдущий герой">‹</button>
@@ -844,12 +964,12 @@ function renderDraftBar(){
       <button type="button" class="dx" data-clear="${esc(n)}" aria-label="Снять отметку с ${esc(h.name)}">×</button></div>`; };
   document.getElementById("draftbar").innerHTML=["my","enemy","ban"].map((k,i)=>{
     const list=groups[k], slots=Math.max(4, Math.ceil(list.length/4)*4);
-    const body=`<div class="dslots">${list.map(slot).join("")}${"<div class=\"dslot empty\">пусто</div>".repeat(slots-list.length)}</div>`;
+    const body=`<div class="dslots">${list.map(slot).join("")}${`<button type="button" class="dslot empty" data-add="${k}">+ выбрать</button>`.repeat(slots-list.length)}</div>`;
     if(k==="ban") return `<details class="dgroup ban" id="dban"${BAN_OPEN?" open":""}><summary class="dgroup-h"><span class="chev" aria-hidden="true"></span>${T[k]} <span class="dn">${list.length}/4</span>`+
       `<span class="dbanlist">${list.length?"· "+list.map(esc).join(", "):""}</span></summary>${body}</details>`;
     return `<div class="dgroup ${k}"><div class="dgroup-h">${T[k]} <span class="dn">${list.length}/4</span>`+
       (i===0&&total?`<a href="#" class="flink" id="draftReset">Сбросить драфт</a>`:"")+`</div>${body}</div>`;
-  }).join("")+(total?"":`<p class="dhint">Отмечайте героев кнопками «Мой», «Враг» и «Бан» в таблице ниже.</p>`);
+  }).join("")+(total?"":`<p class="dhint">Нажмите на пустую ячейку, чтобы выбрать героя, или отмечайте героев кнопками «Мой», «Враг» и «Бан» в таблице ниже.</p>`);
   const db=document.getElementById("dban");
   db.addEventListener("toggle",()=>{ BAN_OPEN=db.open; try{localStorage.setItem("onward-bans",BAN_OPEN?"1":"0")}catch(e){} });
   const pe=document.getElementById("pickEnemy"); if(pe){ const c=groups.enemy.length; pe.disabled=!c; pe.textContent=c?`Взять пики противника (${c})`:"Взять пики противника"; }
@@ -1033,7 +1153,35 @@ document.getElementById("pickChips").addEventListener("click",e=>{ const b=e.tar
 document.getElementById("pickClear").addEventListener("click",()=>{ PICK.length=0; renderPick(); });
 document.getElementById("pickEnemy").addEventListener("click",()=>{
   PICK.length=0; H.filter(h=>DRAFT[h.name]==="enemy").slice(0,4).forEach(h=>PICK.push(h.name)); PICK_ALL=false; renderPick(); });
+// ---- Быстрый выбор героя из пустой ячейки драфта ----
+const PK={k:null,cls:""};
+const pkWrap=document.getElementById("picker"), pkQ=document.getElementById("pkQ");
+const PK_T={my:'<span class="t-my">Наш пик</span>',enemy:'<span class="t-enemy">Пик противника</span>',ban:'<span class="t-ban">Бан</span>'};
+function pkRender(){
+  const q=pkQ.value.trim().toLowerCase();
+  document.getElementById("pkCls").innerHTML=[["","Все"],...CLS_ORDER.map(c=>[c,c])].map(([v,t])=>`<button type="button" class="pk-c" data-cls="${v}" aria-pressed="${PK.cls===v}">${t}</button>`).join("");
+  const list=H.filter(h=>!DRAFT[h.name] && (!PK.cls||h.cls===PK.cls) && (!q||(h.name+" "+h.ru+" "+h.cls+" "+h.fac).toLowerCase().includes(q)))
+    .sort((a,b)=>coll.compare(a.name,b.name));
+  document.getElementById("pkList").innerHTML = list.length ? list.map(h=>`<button type="button" class="pk-h" data-pick="${esc(h.name)}">
+      <b>${esc(h.name)}</b><span class="dcl"><span>${esc(h.cls)}</span>${rngIcon(h.rng)}</span><span class="pk-f f-${h.fac}">${h.fac}</span></button>`).join("")
+    : '<p class="pk-empty">Свободных героев с такими условиями нет.</p>';
+}
+function pkOpen(k){
+  PK.k=k; PK.cls=""; pkQ.value="";
+  document.getElementById("pkTitle").innerHTML="Выбрать героя: "+PK_T[k];
+  pkRender(); pkWrap.hidden=false; document.body.style.overflow="hidden";
+  if(matchMedia("(pointer:fine)").matches) pkQ.focus();
+}
+function pkClose(){ pkWrap.hidden=true; document.body.style.overflow=""; }
+pkQ.addEventListener("input",pkRender);
+pkWrap.addEventListener("click",e=>{
+  if(e.target.closest("[data-close]")){ pkClose(); return; }
+  const c=e.target.closest(".pk-c"); if(c){ PK.cls=c.dataset.cls; pkRender(); return; }
+  const h=e.target.closest("[data-pick]"); if(h){ const k=PK.k; pkClose(); setDraft(h.dataset.pick,k); }
+});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !pkWrap.hidden){ e.stopImmediatePropagation(); pkClose(); } },true);
 document.getElementById("draftbar").addEventListener("click",e=>{
+  const ad=e.target.closest("[data-add]"); if(ad){ pkOpen(ad.dataset.add); return; }
   if(e.target.id==="draftReset"){ e.preventDefault(); Object.keys(DRAFT).forEach(k=>delete DRAFT[k]); saveDraft(); render(); renderDraftBar(); renderPick(); renderSheet(); return; }
   const x=e.target.closest("[data-clear]"); if(x){ setDraft(x.dataset.clear, DRAFT[x.dataset.clear]); return; }
   const g=e.target.closest(".dslot[data-go]"); if(g) goHero(g.dataset.go);
@@ -1106,6 +1254,13 @@ renderSheet();
 // Сворачивание секций: состояние запоминается в этом браузере
 document.querySelectorAll("details.sec").forEach(d=>{
   const k="onward-sec-"+d.id;
+  const sm=d.querySelector(":scope > summary");
+  // если раздел свернули из «прилипшего» заголовка — вернуть страницу к его началу
+  sm.addEventListener("click",()=>{ if(d.open && d.getBoundingClientRect().top<0){ requestAnimationFrame(()=>d.scrollIntoView({block:"start"})); } });
+  // тень у заголовка, когда он прилип к верху
+  if("IntersectionObserver" in window){ const sent=document.createElement("div"); sent.style.cssText="height:1px;margin-bottom:-1px"; d.parentNode.insertBefore(sent,d);
+    new IntersectionObserver(([en])=>sm.classList.toggle("stuck", !en.isIntersecting && d.open && d.getBoundingClientRect().top<1)).observe(sent);
+    window.addEventListener("scroll",()=>{ sm.classList.toggle("stuck", d.open && d.getBoundingClientRect().top<0); },{passive:true}); }
   try{ if(localStorage.getItem(k)==="1") d.open=true; }catch(e){}
   d.addEventListener("toggle",()=>{ try{ localStorage.setItem(k, d.open?"1":"0"); }catch(e){} });
 });
