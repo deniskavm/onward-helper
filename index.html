@@ -97,6 +97,32 @@
   .sw input:checked + .sw-t::after{transform:translateX(16px)}
   .sw input:focus-visible + .sw-t{outline:2px solid var(--accent);outline-offset:2px}
   body.no-cp #heroes details[data-cp="good"], body.no-cp #heroes details[data-cp="bad"], body.no-cp #sec-pick{display:none}
+  .rnd{list-style:none;margin:0;padding:0;counter-reset:rnd;display:flex;flex-direction:column;gap:6px}
+  .rnd > li{counter-increment:rnd;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:0;position:relative}
+  .rnd > li::before{content:counter(rnd);position:absolute;left:12px;top:7px;pointer-events:none;width:24px;height:24px;border-radius:50%;background:var(--chip);color:var(--ink);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+  .rnd > li.hero{background:color-mix(in srgb,#e8d84a 22%,var(--card));border-color:color-mix(in srgb,#c9b520 45%,var(--line))}
+  .rnd > li.hero::before{background:#c9b520;color:#222}
+  .rnd{gap:4px}
+  .rnd-x{margin-top:10px}
+  .rnd-x > li{counter-increment:none}
+  .rnd-x > li::before{content:"i";font-style:italic;font-family:Georgia,serif;color:var(--muted)}
+  .rnd-h{font-weight:700;font-size:15px;list-style:none;cursor:pointer;padding:9px 36px 9px 46px;position:relative;-webkit-tap-highlight-color:transparent}
+  .rnd-h::-webkit-details-marker{display:none}
+  .rnd-h::after{content:"";position:absolute;right:16px;top:14px;width:7px;height:7px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s}
+  .rnd-d[open] > .rnd-h::after{transform:rotate(-135deg);top:17px}
+  .rnd-h:hover{color:var(--accent)}
+  .rnd-b{padding:0 14px 10px 46px}
+  .rnd p,.rl-p{margin:4px 0;font-size:14px;line-height:1.45}
+  .rl-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:start;margin-bottom:10px}
+  .rl-n{display:inline-flex;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:13px;align-items:center;justify-content:center;margin-right:7px;vertical-align:1px}
+  .rl-ul{margin:4px 0;padding-left:18px;font-size:14px;line-height:1.45}
+  .rl-ul li{margin:3px 0}
+  .rl-formula{margin-top:8px;background:var(--chip);border-radius:8px;padding:8px 10px;font-size:13.5px;line-height:1.45}
+  .rl-note{margin:6px 0 0;font-size:12.5px;color:var(--muted);line-height:1.4}
+  .rl-h3{margin:16px 0 6px;font-size:16px}
+  .rl-warn{background:color-mix(in srgb,#d9534f 12%,var(--card));border:1px solid color-mix(in srgb,#d9534f 40%,var(--line));border-radius:10px;padding:9px 14px;font-size:14px;line-height:1.45}
+  .rl-hp{font-size:12.5px;font-weight:600;color:var(--kur);margin-left:6px}
+  @media (max-width:760px){ .rl-grid{grid-template-columns:1fr} .rnd-h{padding-left:42px} .rnd-b{padding:0 12px 10px 42px} .rnd > li::before{left:10px} }
   .ref-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
   .ref-card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
   .ref-card h3{margin:2px 0 8px;font-size:15px}
@@ -527,6 +553,89 @@
     <label class="sw"><input type="checkbox" id="itDraft"><span class="sw-t" aria-hidden="true"></span>Только влияющие на драфт</label>
   </div>
   <div class="it-list" id="itList"></div>
+</details>
+
+<details class="sec" id="sec-round">
+  <summary><h2>Структура раунда</h2><span class="hint"></span></summary>
+  <p class="sub" style="margin-bottom:10px">Раунды идут, пока одна из команд не уничтожит вражеский портал. В каждом раунде ходят не больше двух героев — по одному от каждой команды (правила, с. 6).</p>
+  <ol class="rnd">
+    <li><details class="rnd-d"><summary class="rnd-h">Фаза покупки <span class="ref-pg">(с. 6)</span></summary><div class="rnd-b"><p><b>В первом раунде её пропускают.</b> Команды по порядку приоритета покупают сколько угодно предметов — только верхние карты стопок рынка. Предмет кладут рядом с любым дружественным героем. У героя может быть не больше одного предмета каждого цвета. Предметы можно сбрасывать под низ своих стопок, чтобы освободить место, но передавать другим героям нельзя.</p></div></details></li>
+    <li><details class="rnd-d"><summary class="rnd-h">Фаза планирования <span class="ref-pg">(с. 7)</span></summary><div class="rnd-b"><p>Сначала планирует <b>приоритетная команда</b>: берёт 2 карты из колоды, выбирает 1 <b>готового</b> героя и кладёт на его планшет любую карту из руки рубашкой вверх — это карта плана. Затем то же самое делает другая команда. Если готовых героев нет, команда пропускает этап и в этом раунде не ходит.</p>
+      <p>Карты плана открывают одновременно и сравнивают <b>инициативу</b> — число ОП на карте (плюс бонусы предметов и свойств). У кого больше, тот ходит первым. При ничьей первой ходит приоритетная команда и переворачивает жетон обновления, так что приоритет переходит к другой.</p></div></details></li>
+    <li class="hero"><details class="rnd-d"><summary class="rnd-h">Ход более быстрого героя <span class="ref-pg">(из одной команды, с. 7–8)</span></summary><div class="rnd-b"><p>Герой выбирает основной план (карта плана) или запасной (с планшета) и получает его ОП и ОА. Дальше в любом порядке: <b>перемещение</b> — 1 ОП, <b>атака</b> — 1 ОА. Любой дружественный герой, даже истощённый, может творить сколько угодно заклинаний. Ход заканчивается обязательным <b>пасом</b>: герой истощается, сбрасывает карту плана и все статусы, непотраченные ОП и ОА сгорают.</p></div></details></li>
+    <li><details class="rnd-d"><summary class="rnd-h">Фаза миньонов <span class="ref-pg">(с. 10)</span></summary><div class="rnd-b"><p>Миньоны расчищают пути: считают импульс, нападают, осаждают или продвигаются. Подробно — в разделе <a href="#sec-minions" class="flink gosec" style="margin:0">«Фаза миньонов»</a>.</p></div></details></li>
+    <li><details class="rnd-d"><summary class="rnd-h">Фаза джунглей <span class="ref-pg">(с. 11)</span></summary><div class="rnd-b"><p>Каждый герой на участке с монстром (в том числе с дальней атакой) побеждает этого монстра, переворачивает жетон и кладёт его перед собой — это золото команды. Если на участке герои разных команд, монстра побеждает большая группа, при равенстве — никто. Фаза идёт для всех одновременно, поэтому несколько своих героев на одном участке побеждают только одного монстра.</p></div></details></li>
+    <li class="hero"><details class="rnd-d"><summary class="rnd-h">Ход более медленного героя <span class="ref-pg">(из другой команды)</span></summary><div class="rnd-b"><p>Ходит герой другой команды — так же, как первый.</p></div></details></li>
+    <li><details class="rnd-d"><summary class="rnd-h">Фаза обновления <span class="ref-pg">(с. 11)</span></summary><div class="rnd-b"><p>Проводится, <b>только если все герои истощены или повержены</b> (готовых не осталось). Тогда день заканчивается: истощённые герои становятся готовыми, поверженные — истощёнными, жетон обновления продвигается по шкале дня.</p>
+      <p>В конце <b>первого дня</b> в игру входит отродье: его фигурку ставят на участок реки, а стопку из 4 жетонов — на деление «5» шкалы ОЗ. Если к концу <b>пятого дня</b> ни один портал не уничтожен, побеждает команда, у портала которой больше ОЗ (при равенстве — приоритетная).</p></div></details></li>
+  </ol>
+  <ul class="rnd rnd-x">
+    <li><details class="rnd-d"><summary class="rnd-h">Приоритет команд</summary><div class="rnd-b"><p>Жетон обновления показывает приоритетную команду: она первой покупает и первой планирует. Приоритет меняется при каждой ничьей по инициативе (с. 6).</p></div></details></li>
+    <li><details class="rnd-d"><summary class="rnd-h">Карты</summary><div class="rnd-b"><p>Предел руки — 7 карт: лишние сбрасывают в конце хода. Закончилась колода — перемешайте сброс. Сброс лежит лицом вверх, смотреть его может любой игрок (с. 6).</p></div></details></li>
+  </ul>
+</details>
+
+<details class="sec" id="sec-minions">
+  <summary><h2>Фаза миньонов</h2><span class="hint"></span></summary>
+  <p class="sub" style="margin-bottom:10px">Начинается после хода более быстрого героя. Пути расчищают по одному, в порядке, который выбирает приоритетная команда. Если на пути есть хотя бы 1 миньон, пройдите все 3 этапа, иначе сразу переходите к третьему (правила, с. 10).</p>
+
+  <div class="rl-grid">
+    <div class="ref-card"><h3><span class="rl-n">1</span>Посчитайте импульс</h3>
+      <p class="rl-p"><b>Спорный участок</b> — участок пути, где стоят миньоны. На каждом пути он только один: все миньоны пути всегда стоят вместе.</p>
+      <ul class="rl-ul">
+        <li>Каждый <b>миньон</b> на спорном участке — +1 импульс своей команде.</li>
+        <li>Каждый <b>герой</b> на спорном участке — +1 импульс своей команде.</li>
+        <li>Предметы и свойства тоже могут добавить импульс.</li>
+      </ul>
+      <div class="rl-formula">Импульс команды = миньоны + герои на спорном участке + бонусы.<br>Тратит только <b>разница</b> между командами.</div>
+    </div>
+    <div class="ref-card"><h3><span class="rl-n">2</span>Потратьте импульс</h3>
+      <p class="rl-p">Если у команды есть миньоны и импульса <b>больше</b>, чем у противника, она обязана потратить разницу на действия своих миньонов. Вторая команда ничего не тратит. Нельзя потратить на цель больше импульса, чем нужно, чтобы её поразить.</p>
+      <p class="rl-p">Если импульс равный, его не тратит никто.</p>
+    </div>
+    <div class="ref-card"><h3><span class="rl-n">3</span>Разместите миньонов</h3>
+      <p class="rl-p">Каждая команда ставит 1 дружественного миньона:</p>
+      <ul class="rl-ul">
+        <li>на спорный участок (где уже есть миньоны);</li>
+        <li>если на пути миньонов нет — на участок с символом <b>M</b>.</li>
+      </ul>
+      <p class="rl-p">Затем расчищайте следующий путь.</p>
+    </div>
+  </div>
+
+  <h3 class="rl-h3">Действия миньонов</h3>
+  <p class="rl-p">Миньоны <b>нападают</b> каждый раз, когда могут. Если напасть не на кого, они <b>осаждают</b>. Если и осада невозможна, они <b>продвигаются</b>.</p>
+  <div class="rl-grid">
+    <div class="ref-card rl-act"><h3>Нападение</h3><p class="rl-p">Потратьте сколько угодно импульса — столько же урона получит один вражеский <b>герой, миньон или башня</b> на спорном участке. Это не считается атакой.</p><p class="rl-note">Миньону и башне хватает 1 импульса (у них 1 ОЗ), герою — столько, сколько у него осталось ОЗ.</p></div>
+    <div class="ref-card rl-act"><h3>Осада</h3><p class="rl-p">Потратьте <b>весь оставшийся</b> импульс — столько же урона получит <b>соседний</b> вражеский портал. Свойство «Стойкость» при осаде не действует.</p></div>
+    <div class="ref-card rl-act"><h3>Продвижение</h3><p class="rl-p">Потратьте 1 импульс — все свои миньоны (и только они) переходят на соседний участок по направлению к вражескому порталу.</p><p class="rl-note">На участок портала миньоны никогда не заходят (FAQ).</p></div>
+  </div>
+  <div class="rl-warn"><b>Не забывайте об ответном ударе.</b> Когда миньоны нападают на башню или осаждают портал, те наносят ответный удар и побеждают одного миньона. Если так погиб ваш последний миньон, весь оставшийся импульс пропадает.</div>
+
+  <h3 class="rl-h3">Башни и портал</h3>
+  <div class="ref-cards">
+    <div class="ref-card"><h3>Башни <span class="rl-hp">1 ОЗ</span></h3>
+      <p class="rl-p">Стоят на границе двух участков, то есть находятся на обоих сразу (с. 13). Свойства — «Ответный удар» и «Преграда».</p>
+      <ul class="rl-ul">
+        <li><b>Преграда.</b> Для врагов участки по обе стороны башни не соседние: через эту границу нельзя переместиться и нельзя считать через неё расстояние, в том числе для дальней атаки (с. 12).</li>
+        <li>Зайти на участок с башней можно другим путём, если не пересекать её границу (FAQ).</li>
+        <li>Чтобы добраться до портала, сначала нужно уничтожить башни, которые закрывают к нему дорогу (с. 6). Порядок любой, уничтожать все не обязательно (FAQ).</li>
+        <li>Уничтожить башню можно нападением миньонов, атакой героя или заклинанием. У башни 1 ОЗ, поэтому при атаке героя карту атаки не открывают: считается, что выпала сила 2 (с. 8).</li>
+        <li><b>Ответный удар.</b> Получив урон, башня атакует того, кто его нанёс: героя — атакой (карту атаки открывает игрок команды-владельца башни), миньона — побеждает одного расчищающего путь. Удар наносится, даже если башня уничтожена (с. 12) и даже если урон заблокировала броня (FAQ).</li>
+      </ul>
+    </div>
+    <div class="ref-card"><h3>Портал <span class="rl-hp">9 ОЗ</span></h3>
+      <p class="rl-p">Портал уничтожен — команда противника побеждает. Лечить порталы нельзя (с. 13). Свойства — «Ответный удар» и «Стойкость».</p>
+      <ul class="rl-ul">
+        <li><b>Три способа нанести урон:</b> осада миньонами, атака героями, прицельные заклинания (с. 6).</li>
+        <li><b>Стойкость.</b> Портал не может потерять больше 1 ОЗ за раз: атака на 5 урона снимет только 1 ОЗ.</li>
+        <li><b>Осада игнорирует Стойкость:</b> весь оставшийся импульс уходит в урон порталу целиком. Поэтому большая волна миньонов у портала особенно опасна.</li>
+        <li><b>Ответный удар</b> при осаде побеждает ровно одного миньона, сколько бы урона ни нанесли (FAQ). Герою, который атакует портал, тоже достаётся ответный удар.</li>
+        <li>Герой ближнего боя может атаковать портал, только стоя на его участке (FAQ). Здесь же возрождаются герои — на участке своего портала (с. 13).</li>
+        <li>Если к концу пятого дня оба портала целы, побеждает тот, у кого больше ОЗ портала (с. 11).</li>
+      </ul>
+    </div>
+  </div>
 </details>
 
 <details class="sec" id="sec-ref">
@@ -1444,6 +1553,7 @@ document.addEventListener("keydown",e=>{
 })();
 renderSheet();
 // Сворачивание секций: состояние запоминается в этом браузере
+document.addEventListener("click",e=>{const a=e.target.closest("a.gosec"); if(!a) return; const d=document.querySelector(a.getAttribute("href")); if(!d) return; e.preventDefault(); d.open=true; d.scrollIntoView({behavior:"smooth",block:"start"});});
 document.querySelectorAll("details.sec").forEach(d=>{
   const k="onward-sec-"+d.id;
   const sm=d.querySelector(":scope > summary");
