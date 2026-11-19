@@ -368,7 +368,10 @@
   .dord-n{text-transform:none;letter-spacing:0}
   .dord-now{font-size:15px;font-weight:600;margin:3px 0 1px}
   .dord-next{font-size:13px;color:var(--muted)}
-  .dord-dots{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px}
+  .dord-dots{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px;align-items:center}
+  .dbase{margin-left:auto;font:inherit;font-size:13px;font-weight:600;padding:3px 12px;border-radius:999px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;white-space:nowrap}
+  .dbase:hover{background:var(--accent);color:#fff}
+  .dord-base{display:flex;justify-content:flex-end;margin:0 0 8px}
   .ost{width:22px;height:22px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;
     border:1.5px solid currentColor;opacity:.45}
   .ost.D{color:#6a54a8} .ost.L{color:#a8801f}
@@ -1166,6 +1169,7 @@ function draftSteps(size){
 function teamGroup(t){ return (t==="D")===(DSET.side==="dark") ? "my" : "enemy"; }
 function draftState(groups){
   const st=draftSteps(DSET.size); const need={ban:0,my:0,enemy:0};
+  if(groups.my.length>=DSET.size&&groups.enemy.length>=DSET.size) return {i:st.length, steps:st, done:true};
   for(let i=0;i<st.length;i++){
     const s=st[i], g=s.t==="ban"?"ban":teamGroup(s.team);
     need[g]+=s.n;
@@ -1175,9 +1179,17 @@ function draftState(groups){
   return {i:st.length, steps:st, done:true};
 }
 const TEAM={D:"Тьма",L:"Свет"};
+const BASE_DRAFT={D:["Akimo","Miyuki","Kichie","Yami"], L:["Vorhild","Brylvar","Astryda","Heraal"]};
+function applyBaseDraft(){
+  Object.keys(DRAFT).forEach(k=>delete DRAFT[k]);
+  if(DSET.size!==4){ DSET.size=4; saveDset(); renderDset(); }
+  ["D","L"].forEach(t=>BASE_DRAFT[t].forEach(n=>{ DRAFT[n]=teamGroup(t); }));
+  saveDraft(); render(); renderDraftBar(); renderPick(); renderSheet();
+}
 function renderOrder(groups){
   const box=document.getElementById("dorder");
-  if(!DSET.order){ box.innerHTML=""; return null; }
+  const baseBtn=`<button type="button" class="dbase" id="draftBase" title="Тьма: ${BASE_DRAFT.D.join(", ")}. Свет: ${BASE_DRAFT.L.join(", ")}">Базовый драфт</button>`;
+  if(!DSET.order){ box.innerHTML=`<div class="dord-base">${baseBtn}</div>`; return null; }
   const ds=draftState(groups);
   const desc=s=>{ const g=s.t==="ban"?"":(teamGroup(s.team)==="my"?" (мы)":" (противник)");
     const who=`<span class="tm ${s.team}">${TEAM[s.team]}${s.t==="ban"?(teamGroup(s.team)==="my"?" (мы)":" (противник)"):g}</span>`;
@@ -1186,7 +1198,7 @@ function renderOrder(groups){
   box.innerHTML=`<div class="dord${ds.done?" fin":""}"><div class="dord-h">Порядок драфта · <span class="dord-n">${ds.done?"завершён":"шаг "+(ds.i+1)+" из "+ds.steps.length}</span></div>
     <div class="dord-now">${ds.done?"Все герои выбраны — удачной партии!":"Сейчас: "+desc(ds.step)+(ds.step.n>1&&ds.left<ds.step.n?` · осталось ${ds.left}`:"")}</div>
     ${!ds.done&&ds.steps[ds.i+1]?`<div class="dord-next">Далее: ${desc(ds.steps[ds.i+1])}</div>`:""}
-    <div class="dord-dots">${dots}</div>
+    <div class="dord-dots">${dots}${baseBtn}</div>
     ${DSET.size===3?'<div class="dord-note">Для 3 героев порядок в правилах не описан — это та же схема, сокращённая до 3 героев.</div>':""}</div>`;
   return ds.done?null:ds.g;
 }
@@ -1451,6 +1463,7 @@ pkWrap.addEventListener("click",e=>{
   const h=e.target.closest("[data-pick]"); if(h){ const k=PK.k; pkClose(); setDraft(h.dataset.pick,k); }
 });
 document.addEventListener("keydown",e=>{ if(e.key==="Escape" && !pkWrap.hidden){ e.stopImmediatePropagation(); pkClose(); } },true);
+document.getElementById("dorder").addEventListener("click",e=>{ if(e.target.closest("#draftBase")) applyBaseDraft(); });
 document.getElementById("draftbar").addEventListener("click",e=>{
   const ad=e.target.closest("[data-add]"); if(ad){ pkOpen(ad.dataset.add); return; }
   if(e.target.id==="draftReset"){ e.preventDefault(); Object.keys(DRAFT).forEach(k=>delete DRAFT[k]); saveDraft(); render(); renderDraftBar(); renderPick(); renderSheet(); return; }
