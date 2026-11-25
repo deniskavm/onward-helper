@@ -81,6 +81,14 @@
     border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s;margin:0 6px 4px 2px}
   details.sec:not([open]) > summary h2::before{transform:rotate(-45deg);margin:0 6px 0 0}
   details.sec > summary .hint{color:var(--muted);font-size:13px}
+  details.subsec{margin-top:14px;border-top:1px solid var(--line);scroll-margin-top:58px}
+  details.subsec > summary{list-style:none;cursor:pointer;display:flex;align-items:baseline;gap:10px;-webkit-tap-highlight-color:transparent}
+  details.subsec > summary::-webkit-details-marker{display:none}
+  details.subsec > summary h3{margin:12px 0 8px;font-size:18px;display:flex;align-items:center;gap:6px}
+  details.subsec > summary h3::before{content:"";width:6px;height:6px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin:0 7px 3px 1px;transition:transform .15s}
+  details.subsec:not([open]) > summary h3::before{transform:rotate(-45deg);margin:0 7px 0 0}
+  details.subsec > summary:hover h3{color:var(--accent)}
+
   details.sec > summary:hover h2{color:var(--accent)}
   .count{color:var(--muted);font-size:13px;white-space:nowrap}
   .flink{white-space:nowrap}
@@ -551,7 +559,19 @@
   (<a href="https://boardgamegeek.com/thread/3609027/hero-strategies-kurumo">Курумо</a>,
   <a href="https://boardgamegeek.com/thread/3617471/hero-strategies-liothan">Лиотан</a>). Разборов Таулота и Нуптена автор не публиковал:
   для этих героев собрано то, что он писал о них в разборах базовых героев, а пометка <span class="src-v">наш вывод</span> — наши предположения по способностям, в партиях не проверенные.</p>
+  
+  <details class="subsec" id="sec-classes">
+  <summary><h3>Классы</h3></summary>
+  <div class="card">
+    <table class="cls">
+      <thead><tr><th>Класс</th><th>Роль в команде</th></tr></thead>
+      <tbody id="classes"></tbody>
+    </table>
+  </div>
+  <p class="note">Класс указан рядом с именем на планшете героя, отдельных правил у классов нет. Цвет ленты на планшете — специализация героя:
+  красные наносят много урона, синие сильны в обороне и живучи, зелёные используют импульс и миньонов, жёлтые — скорость и разнообразие (правила, с. 16).</p>
   </details>
+</details>
 
 <details class="sec" id="sec-pick">
   <summary><h2>Подобрать контрпик</h2><span class="hint"></span></summary>
@@ -564,18 +584,6 @@
   <div id="pickChips" class="pick-chips"></div>
   <div id="pickOut"></div>
 </details>
-
-<details class="sec" id="sec-classes">
-  <summary><h2>Классы</h2><span class="hint"></span></summary>
-  <div class="card">
-    <table class="cls">
-      <thead><tr><th>Класс</th><th>Роль в команде</th></tr></thead>
-      <tbody id="classes"></tbody>
-    </table>
-  </div>
-  <p class="note">Класс указан рядом с именем на планшете героя, отдельных правил у классов нет. Цвет ленты на планшете — специализация героя:
-  красные наносят много урона, синие сильны в обороне и живучи, зелёные используют импульс и миньонов, жёлтые — скорость и разнообразие (правила, с. 16).</p>
-  </details>
 
 <details class="sec" id="sec-ref">
   <summary><h2>Справочник: термины и статусы</h2><span class="hint"></span></summary>
@@ -668,10 +676,9 @@
     <li><details class="rnd-d"><summary class="rnd-h">Приоритет команд</summary><div class="rnd-b"><p>Жетон обновления показывает приоритетную команду: она первой покупает и первой планирует. Приоритет меняется при каждой ничьей по инициативе (с. 6).</p></div></details></li>
     <li><details class="rnd-d"><summary class="rnd-h">Карты</summary><div class="rnd-b"><p>Предел руки — 7 карт: лишние сбрасывают в конце хода. Закончилась колода — перемешайте сброс. Сброс лежит лицом вверх, смотреть его может любой игрок (с. 6).</p></div></details></li>
   </ul>
-</details>
 
-<details class="sec" id="sec-minions">
-  <summary><h2>Фаза миньонов</h2><span class="hint"></span></summary>
+  <details class="subsec" id="sec-minions">
+  <summary><h3>Фаза миньонов</h3></summary>
   <p class="sub" style="margin-bottom:10px">Начинается после хода более быстрого героя. Пути расчищают по одному, в порядке, который выбирает приоритетная команда. Если на пути есть хотя бы 1 миньон, пройдите все 3 этапа, иначе сразу переходите к третьему (правила, с. 10).</p>
 
   <div class="rl-grid">
@@ -751,10 +758,15 @@
       </ul>
     </div>
   </div>
+  </details>
 </details>
 
 <details class="sec" id="sec-errata">
-  <summary><h2>Эррата и пояснения</h2><span class="hint"></span></summary>
+  <summary><h2>Эррата и FAQ</h2><span class="hint"></span></summary>
+  <p class="sub" style="margin-bottom:4px">Официальная эррата Skytear Games и неофициальный FAQ сообщества с BoardGameGeek.</p>
+
+  <details class="subsec" id="sub-errata">
+  <summary><h3>Официальная эррата и пояснения</h3></summary>
   <p class="sub" style="margin-bottom:10px">Официальный документ Skytear Games «Errata &amp; Clarifications» (черновик, обновлён 1 октября 2026). Перевод наш, термины — по русским правилам. Уточнения к героям и предметам также показаны прямо у карт в блоке «Способности» и в разделе «Предметы».</p>
 
   <h3 class="rl-h3">Эррата правил</h3>
@@ -826,10 +838,10 @@
     <div class="er-item"><div class="er-hd"><span class="er-l c">Пояснение</span><b>Skytear Whistle</b><span class="ref-pg">Legendary Expansion</span></div>
       <p>Срабатывает, даже если на этапе 2 («Потратьте импульс») все дружественные миньоны побеждены, а на этапе 3 («Разместите миньонов») 1 дружественный миньон ставится на участок поблизости.</p></div>
   </div>
-</details>
+  </details>
 
-<details class="sec" id="sec-faq">
-  <summary><h2>Community FAQ с сайта BGG</h2><span class="hint"></span></summary>
+  <details class="subsec" id="sec-faq">
+  <summary><h3>Community FAQ с сайта BGG</h3></summary>
   <p class="sub" style="margin-bottom:8px">Опубликовано на BoardGameGeek пользователем <a class="flink" style="margin:0" href="https://boardgamegeek.com/profile/coylote">coylote</a>. Документ сообщества: все ответы подтверждены книгой правил и/или комментариями разработчиков в Discord Skytear Games. Это не новые правила, а собранные в одном месте разъяснения. Официальные уточнения и эррата — <a class="flink" style="margin:0" href="https://docs.google.com/document/d/1mPRMGgT7OkKzkOduW1jc7jqk1hoP9pt1MaPk_NFteGY/edit?tab=t.0">Onward rules clarifications</a>, вопросы разработчикам — <a class="flink" style="margin:0" href="https://discord.gg/V8ZAdn7m9x">Discord Skytear Games</a>.</p>
   <div class="faq-bar"><span class="count">40 вопросов</span><a href="#" class="flink" id="faqAll">Развернуть все</a></div>
   <div class="faq">
@@ -896,7 +908,7 @@
       <details class="faq-q"><summary>Может ли неактивный герой разыграть заклинание с дополнительной стоимостью в ОП или ОА?</summary><div class="faq-a">Фактически нет, технически да. Если герой получил ОП или ОА не от плана, он может потратить их на заклинания. Но так может только Nelaclen, и для этого ему нужно разыграть заклинания нескольких героев. У The Ermine’s Eye героини Vorhild тоже есть стоимость в ОА, но вне её хода его можно разыграть за 0 ОА.</div></details>
       <details class="faq-q"><summary>Можно ли разыграть встречное заклинание в ответ на действие «Пас»?</summary><div class="faq-a">Да. Это действие, и его нужно объявить, прежде чем оно будет выполнено.</div></details>
       <h4>Перемещение</h4>
-      <details class="faq-q"><summary>Выбирается ли участок перемещения целью?</summary><div class="faq-a"><div class="er er-e"><span class="er-l">Эррата</span>Вопрос устарел: при объявлении перемещения участок больше не выбирают. Герой тратит 1 ОП, а при розыгрыше ставится на соседний участок (см. «Эррата и пояснения»).</div>Нет: выбор участка — это не выбор цели. Герой всегда перемещается на выбранный участок. Даже если в ответ на объявление перемещения разыграли заклинания, герой затем всё равно переместится туда. Заклинания вытеснения не мешают дойти до выбранного участка. Герой может даже уйти из неё рывком — перемещение всё равно завершится на изначально выбранном участке.</div></details>
+      <details class="faq-q"><summary>Выбирается ли участок перемещения целью?</summary><div class="faq-a"><div class="er er-e"><span class="er-l">Эррата</span>Вопрос устарел: при объявлении перемещения участок больше не выбирают. Герой тратит 1 ОП, а при розыгрыше ставится на соседний участок (см. «Официальная эррата и пояснения» выше).</div>Нет: выбор участка — это не выбор цели. Герой всегда перемещается на выбранный участок. Даже если в ответ на объявление перемещения разыграли заклинания, герой затем всё равно переместится туда. Заклинания вытеснения не мешают дойти до выбранного участка. Герой может даже уйти из неё рывком — перемещение всё равно завершится на изначально выбранном участке.</div></details>
       <h4>Атака</h4>
       <details class="faq-q"><summary>Если герой может поразить несколько врагов, могут ли они быть на разных участках?</summary><div class="faq-a">Да. Достаточно, чтобы для каждой цели соблюдались ограничения выбора целей; положение целей друг относительно друга неважно.</div></details>
       <details class="faq-q"><summary>В каком порядке применяются эффекты, добавленные к атаке (например, от Reptile String)?</summary><div class="faq-a">Если время не указано, эффекты применяются после нанесения урона.</div></details>
@@ -906,7 +918,9 @@
       <details class="faq-q"><summary>Может ли герой «застрять» во вражеском портале или между двумя стенами на центральном пути?</summary><div class="faq-a">Да, такое возможно. Помните об этом и не попадайтесь!</div></details>
     </div>
   </div>
+  </details>
 </details>
+
 </main>
 <div id="picker" class="pk-wrap" hidden>
   <div class="pk-back" data-close></div>
@@ -1874,7 +1888,11 @@ renderSheet();
   document.addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.classList&&e.target.classList.contains("lnk")) e.target.click(); });
 })();
 // Сворачивание секций: состояние запоминается в этом браузере
-document.addEventListener("click",e=>{const a=e.target.closest("a.gosec"); if(!a) return; const d=document.querySelector(a.getAttribute("href")); if(!d) return; e.preventDefault(); d.open=true; d.scrollIntoView({behavior:"smooth",block:"start"});});
+document.addEventListener("click",e=>{const a=e.target.closest("a.gosec"); if(!a) return; const d=document.querySelector(a.getAttribute("href")); if(!d) return; e.preventDefault(); for(let x=d;x;x=x.parentElement&&x.parentElement.closest("details")) x.open=true; d.scrollIntoView({behavior:"smooth",block:"start"});});
+document.querySelectorAll("details.subsec").forEach(d=>{ const k="onward-sub-"+d.id;
+  try{ if(localStorage.getItem(k)==="1") d.open=true; }catch(e){}
+  d.addEventListener("toggle",()=>{ try{ localStorage.setItem(k, d.open?"1":"0"); }catch(e){} });
+});
 document.querySelectorAll("details.sec").forEach(d=>{
   const k="onward-sec-"+d.id;
   const sm=d.querySelector(":scope > summary");
